@@ -97,61 +97,54 @@ if __name__ == '__main__':
     if isValidOpts(options):
         rootLogger = setLogPath("finegrainedcontainerprofiler.log")
 
-        #Read list of libc and musl functions
-        glibcFuncList = util.extractAllFunctions(options.libcfuncpath, rootLogger)
-        if ( not glibcFuncList ):
-            rootLogger.error("Problem extracting list of functions from glibc")
-            sys.exit(-1)
-        muslFuncList = util.extractAllFunctions(options.muslfuncpath, rootLogger)
-        if ( not muslFuncList ):
-            rootLogger.error("Problem extracting list of functions from musl")
-            sys.exit(-1)
+        glibcFuncList = None
+        muslFuncList = None
+        if ( options.strictmode ):
+            #Read list of libc and musl functions
+            glibcFuncList = util.extractAllFunctions(options.libcfuncpath, rootLogger)
+            if ( not glibcFuncList ):
+                rootLogger.error("Problem extracting list of functions from glibc")
+                sys.exit(-1)
+            muslFuncList = util.extractAllFunctions(options.muslfuncpath, rootLogger)
+            if ( not muslFuncList ):
+                rootLogger.error("Problem extracting list of functions from musl")
+                sys.exit(-1)
 
-        inputFile = open(options.input, 'r')
-        inputLine = inputFile.readline()
+        # inputFile = open(options.input, 'r')
+        # inputLine = inputFile.readline()
+        try:
+            inputFile = open(options.input, 'r')
+            imageToPropertyStr = inputFile.read()
+            imageToPropertyMap = json.loads(imageToPropertyStr)
+        except Exception as e:
+            rootLogger.error("Trying to load image list map json from: %s, but doesn't exist: %s", options.input, str(e))
+            rootLogger.error("Exiting...")
+            sys.exit(-1)
 
         retry = False
-        skipList = []
-        while ( inputLine ):
-            inputLine = inputLine.strip()
-            imageName = inputLine
-            imageOptions = ""
-            if ( ";" in inputLine ):
-                splittedInput = inputLine.split(";")
-                imageRank = splittedInput[0]
-                imageName = splittedInput[1]
-                imageNameFullPath = splittedInput[2]
-                if ( imageNameFullPath == "" ):
-                    imageNameFullPath = imageName
-                #imageName = imageNameFullPath
-                #if ( "/" in imageName ):
-                #    imageName = imageName.replace("/", "-")
-                #if ( ":" in imageName ):
-                #    imageName = imageName[:imageName.find(":")]
-                imageCategory = splittedInput[3].strip()
-                imageCategory = imageCategory.replace("'", "")
-                imageCategory = imageCategory[1:-1]
-                if ( imageCategory != "" ):
-                    imageCategoryList = imageCategory.split(",")
-                else:
-                    imageCategoryList = ["Other"]
-                if ( len(splittedInput) > 6 ):
-                    for splitPart in splittedInput[6:]:
-                        imageOptions += splitPart + ";"
-                    imageOptions = imageOptions[:-1]
+        for imageKey, imageVals in imageToPropertyMap.items():
+            imageName = imageVals.get("image-name", imageKey)
+            imageNameFullPath = imageVals.get("image-url", None)
+            imageOptions = imageVals.get("options", "")
+            imageRank = imageVals.get("id", -1)
+            imageCategoryList = imageVals.get("category", ["Other"])
+            imageArgs = imageVals.get("args", "")
+            imagePullCount = imageVals.get("pull-count", 0)
+            imageOfficial = imageVals.get("official", False)
+            imageBinaryCfgPath = imageVals.get("binary-cfg-path", "")
 
-            if ( not imageRank.startswith("#") and imageName not in skipList ):
-                start = time.time()
-                newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, rootLogger)
+            start = time.time()
+            newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, rootLogger)
 #                returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
-                returncode = newProfile.createFineGrainedSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
-                end = time.time()
-                if ( returncode == C.SYSDIGERR and not retry ):
-                    retry = True
-                else:
-                    retry = False
+            returncode = newProfile.createFineGrainedSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
+            end = time.time()
+
+            if ( returncode == C.SYSDIGERR and not retry ):
+                retry = True
             else:
-                rootLogger.info("Skipping %s", imageName)
+                retry = False
+
             if ( not retry ):
                 inputLine = inputFile.readline()
+
         inputFile.close()
