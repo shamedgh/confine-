@@ -134,7 +134,7 @@ if __name__ == '__main__':
             imageBinaryCfgPath = imageVals.get("binary-cfg-path", "")
 
             start = time.time()
-            newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, rootLogger)
+            newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, options.finegrain, options.allbinaries, imageBinaryCfgPath, rootLogger)
 #                returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
             returncode = newProfile.createFineGrainedSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
             end = time.time()
