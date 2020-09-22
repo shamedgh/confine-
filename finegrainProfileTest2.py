@@ -122,6 +122,8 @@ if __name__ == '__main__':
             sys.exit(-1)
 
         retry = False
+        finegrain = True
+        allbinaries = True
         for imageKey, imageVals in imageToPropertyMap.items():
             imageName = imageVals.get("image-name", imageKey)
             imageNameFullPath = imageVals.get("image-url", None)
@@ -132,9 +134,10 @@ if __name__ == '__main__':
             imagePullCount = imageVals.get("pull-count", 0)
             imageOfficial = imageVals.get("official", False)
             imageBinaryCfgPath = imageVals.get("binary-cfg-path", "")
+            
 
             start = time.time()
-            newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, options.finegrain, options.allbinaries, imageBinaryCfgPath, rootLogger)
+            newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, finegrain, allbinaries, imageBinaryCfgPath, rootLogger)
 #                returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
             returncode = newProfile.createFineGrainedSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
             end = time.time()
