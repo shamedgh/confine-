@@ -97,15 +97,18 @@ if __name__ == '__main__':
     if isValidOpts(options):
         rootLogger = setLogPath("finegrainedcontainerprofiler.log")
 
-        #Read list of libc and musl functions
-        glibcFuncList = util.extractAllFunctions(options.libcfuncpath, rootLogger)
-        if ( not glibcFuncList ):
-            rootLogger.error("Problem extracting list of functions from glibc")
-            sys.exit(-1)
-        muslFuncList = util.extractAllFunctions(options.muslfuncpath, rootLogger)
-        if ( not muslFuncList ):
-            rootLogger.error("Problem extracting list of functions from musl")
-            sys.exit(-1)
+        glibcFuncList = None
+        muslFuncList = None
+        if ( options.strictmode ):
+            #Read list of libc and musl functions
+            glibcFuncList = util.extractAllFunctions(options.libcfuncpath, rootLogger)
+            if ( not glibcFuncList ):
+                rootLogger.error("Problem extracting list of functions from glibc")
+                sys.exit(-1)
+            muslFuncList = util.extractAllFunctions(options.muslfuncpath, rootLogger)
+            if ( not muslFuncList ):
+                rootLogger.error("Problem extracting list of functions from musl")
+                sys.exit(-1)
 
         inputFile = open(options.input, 'r')
         inputLine = inputFile.readline()
