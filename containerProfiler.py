@@ -2,6 +2,7 @@ import os, sys, subprocess, signal
 import re
 
 sys.path.insert(0, './python-utils/')
+sys.path.insert(1, './library-debloating/')
 
 import container
 import graph
@@ -16,12 +17,13 @@ import sysdig
 import constants as C
 import binaryAnalysis
 
+import piecewise
 
 class ContainerProfiler():
     """
     This class can be used to create a seccomp profile for a container through static anlyasis of the useful binaries
     """
-    def __init__(self, name, imagePath, options, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
+    def __init__(self, name, imagePath, options, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, binarycfgpath, logger, isDependent=False):
         self.logger = logger
         self.name = name
         self.imagePath = imagePath
@@ -52,6 +54,7 @@ class ContainerProfiler():
         self.languageSet = set()
         self.fineGrain = fineGrain
         self.extractAllBinaries = extractAllBinaries
+        self.binaryCfgPath = binarycfgpath
         self.isDependent = isDependent
         self.containerName = None
 
@@ -447,7 +450,9 @@ class ContainerProfiler():
 
                 self.logger.info("--->Starting INTEGRATE phase, extracting the list required system calls")
                 functionStartsOriginal = set()
-                functionStartsFineGrain = set()
+                # functionStartsFineGrain = set()
+
+                allSyscallsFineGrain = set()
 
                 if ( self.fineGrain ):
                     #TODO Fix fine grained analysis
@@ -456,55 +461,60 @@ class ContainerProfiler():
                     #3. Create a list of required functions for each library
                     #4. Use fine grained version or all imported for libraries without CFG
 
-                    libsWithCfg = set()
-                    libsInLibc = set()
-                    for fileName in os.listdir(self.cfgFolderPath):
-                        libsWithCfg.add(fileName)
+                    for binaryPath in psListAll:
+                        if binaryPath.strip() != "":
+                            piecewiseObj = piecewise.Piecewise(binaryPath, binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
+                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCalls(["main"]))
 
-                    libsInLibc.add("libcrypt.callgraph.out")
-                    libsInLibc.add("libdl.callgraph.out")
-                    libsInLibc.add("libnsl.callgraph.out")
-                    libsInLibc.add("libnss_compat.callgraph.out")
-                    libsInLibc.add("libnss_files.callgraph.out")
-                    libsInLibc.add("libnss_nis.callgraph.out")
-                    libsInLibc.add("libpthread.callgraph.out")
-                    libsInLibc.add("libm.callgraph.out")
-                    libsInLibc.add("libresolv.callgraph.out")
-                    libsInLibc.add("librt.callgraph.out")
-                    libsInLibc.add("libutil.callgraph.out")
-                    libsInLibc.add("libnss_dns.callgraph.out")
+                    # libsWithCfg = set()
+                    # libsInLibc = set()
+                    # for fileName in os.listdir(self.cfgFolderPath):
+                    #     libsWithCfg.add(fileName)
 
-                    cfgAvailable = False
-                    for fileName in os.listdir(tempOutputFolder):
-                        self.logger.debug("fileName: %s", fileName)
-                        tmpFileName = fileName
-                        functionList = set()
-                        if ( fileName.startswith("lib") and fileName != "libs.out"):
-                            cfgAvailable = True
-                            tmpFileName = re.sub("-.*so",".so",fileName)
-                            tmpFileName = tmpFileName[:tmpFileName.index(".so")]
-                            tmpFileName = tmpFileName + ".callgraph.out"
-                            self.logger.debug("tmpFileName: %s", tmpFileName)
-                        if ( tmpFileName in libsWithCfg ):
-                            tmpGraph = graph.Graph(self.logger)
-                            tmpGraph.createGraphFromInput(self.cfgFolderPath + "/" + tmpFileName, "->")
-                            funcFile.seek(0)
-                            funcLine = funcFile.readline()
-                            while ( funcLine ):
-                                funcName = funcLine.strip()
-                                leaves = tmpGraph.getLeavesFromStartNode(funcName, list(), list())
-                                if ( len(leaves) != 0 and funcName not in leaves ):
-                                    #self.logger.debug("funcName: %s leaves: %s", funcName, str(leaves))
-                                    functionList.update(set(leaves))
-                                funcLine = funcFile.readline()
-                        elif ( tmpFileName in libsInLibc ):
-                            continue
-                        else:
-                            self.logger.info("Adding function starts for %s", fileName)
-                            functionList = util.extractImportedFunctions(tempOutputFolder + "/" + fileName, self.logger)
-                            if ( not functionList ):
-                                self.logger.warning("Function extraction for file: %s failed!", fileName)
-                        functionStartsFineGrain.update(set(functionList))
+                    # libsInLibc.add("libcrypt.callgraph.out")
+                    # libsInLibc.add("libdl.callgraph.out")
+                    # libsInLibc.add("libnsl.callgraph.out")
+                    # libsInLibc.add("libnss_compat.callgraph.out")
+                    # libsInLibc.add("libnss_files.callgraph.out")
+                    # libsInLibc.add("libnss_nis.callgraph.out")
+                    # libsInLibc.add("libpthread.callgraph.out")
+                    # libsInLibc.add("libm.callgraph.out")
+                    # libsInLibc.add("libresolv.callgraph.out")
+                    # libsInLibc.add("librt.callgraph.out")
+                    # libsInLibc.add("libutil.callgraph.out")
+                    # libsInLibc.add("libnss_dns.callgraph.out")
+
+                    # cfgAvailable = False
+                    # for fileName in os.listdir(tempOutputFolder):
+                    #     self.logger.debug("fileName: %s", fileName)
+                    #     tmpFileName = fileName
+                    #     functionList = set()
+                    #     if ( fileName.startswith("lib") and fileName != "libs.out"):
+                    #         cfgAvailable = True
+                    #         tmpFileName = re.sub("-.*so",".so",fileName)
+                    #         tmpFileName = tmpFileName[:tmpFileName.index(".so")]
+                    #         tmpFileName = tmpFileName + ".callgraph.out"
+                    #         self.logger.debug("tmpFileName: %s", tmpFileName)
+                    #     if ( tmpFileName in libsWithCfg ):
+                    #         tmpGraph = graph.Graph(self.logger)
+                    #         tmpGraph.createGraphFromInput(self.cfgFolderPath + "/" + tmpFileName, "->")
+                    #         funcFile.seek(0)
+                    #         funcLine = funcFile.readline()
+                    #         while ( funcLine ):
+                    #             funcName = funcLine.strip()
+                    #             leaves = tmpGraph.getLeavesFromStartNode(funcName, list(), list())
+                    #             if ( len(leaves) != 0 and funcName not in leaves ):
+                    #                 #self.logger.debug("funcName: %s leaves: %s", funcName, str(leaves))
+                    #                 functionList.update(set(leaves))
+                    #             funcLine = funcFile.readline()
+                    #     elif ( tmpFileName in libsInLibc ):
+                    #         continue
+                    #     else:
+                    #         self.logger.info("Adding function starts for %s", fileName)
+                    #         functionList = util.extractImportedFunctions(tempOutputFolder + "/" + fileName, self.logger)
+                    #         if ( not functionList ):
+                    #             self.logger.warning("Function extraction for file: %s failed!", fileName)
+                    #     functionStartsFineGrain.update(set(functionList))
 
                 funcFile.seek(0)
                 funcLine = funcFile.readline()
@@ -534,23 +544,23 @@ class ContainerProfiler():
 
 
                 self.logger.debug("allSyscallsOriginal: %s", str(allSyscallsOriginal))
-                allSyscallsFineGrain = set()
-                if ( self.fineGrain ):
-                    tmpSet = set()
-                    for function in functionStartsFineGrain:
-                        #if ( function == "fork" ):
-                        #    self.logger.debug("/////////////////////////////////////////FORK has been found///////////////////////////////////")
-                        if ( isMusl ):
-                            leaves = muslGraph.getLeavesFromStartNode(function, muslSyscallList, list())
-                        else:
-                            leaves = glibcGraph.getLeavesFromStartNode(function, glibcSyscallList, list())
-                        tmpSet = tmpSet.union(leaves)
-                    for syscallStr in tmpSet:
-                        syscallStr = syscallStr.replace("syscall( ", "syscall(")
-                        syscallStr = syscallStr.replace("syscall ( ", "syscall(")
-                        syscallStr = syscallStr.replace(" )", ")")
-                        syscallNum = int(syscallStr[8:-1])
-                        allSyscallsFineGrain.add(syscallNum)
+                # allSyscallsFineGrain = set()
+                # if ( self.fineGrain ):
+                #     tmpSet = set()
+                #     for function in functionStartsFineGrain:
+                #         #if ( function == "fork" ):
+                #         #    self.logger.debug("/////////////////////////////////////////FORK has been found///////////////////////////////////")
+                #         if ( isMusl ):
+                #             leaves = muslGraph.getLeavesFromStartNode(function, muslSyscallList, list())
+                #         else:
+                #             leaves = glibcGraph.getLeavesFromStartNode(function, glibcSyscallList, list())
+                #         tmpSet = tmpSet.union(leaves)
+                #     for syscallStr in tmpSet:
+                #         syscallStr = syscallStr.replace("syscall( ", "syscall(")
+                #         syscallStr = syscallStr.replace("syscall ( ", "syscall(")
+                #         syscallStr = syscallStr.replace(" )", ")")
+                #         syscallNum = int(syscallStr[8:-1])
+                #         allSyscallsFineGrain.add(syscallNum)
 
 
                 #Check if we have go syscalls
