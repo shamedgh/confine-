@@ -153,11 +153,14 @@ if __name__ == '__main__':
         finegrain = True
         allbinaries = True
         for imageKey, imageVals in imageToPropertyMap.items():
+            imageRank = imageVals.get("id", -1)
             imageName = imageVals.get("image-name", imageKey)
             imageNameFullPath = imageVals.get("image-url", None)
-            imageOptions = imageVals.get("options", "")
-            imageRank = imageVals.get("id", -1)
+            if ( not imageNameFullPath ):
+                    imageNameFullPath = imageName
             imageCategoryList = imageVals.get("category", ["Other"])
+            imageOptions = imageVals.get("options", "")
+            
             imageArgs = imageVals.get("args", "")
             imagePullCount = imageVals.get("pull-count", 0)
             imageOfficial = imageVals.get("official", False)
@@ -167,7 +170,7 @@ if __name__ == '__main__':
             start = time.time()
             newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, finegrain, allbinaries, imageBinaryCfgPath, rootLogger)
 #                returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
-            returncode = newProfile.createFineGrainedSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
+            returncode = newProfile.createSeccompProfile(outputFolder + "/" + imageName + "/", reportFolder)
             end = time.time()
 
             if ( returncode == C.SYSDIGERR and not retry ):

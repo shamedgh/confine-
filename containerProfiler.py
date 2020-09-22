@@ -463,7 +463,7 @@ class ContainerProfiler():
 
                     for binaryPath in psListAll:
                         if binaryPath.strip() != "":
-                            piecewiseObj = piecewise.Piecewise(binaryPath, binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
+                            piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
                             allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCalls(["main"]))
 
                     # libsWithCfg = set()
