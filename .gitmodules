@@ -1,3 +1,6 @@
 [submodule "library-debloating"]
 	path = library-debloating
 	url = git@github.com:shamedgh/library-debloating.git
+[submodule "python-utils"]
+	path = python-utils
+	url = git@github.com:shamedgh/python-utils.git
