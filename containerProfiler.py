@@ -452,6 +452,15 @@ class ContainerProfiler():
                 functionStartsOriginal = set()
                 # functionStartsFineGrain = set()
 
+                funcFile.seek(0)
+                funcLine = funcFile.readline()
+                while ( funcLine ):
+                    funcLine = funcLine.strip()
+                    functionStartsOriginal.add(funcLine)
+                    funcLine = funcFile.readline()
+
+                funcFile.close()
+
                 allSyscallsFineGrain = set()
 
                 if ( self.fineGrain ):
@@ -464,7 +473,8 @@ class ContainerProfiler():
                     for binaryPath in psListAll:
                         if binaryPath.strip() != "":
                             piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
-                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCalls(["main"]))
+                            startNodes = list(functionStartsOriginal)
+                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startNodes))
 
                     # libsWithCfg = set()
                     # libsInLibc = set()
@@ -515,15 +525,6 @@ class ContainerProfiler():
                     #         if ( not functionList ):
                     #             self.logger.warning("Function extraction for file: %s failed!", fileName)
                     #     functionStartsFineGrain.update(set(functionList))
-
-                funcFile.seek(0)
-                funcLine = funcFile.readline()
-                while ( funcLine ):
-                    funcLine = funcLine.strip()
-                    functionStartsOriginal.add(funcLine)
-                    funcLine = funcFile.readline()
-
-                funcFile.close()
 
                 self.logger.info("Traversing libc call graph to identify required system calls")
                 tmpSet = set()
