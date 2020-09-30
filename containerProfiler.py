@@ -469,12 +469,15 @@ class ContainerProfiler():
                     #2. Extract leaves from all imported functions in libs.out 
                     #3. Create a list of required functions for each library
                     #4. Use fine grained version or all imported for libraries without CFG
-
+                    self.logger.info("--->Starting Fine Grain Syscall Extraction")
+                    self.logger.info("Fine grain start nodes: %s", str(functionStartsOriginal))
                     for binaryPath in psListAll:
                         if binaryPath.strip() != "":
                             piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
-                            startNodes = list(functionStartsOriginal)
-                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startNodes))
+                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(functionStartsOriginal))
+
+                    self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
+                    self.logger.info("<---Finished Direct Syscall Extraction\n")
 
                     # libsWithCfg = set()
                     # libsInLibc = set()
