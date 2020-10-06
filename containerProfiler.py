@@ -470,9 +470,14 @@ class ContainerProfiler():
                     #3. Create a list of required functions for each library
                     #4. Use fine grained version or all imported for libraries without CFG
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
-                    self.logger.info("Fine grain start nodes: %s", str(functionStartsOriginal))
-                    for binaryPath in psListAll:
-                        if binaryPath.strip() != "":
+                    # self.logger.info("Fine grain start nodes: %s", str(functionStartsOriginal))
+                    binaryPaths = os.listdir(tempOutputFolder)
+                    self.logger.info("Binary paths: %s", str(binaryPaths))
+
+                    for binary in binaryPaths:
+                        if binary.strip() != "" and binary != C.LIBFILENAME:
+                            binaryPath = tempOutputFolder + "/" + binary
+                            self.logger.info("Binary path %s", binaryPath)
                             piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
                             allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(functionStartsOriginal))
 
