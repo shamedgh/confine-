@@ -139,6 +139,17 @@ class ContainerProfiler():
         outputFile.close()
         return outputFilePath
 
+    def extractAllImportedFunctionsFromBinary(self, folder, fileName):
+        funcSet = set()
+        for fileName in os.listdir(folder):
+            functionList = util.extractImportedFunctions(folder + "/" + fileName, self.logger)
+            if ( not functionList ):
+                self.logger.debug("Function extraction for file: %s failed (probably not an ELF file).", fileName)
+            else:
+                for function in functionList:
+                    funcSet.add(function)
+        return list(funcSet)
+
     def usesMusl(self, folder):
         #return True
         for fileName in os.listdir(folder):
@@ -475,11 +486,12 @@ class ContainerProfiler():
                     self.logger.info("Binary paths: %s", str(binaryPaths))
 
                     for binary in binaryPaths:
-                        if binary.strip() != "" and binary != C.LIBFILENAME:
+                        if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
                             binaryPath = tempOutputFolder + "/" + binary
                             self.logger.info("Binary path %s", binaryPath)
+                            startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
-                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(functionStartsOriginal))
+                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions))
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")
