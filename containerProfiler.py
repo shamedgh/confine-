@@ -148,7 +148,7 @@ class ContainerProfiler():
             else:
                 for function in functionList:
                     funcSet.add(function)
-        return list(funcSet)
+        return funcSet
 
     def usesMusl(self, folder):
         #return True
@@ -483,14 +483,17 @@ class ContainerProfiler():
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
                     binaryPaths = os.listdir(tempOutputFolder)
                     #self.logger.info("Binary paths: %s", str(binaryPaths))
+                    startFunctions = set()
 
                     for binary in binaryPaths:
                         if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary and self.name not in binary:
                             binaryPath = tempOutputFolder + binary
                             self.logger.info("Binary path %s", binaryPath)
-                            startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
-                            piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
-                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions))
+                            startFunctions.update(self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary))
+                    
+                    for binary in binaryPaths:
+                        piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
+                        allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions))
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")
