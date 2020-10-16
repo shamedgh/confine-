@@ -228,12 +228,11 @@ if __name__ == '__main__':
                     depImageNameFullPath = depVals.get("image-url", depImageName)
                     depOptions = depVals.get("options", "")
                     depLink = True if depVals.get("link", False) else False
-                    depBinaryCfgPath = depVals.get("binary-cfg-path", "")
                     #rootLogger.info("depLink: %s", depLink)
 
                     retryCount = 0
                     while ( retryCount < 2 ):
-                        newProfile = containerProfiler.ContainerProfiler(depImageName, depImageNameFullPath, depOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, options.finegrain, options.allbinaries, depBinaryCfgPath, rootLogger, True)
+                        newProfile = containerProfiler.ContainerProfiler(depImageName, depImageNameFullPath, depOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, options.finegrain, options.allbinaries, rootLogger, True)
                         returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + depImageName + "/", options.reportfolder)
                         #if ( returncode != C.SYSDIGERR ):
                         if ( returncode == 0 ):

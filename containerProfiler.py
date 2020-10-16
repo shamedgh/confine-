@@ -23,7 +23,7 @@ class ContainerProfiler():
     """
     This class can be used to create a seccomp profile for a container through static anlyasis of the useful binaries
     """
-    def __init__(self, name, imagePath, options, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, binarycfgpath, logger, isDependent=False):
+    def __init__(self, name, imagePath, options, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
         self.logger = logger
         self.name = name
         self.imagePath = imagePath
@@ -54,7 +54,6 @@ class ContainerProfiler():
         self.languageSet = set()
         self.fineGrain = fineGrain
         self.extractAllBinaries = extractAllBinaries
-        self.binaryCfgPath = binarycfgpath
         self.isDependent = isDependent
         self.containerName = None
 
@@ -141,13 +140,12 @@ class ContainerProfiler():
 
     def extractAllImportedFunctionsFromBinary(self, folder, fileName):
         funcSet = set()
-        for fileName in os.listdir(folder):
-            functionList = util.extractImportedFunctions(folder + "/" + fileName, self.logger)
-            if ( not functionList ):
-                self.logger.debug("Function extraction for file: %s failed (probably not an ELF file).", fileName)
-            else:
-                for function in functionList:
-                    funcSet.add(function)
+        functionList = util.extractImportedFunctions(folder + fileName, self.logger)
+        if ( not functionList ):
+            self.logger.debug("Function extraction for file: %s failed (probably not an ELF file).", fileName)
+        else:
+            for function in functionList:
+                funcSet.add(function)
         return funcSet
 
     def usesMusl(self, folder):
@@ -482,18 +480,14 @@ class ContainerProfiler():
                     #4. Use fine grained version or all imported for libraries without CFG
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
                     binaryPaths = os.listdir(tempOutputFolder)
-                    #self.logger.info("Binary paths: %s", str(binaryPaths))
-                    startFunctions = set()
 
                     for binary in binaryPaths:
-                        if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary and self.name not in binary:
+                        if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary: # and self.name not in binary:
+                            self.logger.info("Binary: %s", binary)
                             binaryPath = tempOutputFolder + binary
-                            self.logger.info("Binary path %s", binaryPath)
-                            startFunctions.update(self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary))
-                    
-                    for binary in binaryPaths:
-                        piecewiseObj = piecewise.Piecewise(binaryPath, self.binaryCfgPath, self.glibcCfgpath, self.cfgFolderPath, self.logger)
-                        allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions))
+                            startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
+                            piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
+                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions))
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")
@@ -631,6 +625,7 @@ class ContainerProfiler():
 
                 if ( self.fineGrain ):
                     self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(blackListFineGrain)))
+                    self.logger.info("blacklistFineGrain - blackListOriginal: %s", str(set(blackListFineGrain).difference(set(blackListOriginal))))
                     self.blSyscallsFineGrain = blackListFineGrain
                     self.blSyscallFineGrainCount = len(blackListFineGrain)
 

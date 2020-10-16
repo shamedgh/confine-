@@ -1,0 +1,17 @@
+{
+    "couchbase": {
+        "enable": "false",
+        "image-name": "couchbase",
+        "image-url": "couchbase",
+        "category": [
+            "Storage",
+            "ApplicationFrameworks"
+        ],
+        "pull-count": 38989426,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "5"
+    }
+}

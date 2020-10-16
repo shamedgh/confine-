@@ -1,0 +1,160 @@
+============
+Nginx
+============
+Original: 154
+Fine Grain: 160
+Additional Syscalls: {'listxattr', 'sched_setparam', 'mlock', 'llistxattr', 'flistxattr', 'rt_sigtimedwait'}
+Libraries that don't exist / path not found: 
+Libraries with no callgraphs: libselinux, libacl, libattr
+Hardened Successfully
+
+============
+Memcached:
+============
+Original: 162
+Fine Grain: 168
+Additional Syscalls: {'mlock', 'chmod', 'link', 'sched_setparam', 'rt_sigtimedwait', 'sendmmsg'}
+Libraries that don't exist / path not found: 
+Libraries with no callgraphs: libselinux, libevent-2
+Hardened Successfully
+
+============
+Redis:
+============
+Original: 166
+Fine Grain: 174
+Additional Syscalls: {'mlock', 'link', 'pread64', 'rt_sigtimedwait', 'sched_setparam', 'clock_nanosleep', 'pwrite64', 'clock_settime'}
+Libraries that don't exist / path not found: 
+Libraries with no callgraphs: libselinux
+Hardened Successfully
+
+============
+MySQL:
+============
+Original: 128
+Fine Grain: 135
+Additional Syscalls: {'llistxattr', 'clock_nanosleep', 'mlock', 'sched_setparam', 'link', 'listxattr', 'flistxattr'}
+Libraries that don't exist / path not found: libtinfo, libprotobuf-lite
+Libraries with no callgraphs: libselinux, libstdc++, libgcc_s, libacl, libattr, 
+Hardened Successfully
+
+============
+Postgres:
+============
+Original: 135
+Fine Grain: 142
+Additional Syscalls: {'rt_sigtimedwait', 'rt_sigpending', 'sched_getaffinity', 'sync', 'clock_nanosleep', 'clock_settime', 'flock', 'name_to_handle_at'}
+Libraries that don't exist / path not found: libtinfo, libicui18n, libpq
+Libraries with no callgraphs: libselinux, libxml2, libpam, libldap_r-2, libicuuc, libsystemd, liblzma, libaudit, liblber-2, liblz4, libgcrypt, libicudata, libstdc++, libgcc_s, libcap-ng, libidn2, libunistring, libgpg-error
+Hardened Successfully
+
+============
+Wordpress:
+============
+Error running docker: docker: Error response from daemon: driver failed programming external connectivity on endpoint wordpress-container-CONFINE (9cb4db9bc2f2cfa73c785f6a7befda10bcd027b55f00614ad5fa892bf3a1a885): Error starting userland proxy: listen tcp 0.0.0.0:80: bind: address already in use.
+
+============
+Couchbase:
+============
+Couldn't open file: /tmp/forkstat.out.1 with err: Could not initialize reader: invalid block type
+ trying again.
+Couldn't open file: /tmp/forkstat.out.1 with err: Could not initialize reader: invalid block type
+ trying again.
+Couldn't open file: /tmp/forkstat.out.1 after 3 attempts with error: Could not initialize reader: invalid block type
+
+PS List is None from extractPsNames(). Retrying this container: couchbase
+
+============
+httpd: (success)
+============
+Original: 159
+Fine Grain: 165
+Additional Syscalls: {'pread64', 'chroot', 'clock_nanosleep', 'sched_setparam', 'clock_settime', 'pwrite64'}
+Libraries that don't exist / path not found: 
+Libraries with no callgraphs: libselinux, libapr-1, libaprutil-1
+Hardened Successfully
+
+============
+httpd: (error)
+============
+Original: 159
+Fine Grain: 194
+Additional Syscalls: {'accept4', 'semop', 'link', 'sched_setaffinity', 'epoll_wait', 'semget', 'flock', 'getpeername', 'pread64', 'setsid', 'rmdir', 'shmctl', 'getsockname', 'epoll_ctl', 'utimes', 'fdatasync', 'clock_settime', 'fsync', 'select', 'shmat', 'sched_setparam', 'sendfile', 'shmdt', 'rt_sigtimedwait', 'listen', 'clock_nanosleep', 'pwrite64', 'ftruncate', 'shmget', 'mknod', 'chmod', 'shutdown', 'epoll_create1', 'chroot', 'dup3'}
+Libraries that don't exist / path not found: libapr-1, libaprutil-1
+Libraries with no callgraphs: libselinux
+Container for image: httpd was hardened with problems: len(original): 617 len(seccomp): 453 original: AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.3. Set the 'ServerName' directive globally to suppress this message
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.3. Set the 'ServerName' directive globally to suppress this message
+[Fri Oct 16 00:22:41.012859 2020] [mpm_event:notice] [pid 1:tid 140251708744832] AH00489: Apache/2.4.46 (Unix) configured -- resuming normal operations
+[Fri Oct 16 00:22:41.012993 2020] [core:notice] [pid 1:tid 140251708744832] AH00094: Command line: 'httpd -D FOREGROUND'
+ seccomp: AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.3. Set the 'ServerName' directive globally to suppress this message
+(1)Operation not permitted: AH00073: make_sock: unable to listen for connections on address [::]:80
+(1)Operation not permitted: AH00073: make_sock: unable to listen for connections on address 0.0.0.0:80
+no listening sockets available, shutting down
+AH00015: Unable to open logs
+
+============
+Mongo
+============
+Original: 140
+Fine Grain: 143
+Additional Syscalls: {'clock_settime', 'sync', 'sched_setparam', 'clock_nanosleep'}
+Libraries that don't exist / path not found: 
+Libraries with no callgraphs: libselinux, libtinfo, liblzma, libgcc_s, libnghttp2, libidn2, librtmp, libpsl, libldap_r-2, liblber-2, libunistring
+Container for image: mongo was hardened with problems: len(original): 7200 len(seccomp): 7198 original: {"t":{"$date":"2020-10-15T23:18:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":23285,   "ctx":"main","msg":"Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'"}
+{"t":{"$date":"2020-10-15T23:18:19.582+00:00"},"s":"W",  "c":"ASIO",     "id":22601,   "ctx":"main","msg":"No TransportLayer configured during NetworkInterface startup"}
+{"t":{"$date":"2020-10-15T23:18:19.583+00:00"},"s":"I",  "c":"NETWORK",  "id":4648601, "ctx":"main","msg":"Implicit TCP FastOpen unavailable. If TCP FastOpen is required, set tcpFastOpenServer, tcpFastOpenClient, and tcpFastOpenQueueSize."}
+{"t":{"$date":"2020-10-15T23:18:19.583+00:00"},"s":"I",  "c":"STORAGE",  "id":4615611, "ctx":"initandlisten","msg":"MongoDB starting","attr":{"pid":1,"port":27017,"dbPath":"/data/db","architecture":"64-bit","host":"f229f507db81"}}
+{"t":{"$date":"2020-10-15T23:18:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":23403,   "ctx":"initandlisten","msg":"Build Info","attr":{"buildInfo":{"version":"4.4.1","gitVersion":"ad91a93a5a31e175f5cbf8c69561e788bbc55ce1","openSSLVersion":"OpenSSL 1.1.1  11 Sep 2018","modules":[],"allocator":"tcmalloc","environment":{"distmod":"ubuntu1804","distarch":"x86_64","target_arch":"x86_64"}}}}
+{"t":{"$date":"2020-10-15T23:18:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":51765,   "ctx":"initandlisten","msg":"Operating System","attr":{"os":{"name":"Ubuntu","version":"18.04"}}}
+{"t":{"$date":"2020-10-15T23:18:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":21951,   "ctx":"initandlisten","msg":"Options set by command line","attr":{"options":{"net":{"bindIp":"*"}}}}
+{"t":{"$date":"2020-10-15T23:18:19.584+00:00"},"s":"I",  "c":"STORAGE",  "id":22297,   "ctx":"initandlisten","msg":"Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem","tags":["startupWarnings"]}
+{"t":{"$date":"2020-10-15T23:18:19.585+00:00"},"s":"I",  "c":"STORAGE",  "id":22315,   "ctx":"initandlisten","msg":"Opening WiredTiger","attr":{"config":"create,cache_size=11540M,session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress,compact_progress],"}}
+{"t":{"$date":"2020-10-15T23:18:20.225+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1602803900:225024][1:0x7f77fa471a80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global recovery timestamp: (0, 0)"}}
+{"t":{"$date":"2020-10-15T23:18:20.225+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1602803900:225092][1:0x7f77fa471a80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global oldest timestamp: (0, 0)"}}
+{"t":{"$date":"2020-10-15T23:18:20.252+00:00"},"s":"I",  "c":"STORAGE",  "id":4795906, "ctx":"initandlisten","msg":"WiredTiger opened","attr":{"durationMillis":667}}
+{"t":{"$date":"2020-10-15T23:18:20.252+00:00"},"s":"I",  "c":"RECOVERY", "id":23987,   "ctx":"initandlisten","msg":"WiredTiger recoveryTimestamp","attr":{"recoveryTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:18:20.295+00:00"},"s":"I",  "c":"STORAGE",  "id":22262,   "ctx":"initandlisten","msg":"Timestamp monitor starting"}
+{"t":{"$date":"2020-10-15T23:18:20.305+00:00"},"s":"W",  "c":"CONTROL",  "id":22120,   "ctx":"initandlisten","msg":"Access control is not enabled for the database. Read and write access to data and configuration is unrestricted","tags":["startupWarnings"]}
+{"t":{"$date":"2020-10-15T23:18:20.305+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"admin.system.version","uuidDisposition":"provided","uuid":{"uuid":{"$uuid":"db3f3dd9-9a59-48fd-afa7-fbc1979cb16f"}},"options":{"uuid":{"$uuid":"db3f3dd9-9a59-48fd-afa7-fbc1979cb16f"}}}}
+{"t":{"$date":"2020-10-15T23:18:20.341+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"admin.system.version","index":"_id_","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:18:20.341+00:00"},"s":"I",  "c":"COMMAND",  "id":20459,   "ctx":"initandlisten","msg":"Setting featureCompatibilityVersion","attr":{"newVersion":"4.4"}}
+{"t":{"$date":"2020-10-15T23:18:20.341+00:00"},"s":"I",  "c":"STORAGE",  "id":20536,   "ctx":"initandlisten","msg":"Flow Control is enabled on this deployment"}
+{"t":{"$date":"2020-10-15T23:18:20.342+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"local.startup_log","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"34f90b4c-20e0-43fa-9c5a-9c9048f57fd0"}},"options":{"capped":true,"size":10485760}}}
+{"t":{"$date":"2020-10-15T23:18:20.377+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"local.startup_log","index":"_id_","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:18:20.378+00:00"},"s":"I",  "c":"FTDC",     "id":20625,   "ctx":"initandlisten","msg":"Initializing full-time diagnostic data capture","attr":{"dataDirectory":"/data/db/diagnostic.data"}}
+{"t":{"$date":"2020-10-15T23:18:20.379+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"LogicalSessionCacheRefresh","msg":"createCollection","attr":{"namespace":"config.system.sessions","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"71cbd083-3a04-4d10-aa16-a2b584b64f06"}},"options":{}}}
+{"t":{"$date":"2020-10-15T23:18:20.379+00:00"},"s":"I",  "c":"CONTROL",  "id":20712,   "ctx":"LogicalSessionCacheReap","msg":"Sessions collection is not set up; waiting until next sessions reap interval","attr":{"error":"NamespaceNotFound: config.system.sessions does not exist"}}
+{"t":{"$date":"2020-10-15T23:18:20.379+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"/tmp/mongodb-27017.sock"}}
+{"t":{"$date":"2020-10-15T23:18:20.379+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"0.0.0.0"}}
+{"t":{"$date":"2020-10-15T23:18:20.380+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
+{"t":{"$date":"2020-10-15T23:18:20.433+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"LogicalSessionCacheRefresh","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"config.system.sessions","index":"_id_","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:18:20.433+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"LogicalSessionCacheRefresh","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"config.system.sessions","index":"lsidTTLIndex","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+ seccomp: {"t":{"$date":"2020-10-15T23:25:24.400+00:00"},"s":"I",  "c":"CONTROL",  "id":23285,   "ctx":"main","msg":"Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'"}
+{"t":{"$date":"2020-10-15T23:25:24.401+00:00"},"s":"W",  "c":"ASIO",     "id":22601,   "ctx":"main","msg":"No TransportLayer configured during NetworkInterface startup"}
+{"t":{"$date":"2020-10-15T23:25:24.401+00:00"},"s":"I",  "c":"NETWORK",  "id":4648601, "ctx":"main","msg":"Implicit TCP FastOpen unavailable. If TCP FastOpen is required, set tcpFastOpenServer, tcpFastOpenClient, and tcpFastOpenQueueSize."}
+{"t":{"$date":"2020-10-15T23:25:24.402+00:00"},"s":"I",  "c":"STORAGE",  "id":4615611, "ctx":"initandlisten","msg":"MongoDB starting","attr":{"pid":1,"port":27017,"dbPath":"/data/db","architecture":"64-bit","host":"cdecebb67920"}}
+{"t":{"$date":"2020-10-15T23:25:24.402+00:00"},"s":"I",  "c":"CONTROL",  "id":23403,   "ctx":"initandlisten","msg":"Build Info","attr":{"buildInfo":{"version":"4.4.1","gitVersion":"ad91a93a5a31e175f5cbf8c69561e788bbc55ce1","openSSLVersion":"OpenSSL 1.1.1  11 Sep 2018","modules":[],"allocator":"tcmalloc","environment":{"distmod":"ubuntu1804","distarch":"x86_64","target_arch":"x86_64"}}}}
+{"t":{"$date":"2020-10-15T23:25:24.402+00:00"},"s":"I",  "c":"CONTROL",  "id":51765,   "ctx":"initandlisten","msg":"Operating System","attr":{"os":{"name":"Ubuntu","version":"18.04"}}}
+{"t":{"$date":"2020-10-15T23:25:24.402+00:00"},"s":"I",  "c":"CONTROL",  "id":21951,   "ctx":"initandlisten","msg":"Options set by command line","attr":{"options":{"net":{"bindIp":"*"}}}}
+{"t":{"$date":"2020-10-15T23:25:24.403+00:00"},"s":"I",  "c":"STORAGE",  "id":22297,   "ctx":"initandlisten","msg":"Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem","tags":["startupWarnings"]}
+{"t":{"$date":"2020-10-15T23:25:24.403+00:00"},"s":"I",  "c":"STORAGE",  "id":22315,   "ctx":"initandlisten","msg":"Opening WiredTiger","attr":{"config":"create,cache_size=11540M,session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress,compact_progress],"}}
+{"t":{"$date":"2020-10-15T23:25:25.024+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1602804325:24476][1:0x7f143df4ea80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global recovery timestamp: (0, 0)"}}
+{"t":{"$date":"2020-10-15T23:25:25.024+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1602804325:24533][1:0x7f143df4ea80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global oldest timestamp: (0, 0)"}}
+{"t":{"$date":"2020-10-15T23:25:25.052+00:00"},"s":"I",  "c":"STORAGE",  "id":4795906, "ctx":"initandlisten","msg":"WiredTiger opened","attr":{"durationMillis":649}}
+{"t":{"$date":"2020-10-15T23:25:25.052+00:00"},"s":"I",  "c":"RECOVERY", "id":23987,   "ctx":"initandlisten","msg":"WiredTiger recoveryTimestamp","attr":{"recoveryTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:25:25.096+00:00"},"s":"I",  "c":"STORAGE",  "id":22262,   "ctx":"initandlisten","msg":"Timestamp monitor starting"}
+{"t":{"$date":"2020-10-15T23:25:25.106+00:00"},"s":"W",  "c":"CONTROL",  "id":22120,   "ctx":"initandlisten","msg":"Access control is not enabled for the database. Read and write access to data and configuration is unrestricted","tags":["startupWarnings"]}
+{"t":{"$date":"2020-10-15T23:25:25.107+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"admin.system.version","uuidDisposition":"provided","uuid":{"uuid":{"$uuid":"18b3aa06-1079-4a61-8866-090cba292a15"}},"options":{"uuid":{"$uuid":"18b3aa06-1079-4a61-8866-090cba292a15"}}}}
+{"t":{"$date":"2020-10-15T23:25:25.143+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"admin.system.version","index":"_id_","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:25:25.143+00:00"},"s":"I",  "c":"COMMAND",  "id":20459,   "ctx":"initandlisten","msg":"Setting featureCompatibilityVersion","attr":{"newVersion":"4.4"}}
+{"t":{"$date":"2020-10-15T23:25:25.143+00:00"},"s":"I",  "c":"STORAGE",  "id":20536,   "ctx":"initandlisten","msg":"Flow Control is enabled on this deployment"}
+{"t":{"$date":"2020-10-15T23:25:25.144+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"local.startup_log","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"11170489-a65b-4136-aa29-83bde500d108"}},"options":{"capped":true,"size":10485760}}}
+{"t":{"$date":"2020-10-15T23:25:25.180+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"local.startup_log","index":"_id_","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:25:25.181+00:00"},"s":"I",  "c":"FTDC",     "id":20625,   "ctx":"initandlisten","msg":"Initializing full-time diagnostic data capture","attr":{"dataDirectory":"/data/db/diagnostic.data"}}
+{"t":{"$date":"2020-10-15T23:25:25.182+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"LogicalSessionCacheRefresh","msg":"createCollection","attr":{"namespace":"config.system.sessions","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"c84d7717-ce30-4b33-a9f7-079b61751dbe"}},"options":{}}}
+{"t":{"$date":"2020-10-15T23:25:25.182+00:00"},"s":"I",  "c":"CONTROL",  "id":20712,   "ctx":"LogicalSessionCacheReap","msg":"Sessions collection is not set up; waiting until next sessions reap interval","attr":{"error":"NamespaceNotFound: config.system.sessions does not exist"}}
+{"t":{"$date":"2020-10-15T23:25:25.183+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"/tmp/mongodb-27017.sock"}}
+{"t":{"$date":"2020-10-15T23:25:25.183+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"0.0.0.0"}}
+{"t":{"$date":"2020-10-15T23:25:25.183+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
+{"t":{"$date":"2020-10-15T23:25:25.236+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"LogicalSessionCacheRefresh","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"config.system.sessions","index":"_id_","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2020-10-15T23:25:25.236+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"LogicalSessionCacheRefresh","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"config.system.sessions","index":"lsidTTLIndex","commitTimestamp":{"$timestamp":{"t":0,"i":0}}}}
