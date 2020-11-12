@@ -1,0 +1,63 @@
+libsigar
+libapt-pkg
+libapt-private
+libbz2
+libzstd
+libudev
+libmemcached_logger
+libengine_utilities
+libcbsocket
+libdirutils
+libxattr
+libcbcompress
+libplatform_so
+libphosphor
+libJSON_checker
+libsnappy
+libjemalloc
+libevent_core
+libevent_extra
+libopentracing 
+libicui18n
+libpq
+
+========================
+Issues configuring or making
+========================
+libselinux - (/usr/bin/ld: error: ../src/libselinux.a: no archive symbol table (run ranlib))
+libstdc++ (gcc) - (clang-7: error: unsupported option '-print-multi-os-directory'; clang-7: error: no input files) 
+libgcc_s - (clang-7: error: unsupported option '-print-multi-os-directory'; clang-7: error: no input files) 
+librtmp - no configure or cmake file'
+libldap_r-2 - error making (/usr/bin/ld: fatal error: --plugin-opt requires --plugin.)
+libsystemd - exec: meson: not found 
+liblber-2 -  part of libldap, can't find source code
+libgcrypt - make error (invalid operand for instruction)
+
+========================
+Can't find source code
+========================
+libtinfo
+
+========================
+Bitcodes Generated
+========================
+libevent-2
+libapr
+libapr-util
+liblzma
+libnghttp2
+libpsl
+libunistring
+libxml2
+libpam
+libicuuc
+liblz4
+libgpg-error
+libcap-ng
+
+not sure if bitcode file is incomplete since the make terminated early or contained errors
+libidn2 - /usr/bin/ld: error: ./.libs/libidn2_cmd.a: no archive symbol table (run ranlib)
+libacl - /usr/bin/ld: error: ./.libs/libmisc.a: no archive symbol table (run ranlib)
+libattr - /usr/bin/ld: internal error in output_section, at ../../gold/symtab.cc:495
+libprotobuf-lite - (./.libs/libprotoc.so: error: undefined reference to 'scc_info_FileDescriptorProto_google_2fprotobuf_2fdescriptor_2eproto' \ ./.libs/libprotoc.so: error: undefined reference to 'scc_info_GeneratedCodeInfo_google_2fprotobuf_2fdescriptor_2eproto' \ ./.libs/libprotoc.so: error: undefined reference to 'descriptor_table_google_2fprotobuf_2fdescriptor_2eproto')
+libaudit - make error

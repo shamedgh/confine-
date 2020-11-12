@@ -1,3 +1,291 @@
+========================================================================
+========================================================================
+Third Iteration of Hardening
+========================================================================
+========================================================================
+new callgraphs: 
+libapr-1      
+libattr   
+libcap-ng   
+libgpg-error  
+libidn2  
+liblzma     
+libpam  
+libunistring
+libacl                
+libaprutil-1  
+libaudit  
+libevent-2  
+libicuuc      
+liblz4   
+libnghttp2  
+libpsl  
+libxml2
+
+============
+Memcached (with new callgraphs):
+============
+Original: 162
+Fine Grain: 172
+Additional Syscalls: {'mlock', 'sendfile', 'sendmmsg', 'link', 'epoll_wait', 'chmod', 'sched_setparam', 'eventfd2', 'timerfd_settime', 'rt_sigtimedwait'}
+Container for image: memcached was hardened with problems: len(original): 0 len(seccomp): 238 original:  seccomp: [warn] epoll_wait: Operation not permitted
+[warn] epoll_wait: Operation not permitted
+[warn] epoll_wait: Operation not permitted
+[warn] epoll_wait: Operation not permitted
+[warn] epoll_wait: Operation not permitted
+Exiting on error
+
+============
+Memcached (original):
+============
+Original: 162
+Fine Grain: 168
+Additional Syscalls: {'sendmmsg', 'mlock', 'link', 'sched_setparam', 'rt_sigtimedwait', 'chmod'}
+Hardened Successfully
+
+============
+httpd (with new callgraphs):
+============
+Original: 159
+Fine Grain: 164
+Additional Syscalls: {'clock_settime', 'pwrite64', 'clock_nanosleep', 'chroot', 'pread64', 'sched_setparam'}}
+Hardened Successfully
+
+============
+httpd (original):
+============
+Original: 159
+Fine Grain: 165
+Additional Syscalls: {'pread64', 'chroot', 'clock_nanosleep', 'sched_setparam', 'clock_settime', 'pwrite64'}
+Hardened Successfully
+
+============
+MySQL (with new callgraphs):
+============
+No change in syscall count
+
+============
+MySQL (original):
+============
+Original: 128
+Fine Grain: 135
+Additional Syscalls: {'llistxattr', 'clock_nanosleep', 'mlock', 'sched_setparam', 'link', 'listxattr', 'flistxattr'}
+Hardened Successfully
+
+============
+Nginx (with new callgraphs):
+============
+No change in syscall count
+
+============
+Nginx (original):
+============
+Original: 154
+Fine Grain: 160
+Additional Syscalls: {'listxattr', 'sched_setparam', 'mlock', 'llistxattr', 'flistxattr', 'rt_sigtimedwait'}
+Hardened Successfully
+
+============
+Postgres (with new callgraphs):
+============
+Original: 135
+Fine Grain: 143
+Additional Syscalls: {'sched_getaffinity', 'setfsuid', 'clock_settime', 'name_to_handle_at', 'fremovexattr', 'clock_nanosleep', 'flock', 'setfsgid', 'sync'}
+Hardened Successfully
+
+============
+Postgres (original):
+============
+Original: 135
+Fine Grain: 140
+Additional Syscalls: {'sync', 'name_to_handle_at', 'flock', 'clock_nanosleep', 'clock_settime', 'sched_getaffinity'}
+Hardened Successfully
+
+============
+Mongo (with new callgraphs):
+============
+No change in syscall count
+
+============
+Mongo (original):
+============
+Original: 140
+Fine Grain: 143
+Additional Syscalls: {'clock_nanosleep', 'clock_settime', 'sync', 'sched_setparam'}
+Container for image: mongo was hardened with problems: len(original): 7200 len(seccomp): 7198 original: 
+
+============
+redis (with new callgraphs):
+============
+No change in syscall count
+
+============
+redis (original):
+============
+Original: 166
+Fine Grain: 174
+Additional Syscalls: {'mlock', 'link', 'pread64', 'rt_sigtimedwait', 'sched_setparam', 'clock_nanosleep', 'pwrite64', 'clock_settime'}
+Hardened Successfully
+
+============
+couchbase (with new callgraphs):
+============
+No change in syscall count
+
+============
+couchbase (original):
+============
+Original: 103
+Fine Grain: 103
+Additional Syscalls: {'truncate', 'clock_nanosleep', 'sched_setparam'}
+Hardened Successfully
+
+
+
+
+
+
+
+
+========================================================================
+========================================================================
+Second Iteration of Hardening
+========================================================================
+========================================================================
+
+============
+httpd (with libapr-1 and libaprutil-1):
+============
+Original: 159
+Fine Grain: 164
+Additional Syscalls: {'chroot', 'pread64', 'pwrite64', 'clock_nanosleep', 'sched_setparam', 'clock_settime'}
+Libraries with no callgraphs: libselinux
+Hardened Successfully
+
+============
+httpd (with libaprutil-1):
+============
+Original: 159
+Fine Grain: 165
+Additional Syscalls: {'chroot', 'pread64', 'pwrite64', 'clock_nanosleep', 'sched_setparam', 'clock_settime'}
+Libraries with no callgraphs: libselinux, libapr-1
+Hardened Successfully
+
+============
+httpd (with libapr-1):
+============
+Original: 159
+Fine Grain: 164
+Additional Syscalls: {'chroot', 'pread64', 'pwrite64', 'clock_nanosleep', 'sched_setparam', 'clock_settime'}
+Libraries with no callgraphs: libselinux, libaprutil-1
+Hardened Successfully
+
+============
+httpd:
+============
+Original: 159
+Fine Grain: 165
+Additional Syscalls: {'pread64', 'chroot', 'clock_nanosleep', 'sched_setparam', 'clock_settime', 'pwrite64'}
+Libraries with no callgraphs: libselinux, libapr-1, libaprutil-1
+Hardened Successfully
+
+
+============
+Memcached (with libevent-2 callgraph):
+============
+Original: 162
+Fine Grain: 178
+Additional Syscalls: {'link', 'mlock', 'sendmmsg', 'pipe2', 'sched_setparam', 'rt_sigtimedwait', 'timerfd_settime', 'socketpair', 'timerfd_create', 'epoll_create1', 'eventfd2', 'chmod', 'epoll_wait', 'sendfile', 'epoll_ctl', 'epoll_create'}
+Libraries with no callgraphs: libselinux
+Hardened with problems:
+len(original): 0 len(seccomp): 230 original:  seccomp: [warn] epoll_create: Operation not permitted
+[warn] epoll_create: Operation not permitted
+[warn] epoll_create: Operation not permitted
+[warn] epoll_create: Operation not permitted
+[warn] epoll_create: Operation not permitted
+
+============
+Memcached:
+============
+Original: 162
+Fine Grain: 168
+Additional Syscalls: {'sendmmsg', 'mlock', 'link', 'sched_setparam', 'rt_sigtimedwait', 'chmod'}
+Libraries with no callgraphs: libselinux, libevent-2
+Hardened Successfully
+
+
+============
+Mongo (with liblzma, libunistring, libnghttp2, libidn2, and libpsl):
+============
+No change in syscall count
+
+============
+Mongo:
+============
+Original: 140
+Fine Grain: 143
+Additional Syscalls: 
+Libraries with no callgraphs: libselinux, libtinfo, liblzma, libgcc_s, libnghttp2, libidn2, librtmp, libpsl, libldap_r-2, liblber-2, libunistring
+Container for image: mongo was hardened with problems: len(original): 7200 len(seccomp): 7198 original:
+
+
+============
+Postgres (with libxml2, liblz4, libgpc-error):
+============
+No change in syscall count
+
+============
+Postgres (with libcap-ng):
+============
+Original: 135
+Fine Grain: 141
+Additional Syscalls: {'flock', 'clock_nanosleep', 'clock_settime', 'name_to_handle_at', 'sync', 'fremovexattr', 'sched_getaffinity'}
+Hardened Successfully
+
+============
+Postgres (with libpam):
+============
+Original: 135
+Fine Grain: 142
+Additional Syscalls: {'clock_settime', 'flock', 'sched_getaffinity', 'clock_nanosleep', 'setfsgid', 'setfsuid', 'name_to_handle_at', 'sync'}
+Hardened Successfully
+
+============
+Postgres:
+============
+Original: 135
+Fine Grain: 140
+Additional Syscalls: {'sync', 'name_to_handle_at', 'flock', 'clock_nanosleep', 'clock_settime', 'sched_getaffinity'}
+Libraries with no callgraphs: libselinux, libxml2, libpam, libldap_r-2, libicuuc, libsystemd, liblzma, libaudit, liblber-2, liblz4, libgcrypt, libicudata, libstdc++, libgcc_s, libcap-ng, libidn2, libunistring, libgpg-error
+Hardened Successfully
+
+
+============
+Nginx (with libacl, libattr):
+============
+No change in syscall count
+
+============
+Nginx
+============
+Original: 154
+Fine Grain: 160
+Additional Syscalls: {'listxattr', 'sched_setparam', 'mlock', 'llistxattr', 'flistxattr', 'rt_sigtimedwait'}
+Libraries with no callgraphs: libselinux, libacl, libattr
+Hardened Successfully
+
+
+
+
+
+
+
+========================================================================
+========================================================================
+First Iteration of Hardening
+========================================================================
+========================================================================
+
 ============
 Nginx
 ============
@@ -92,8 +380,9 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 no listening sockets available, shutting down
 AH00015: Unable to open logs
 
+
 ============
-Mongo
+Mongo (error)
 ============
 Original: 140
 Fine Grain: 143

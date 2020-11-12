@@ -487,7 +487,8 @@ class ContainerProfiler():
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
-                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions))
+
+                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder)))
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")

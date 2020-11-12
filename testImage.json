@@ -1,17 +1,16 @@
 {
-    "couchbase": {
+    "memcached": {
         "enable": "false",
-        "image-name": "couchbase",
-        "image-url": "couchbase",
+        "image-name": "memcached",
+        "image-url": "memcached",
         "category": [
-            "Storage",
-            "ApplicationFrameworks"
+            "Storage"
         ],
-        "pull-count": 38989426,
+        "pull-count": 768466201,
         "official": true,
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "5"
+        "id": "26"
     }
 }
