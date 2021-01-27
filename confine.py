@@ -205,7 +205,6 @@ if __name__ == '__main__':
         statsDebloatableImage = 0
 
         langCount = dict()
-
         retry = False
         for imageKey, imageVals in imageToPropertyMap.items():
             #retry = True
@@ -229,10 +228,30 @@ if __name__ == '__main__':
                     depOptions = depVals.get("options", "")
                     depLink = True if depVals.get("link", False) else False
                     #rootLogger.info("depLink: %s", depLink)
+                    depBinaryFiles = []
+                    depDockerStartArgs = ""
+                    depDockerPath = ""
 
                     retryCount = 0
                     while ( retryCount < 2 ):
-                        newProfile = containerProfiler.ContainerProfiler(depImageName, depImageNameFullPath, depOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, options.finegrain, options.allbinaries, rootLogger, True)
+                        newProfile = containerProfiler.ContainerProfiler(
+                            depImageName, 
+                            depImageNameFullPath, 
+                            depOptions,
+                            depBinaryFiles,
+                            depDockerStartArgs,
+                            depDockerPath,
+                            options.libccfginput, 
+                            options.muslcfginput, 
+                            glibcFuncList, 
+                            muslFuncList, 
+                            options.strictmode, 
+                            options.gofolderpath, 
+                            options.cfgfolderpath, 
+                            options.finegrain, 
+                            options.allbinaries, 
+                            rootLogger, 
+                            True)
                         returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + depImageName + "/", options.reportfolder)
                         #if ( returncode != C.SYSDIGERR ):
                         if ( returncode == 0 ):
@@ -259,6 +278,8 @@ if __name__ == '__main__':
                 imagePullCount = imageVals.get("pull-count", 0)
                 imageOfficial = imageVals.get("official", False)
                 imageBinaryFiles = imageVals.get("binaries", [])
+                dockerStartArgs = imageVals.get("docker-cmd",[])
+                dockerPath = imageVals.get("docker-path", "")
 
                 retryCount = 0
                 while ( retryCount < 2 ):
@@ -268,6 +289,8 @@ if __name__ == '__main__':
                         imageNameFullPath, 
                         imageOptions, 
                         imageBinaryFiles, 
+                        dockerStartArgs,
+                        dockerPath,
                         options.libccfginput, 
                         options.muslcfginput, 
                         glibcFuncList, 
