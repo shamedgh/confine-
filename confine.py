@@ -258,12 +258,26 @@ if __name__ == '__main__':
                 imageArgs = imageVals.get("args", "")
                 imagePullCount = imageVals.get("pull-count", 0)
                 imageOfficial = imageVals.get("official", False)
-                imageBinaryCfgPath = imageVals.get("binary-cfg-path", "")
+                imageBinaryFiles = imageVals.get("binaries", [])
 
                 retryCount = 0
                 while ( retryCount < 2 ):
                     start = time.time()
-                    newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, options.finegrain, options.allbinaries, imageBinaryCfgPath, rootLogger)
+                    newProfile = containerProfiler.ContainerProfiler(
+                        imageName, 
+                        imageNameFullPath, 
+                        imageOptions, 
+                        imageBinaryFiles, 
+                        options.libccfginput, 
+                        options.muslcfginput, 
+                        glibcFuncList, 
+                        muslFuncList, 
+                        options.strictmode, 
+                        options.gofolderpath, 
+                        options.cfgfolderpath, 
+                        options.finegrain, 
+                        options.allbinaries, 
+                        rootLogger)
                     returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
                     end = time.time()
                     #if ( returncode != C.SYSDIGERR ):

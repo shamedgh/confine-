@@ -23,10 +23,13 @@ class ContainerProfiler():
     """
     This class can be used to create a seccomp profile for a container through static anlyasis of the useful binaries
     """
-    def __init__(self, name, imagePath, options, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
+    def __init__(self, name, imagePath, options, imageBinaryFiles, dockerStartArgs, dockerPath, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
         self.logger = logger
         self.name = name
         self.imagePath = imagePath
+        self.imageBinaryFiles = imageBinaryFiles
+        self.dockerStartArgs = dockerStartArgs
+        self.dockerPath = dockerPath
         #self.name = name
         #if ( "/" in self.name ):
         #    self.name = self.name.replace("/","-")
@@ -471,6 +474,7 @@ class ContainerProfiler():
                 funcFile.close()
 
                 allSyscallsFineGrain = set()
+                libSyscalls = set()
 
                 if ( self.fineGrain ):
                     #TODO Fix fine grained analysis
@@ -480,15 +484,19 @@ class ContainerProfiler():
                     #4. Use fine grained version or all imported for libraries without CFG
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
                     binaryPaths = os.listdir(tempOutputFolder)
-
+                    self.logger.info("self.name: %s", self.name)
                     for binary in binaryPaths:
-                        if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary: # and self.name not in binary:
+                        self.logger.info("binary: %s", binary)
+                        if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
                             self.logger.info("Binary: %s", binary)
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
 
-                            allSyscallsFineGrain.update(piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder)))
+                            binarySyscalls = piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder))
+                            allSyscallsFineGrain.update(binarySyscalls)
+                            if binary in self.imageBinaryFiles:
+                                libSyscalls.update(binarySyscalls)
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")
@@ -618,19 +626,79 @@ class ContainerProfiler():
 
                 self.logger.info("************************************************************************************")
                 self.logger.info("Container Name: %s Num of filtered syscalls (original): %s", self.name, str(len(blackListOriginal)))
+
+                # allSyscallsOriginalMapped = set()
+                # for syscall_num in allSyscallsOriginal:
+                #     allSyscallsOriginalMapped.add(syscallMap[syscall_num])
+                # all_syscalls = set(syscallMap.values())
+
+                # self.logger.info("All syscalls original: %s", str(all_syscalls.difference(set(blackListOriginal))))
                 self.logger.info("************************************************************************************")
                 self.logger.info("<---Finished INTEGRATE phase\n")
 
                 self.blSyscallsOriginal = blackListOriginal
                 self.blSyscallOriginalCount = len(blackListOriginal)
 
+                seccompProfile = seccomp.Seccomp(self.logger)
+
                 if ( self.fineGrain ):
                     self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(blackListFineGrain)))
-                    self.logger.info("blacklistFineGrain - blackListOriginal: %s", str(set(blackListFineGrain).difference(set(blackListOriginal))))
+                    # self.logger.info("blacklistFineGrain - blackListOriginal: %s", str(set(blackListFineGrain).difference(set(blackListOriginal))))
+                    # self.logger.info("Fine Grain filtered syscalls: %s", str(set(blackListFineGrain)))
+                    libSyscallNames = set()
+                    for syscall_num in libSyscalls:
+                        libSyscallNames.add(str(syscallMap[syscall_num]))
+                    self.logger.info("%s syscalls: %s", self.name, str(libSyscallNames))
+                    self.logger.info(self.imageBinaryFiles)
+
+                    # generate blacklist and seccomp profile for more restrictive filter
+                    blackListBinaryFineGrain = []
+                    i = 1
+                    while i < 400:
+                        if i not in libSyscalls and syscallMap.get(i, None) and syscallMap[i] not in exceptList:
+                            blackListBinaryFineGrain.append(syscallMap[i])
+                        i += 1
+                    self.logger.info("%s binary profile blacklist: %s", self.name, str(len(blackListBinaryFineGrain)))
+                    blackListBinaryProfile = seccompProfile.createProfile(blackListBinaryFineGrain)
+                    if ( "/" in self.name ):
+                        outputPath = resultsFolder + "/" + self.name.replace("/", "-") + ".restrictive.seccomp.json"
+                    else:
+                        outputPath = resultsFolder + "/" + self.name + ".restrictive.seccomp.json"
+                    outputFile = open(outputPath, 'w')
+                    outputFile.write(blackListBinaryProfile)
+                    outputFile.flush()
+                    outputFile.close()
+
+                    # generate C program that installs the more restrictive seccomp filter
+                    if ( "/" in self.name ):
+                        outputPath = resultsFolder + "/" + self.name.replace("/", "-") + "-seccomp.c"
+                    else:
+                        outputPath = resultsFolder + "/" + self.name + "-seccomp.c"
+                    outputFile = open(outputPath, 'w')
+                    seccompTemplate = open("./seccomp-program/seccomp-1.txt", 'r')
+                    for line in seccompTemplate:
+                        outputFile.write(line)
+                    seccompTemplate.close()
+
+                    # add allowed syscalls
+                    for syscall_name in libSyscallNames:
+                        outputFile.write(f"Allow({syscall_name}),\n\t")
+
+                    seccompTemplate = open("./seccomp-program/seccomp-2.txt", 'r')
+                    for line in seccompTemplate:
+                        outputFile.write(line)
+                    seccompTemplate.close()
+
+                    for arg in self.dockerStartArgs:
+                        outputFile.write(f"\"{arg}\", ")
+                    outputFile.write(f" NULL}};\n\texecv(\"{self.dockerPath}\", args);\n}}\n")
+
+                    outputFile.flush()
+                    outputFile.close()
+
                     self.blSyscallsFineGrain = blackListFineGrain
                     self.blSyscallFineGrainCount = len(blackListFineGrain)
 
-                seccompProfile = seccomp.Seccomp(self.logger)
                 if ( self.fineGrain ):
                     blackListProfile = seccompProfile.createProfile(blackListFineGrain)
                 else:

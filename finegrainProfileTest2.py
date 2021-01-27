@@ -164,10 +164,28 @@ if __name__ == '__main__':
             imageArgs = imageVals.get("args", "")
             imagePullCount = imageVals.get("pull-count", 0)
             imageOfficial = imageVals.get("official", False)
-            
+            imageBinaryFiles = imageVals.get("binaries", [])
+            dockerStartArgs = imageVals.get("docker-cmd",[])
+            dockerPath = imageVals.get("docker-path", "")
 
             start = time.time()
-            newProfile = containerProfiler.ContainerProfiler(imageName, imageNameFullPath, imageOptions, options.libccfginput, options.muslcfginput, glibcFuncList, muslFuncList, options.strictmode, options.gofolderpath, options.cfgfolderpath, finegrain, allbinaries, rootLogger)
+            newProfile = containerProfiler.ContainerProfiler(
+                imageName, 
+                imageNameFullPath, 
+                imageOptions, 
+                imageBinaryFiles,
+                dockerStartArgs,
+                dockerPath,
+                options.libccfginput, 
+                options.muslcfginput, 
+                glibcFuncList, 
+                muslFuncList, 
+                options.strictmode, 
+                options.gofolderpath, 
+                options.cfgfolderpath, 
+                finegrain, 
+                allbinaries, 
+                rootLogger)
 #                returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
             returncode = newProfile.createSeccompProfile(outputFolder + "/" + imageName + "/", reportFolder)
             end = time.time()

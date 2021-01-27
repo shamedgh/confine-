@@ -1,16 +1,23 @@
 {
-    "memcached": {
+    "mongo": {
         "enable": "false",
-        "image-name": "memcached",
-        "image-url": "memcached",
+        "image-name": "mongo",
+        "image-url": "mongo",
         "category": [
-            "Storage"
+            "Databases"
         ],
-        "pull-count": 768466201,
+        "pull-count": 1831318554,
         "official": true,
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "26"
+        "id": "10",
+        "binaries": [
+            "mongod"
+        ],
+        "docker-cmd": [
+            "mongod"
+        ],
+        "docker-path": "/home/test/mongod"
     }
 }
