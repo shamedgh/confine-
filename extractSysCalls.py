@@ -133,20 +133,20 @@ if __name__ == '__main__':
         syscallMapper = syscall.Syscall(rootLogger)
         syscallMap = syscallMapper.createMap()
 
-        blackList = []
+        denyList = []
         i = 1
         while i < 400:
             if ( i not in syscallList and syscallMap.get(i, None) and syscallMap[i] not in exceptList):
-                blackList.append(syscallMap[i])
+                denyList.append(syscallMap[i])
             i += 1
 
-        print ("Num of black listed syscalls: " + str(len(blackList)))
+        print ("Num of filtered syscalls: " + str(len(denyList)))
         seccompProfile = seccomp.Seccomp(rootLogger)
-        blackListProfile = seccompProfile.createProfile(blackList)
+        denyListProfile = seccompProfile.createProfile(denyList)
         outputPath = options.output
         if ( options.output is None ):
             outputPath = "seccomp.out"
         outputFile = open(outputPath, 'w')
-        outputFile.write(blackListProfile)
+        outputFile.write(denyListProfile)
         outputFile.flush()
         outputFile.close()

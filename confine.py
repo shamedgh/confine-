@@ -135,7 +135,7 @@ if __name__ == '__main__':
                 rootLogger.error("Problem extracting list of functions from musl")
                 sys.exit(-1)
 
-        #Load list of default black listed system calls
+        #Load list of default filtered system calls
         defaultProfileFile = open(options.defaultprofile, 'r')
         defaultProfileStr = defaultProfileFile.read()
         defaultProfileJson = json.loads(defaultProfileStr)
@@ -309,18 +309,18 @@ if __name__ == '__main__':
                     #        retryCount += 1
                     #else:
                         retryCount += 1
-                        if ( newProfile.getBlacklistedSyscalls() ):
-                            currentSet = set(newProfile.getBlacklistedSyscalls())
+                        if ( newProfile.getDenylistedSyscalls() ):
+                            currentSet = set(newProfile.getDenylistedSyscalls())
                         else:
                             currentSet = set()
 
-                        if ( newProfile.getBlacklistedSyscallsOriginal() ):
-                            originalSet = set(newProfile.getBlacklistedSyscallsOriginal())
+                        if ( newProfile.getDenylistedSyscallsOriginal() ):
+                            originalSet = set(newProfile.getDenylistedSyscallsOriginal())
                         else:
                             originalSet = set()
 
-                        if ( newProfile.getBlacklistedSyscallsFineGrain() ):
-                            finegrainSet = set(newProfile.getBlacklistedSyscallsFineGrain())
+                        if ( newProfile.getDenylistedSyscallsFineGrain() ):
+                            finegrainSet = set(newProfile.getDenylistedSyscallsFineGrain())
                         else:
                             finegrainSet = set()
 

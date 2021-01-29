@@ -1,6 +1,8 @@
 opendaylight.images.list
 output
 results
+fgOutput/
+fgReport/
 
 
 # Byte-compiled / optimized / DLL files

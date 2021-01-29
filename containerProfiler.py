@@ -48,10 +48,10 @@ class ContainerProfiler():
         self.installStatus = False
         self.debloatStatus = False
         self.errorMessage = ""
-        self.blSyscallsOriginal = None
-        self.blSyscallOriginalCount = 0
-        self.blSyscallsFineGrain = None
-        self.blSyscallFineGrainCount = 0
+        self.denySyscallsOriginal = None
+        self.denySyscallOriginalCount = 0
+        self.denySyscallsFineGrain = None
+        self.denySyscallFineGrainCount = 0
         self.directSyscallCount = 0
         self.libcSyscallCount = 0
         self.languageSet = set()
@@ -186,17 +186,17 @@ class ContainerProfiler():
     def getInstallStatus(self):
         return self.installStatus
 
-    def getBlacklistedSyscallCount(self):
+    def getDenylistedSyscallCount(self):
         if ( self.fineGrain ):
-            return self.blSyscallFineGrainCount
+            return self.denySyscallFineGrainCount
         else:
-            return self.blSyscallOriginalCount
+            return self.denySyscallOriginalCount
 
-    def getBlacklistedSyscallOriginalCount(self):
-        return self.blSyscallOriginalCount
+    def getDenylistedSyscallOriginalCount(self):
+        return self.denySyscallOriginalCount
 
-    def getBlacklistedSyscallFineGrainCount(self):
-        return self.blSyscallFineGrainCount
+    def getDenylistedSyscallFineGrainCount(self):
+        return self.denySyscallFineGrainCount
 
     def getDebloatStatus(self):
         return self.debloatStatus
@@ -204,17 +204,17 @@ class ContainerProfiler():
     def getErrorMessage(self):
         return self.errorMessage
 
-    def getBlacklistedSyscalls(self):
+    def getDenylistedSyscalls(self):
         if ( self.fineGrain ):
-            return self.blSyscallsFineGrain
+            return self.denySyscallsFineGrain
         else:
-            return self.blSyscallsOriginal
+            return self.denySyscallsOriginal
 
-    def getBlacklistedSyscallsOriginal(self):
-        return self.blSyscallsOriginal
+    def getDenylistedSyscallsOriginal(self):
+        return self.denySyscallsOriginal
 
-    def getBlacklistedSyscallsFineGrain(self):
-        return self.blSyscallsFineGrain
+    def getDenylistedSyscallsFineGrain(self):
+        return self.denySyscallsFineGrain
 
     def getDirectSyscallCount(self):
         return self.directSyscallCount
@@ -605,67 +605,67 @@ class ContainerProfiler():
                 syscallMap = syscallMapper.createMap()
 
                 self.logger.info("Generating final system call filter list")
-                blackListOriginal = []
+                denyListOriginal = []
                 i = 1
                 while i < 400:
                     if ( (self.directSyscallCount == 0 and self.libcSyscallCount == 0) or (isMusl and i in muslWrapperList) or (i in glibcWrapperList) ):
                         if ( i not in directSyscallSet and i not in staticSyscallList and i not in allSyscallsOriginal and syscallMap.get(i, None) and syscallMap[i] not in exceptList):
                             if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
-                                blackListOriginal.append(syscallMap[i])
+                                denyListOriginal.append(syscallMap[i])
                     i += 1
 
-                blackListFineGrain = []
+                denyListFineGrain = []
                 if ( self.fineGrain ):
                     i = 1
                     while i < 400:
                         if ( (self.directSyscallCount == 0 and self.libcSyscallCount == 0) or (isMusl and i in muslWrapperList) or (i in glibcWrapperList) ):
                             if ( i not in directSyscallSet and i not in staticSyscallList and i not in allSyscallsFineGrain and syscallMap.get(i, None) and syscallMap[i] not in exceptList):
                                 if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
-                                    blackListFineGrain.append(syscallMap[i])
+                                    denyListFineGrain.append(syscallMap[i])
                         i += 1
 
                 self.logger.info("************************************************************************************")
-                self.logger.info("Container Name: %s Num of filtered syscalls (original): %s", self.name, str(len(blackListOriginal)))
+                self.logger.info("Container Name: %s Num of filtered syscalls (original): %s", self.name, str(len(denyListOriginal)))
 
                 # allSyscallsOriginalMapped = set()
                 # for syscall_num in allSyscallsOriginal:
                 #     allSyscallsOriginalMapped.add(syscallMap[syscall_num])
                 # all_syscalls = set(syscallMap.values())
 
-                # self.logger.info("All syscalls original: %s", str(all_syscalls.difference(set(blackListOriginal))))
+                # self.logger.info("All syscalls original: %s", str(all_syscalls.difference(set(denyListOriginal))))
                 self.logger.info("************************************************************************************")
                 self.logger.info("<---Finished INTEGRATE phase\n")
 
-                self.blSyscallsOriginal = blackListOriginal
-                self.blSyscallOriginalCount = len(blackListOriginal)
+                self.denySyscallsOriginal = denyListOriginal
+                self.denySyscallOriginalCount = len(denyListOriginal)
 
                 seccompProfile = seccomp.Seccomp(self.logger)
 
                 if ( self.fineGrain ):
-                    self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(blackListFineGrain)))
-                    # self.logger.info("blacklistFineGrain - blackListOriginal: %s", str(set(blackListFineGrain).difference(set(blackListOriginal))))
-                    # self.logger.info("Fine Grain filtered syscalls: %s", str(set(blackListFineGrain)))
+                    self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(denyListFineGrain)))
+                    # self.logger.info("denylistFineGrain - denyListOriginal: %s", str(set(denyListFineGrain).difference(set(denyListOriginal))))
+                    # self.logger.info("Fine Grain filtered syscalls: %s", str(set(denyListFineGrain)))
                     libSyscallNames = set()
                     for syscall_num in libSyscalls:
                         libSyscallNames.add(str(syscallMap[syscall_num]))
                     self.logger.info("%s syscalls: %s", self.name, str(libSyscallNames))
                     self.logger.info(self.imageBinaryFiles)
 
-                    # generate blacklist and seccomp profile for more restrictive filter
-                    blackListBinaryFineGrain = []
+                    # generate denylist and seccomp profile for more restrictive filter
+                    denyListBinaryFineGrain = []
                     i = 1
                     while i < 400:
                         if i not in libSyscalls and syscallMap.get(i, None) and syscallMap[i] not in exceptList:
-                            blackListBinaryFineGrain.append(syscallMap[i])
+                            denyListBinaryFineGrain.append(syscallMap[i])
                         i += 1
-                    self.logger.info("%s binary profile blacklist: %s", self.name, str(len(blackListBinaryFineGrain)))
-                    blackListBinaryProfile = seccompProfile.createProfile(blackListBinaryFineGrain)
+                    self.logger.info("%s binary profile denylist: %s", self.name, str(len(denyListBinaryFineGrain)))
+                    denyListBinaryProfile = seccompProfile.createProfile(denyListBinaryFineGrain)
                     if ( "/" in self.name ):
                         outputPath = resultsFolder + "/" + self.name.replace("/", "-") + ".restrictive.seccomp.json"
                     else:
                         outputPath = resultsFolder + "/" + self.name + ".restrictive.seccomp.json"
                     outputFile = open(outputPath, 'w')
-                    outputFile.write(blackListBinaryProfile)
+                    outputFile.write(denyListBinaryProfile)
                     outputFile.flush()
                     outputFile.close()
 
@@ -696,23 +696,31 @@ class ContainerProfiler():
                     outputFile.flush()
                     outputFile.close()
 
-                    self.blSyscallsFineGrain = blackListFineGrain
-                    self.blSyscallFineGrainCount = len(blackListFineGrain)
+                    self.denySyscallsFineGrain = denyListFineGrain
+                    self.denySyscallFineGrainCount = len(denyListFineGrain)
 
                 if ( self.fineGrain ):
-                    blackListProfile = seccompProfile.createProfile(blackListFineGrain)
-                else:
-                    blackListProfile = seccompProfile.createProfile(blackListOriginal)
+                    denyListFineGrainProfile = seccompProfile.createProfile(denyListFineGrain)
+                denyListProfile = seccompProfile.createProfile(denyListOriginal)
                 if ( "/" in self.name ):
+                    outputFineGrainPath = resultsFolder + "/" + self.name.replace("/", "-") + ".finegrain.seccomp.json"
                     outputPath = resultsFolder + "/" + self.name.replace("/", "-") + ".seccomp.json"
                 else:
+                    outputFineGrainPath = resultsFolder + "/" + self.name + ".finegrain.seccomp.json"
                     outputPath = resultsFolder + "/" + self.name + ".seccomp.json"
                 outputFile = open(outputPath, 'w')
-                outputFile.write(blackListProfile)
+                outputFile.write(denyListProfile)
                 outputFile.flush()
                 outputFile.close()
-                self.logger.info("--->Validating generated Seccomp profile: %s", outputPath)
-                if ( myContainer.runWithSeccompProfile(outputPath) ):
+                seccompPath = outputPath
+                if ( self.fineGrain ):
+                    seccompPath = outputFineGrainPath
+                    outputFineGrainFile = open(outputFineGrainPath, 'w')
+                    outputFineGrainFile.write(denyListFineGrainProfile)
+                    outputFineGrainFile.flush()
+                    outputFineGrainFile.close()
+                self.logger.info("--->Validating generated Seccomp profile: %s", seccompPath)
+                if ( myContainer.runWithSeccompProfile(seccompPath) ):
                     time.sleep(logSleepTime)
                     debloatedLogs = myContainer.checkLogs()
                     if ( len(originalLogs) == len(debloatedLogs) ):
@@ -859,15 +867,15 @@ class ContainerProfiler():
 
         syscallMapper = syscall.Syscall(self.logger)
         syscallMap = syscallMapper.createMap()
-        blackList = set()
+        denyList = set()
         i = 0
         while i < 400:
             if ( i not in allSyscalls and syscallMap.get(i, None) and syscallMap[i] not in exceptList):
-                blackList.add(syscallMap[i])
+                denyList.add(syscallMap[i])
             i += 1
 
 
         self.logger.info("Results for %s:///////////////////////////////////", self.name)
-        self.logger.info("%s: len(blacklist): %d", self.name, len(blackList))
-        self.logger.info("%s: blacklist: %s", self.name, str(blackList))
+        self.logger.info("%s: len(denylist): %d", self.name, len(denyList))
+        self.logger.info("%s: denylist: %s", self.name, str(denyList))
         self.logger.info("//////////////////////////////////////////////////////////////////")

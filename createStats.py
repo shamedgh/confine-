@@ -397,7 +397,7 @@ if __name__ == '__main__':
         categoryIntersection = dict()
         categoryUnion = dict()
         categoryCount = dict()
-        blacklistCount = dict()
+        denylistCount = dict()
 
 
         while ( line ):
@@ -423,11 +423,11 @@ if __name__ == '__main__':
                         tempSet.add(imageName)
                         cveToContainer[cveId] = tempSet
 
-                #TODO Top 20 blacklisted system calls
+                #TODO Top 20 denylisted system calls
                 for syscall in syscallSet:
-                    count = blacklistCount.get(syscall, 0)
+                    count = denylistCount.get(syscall, 0)
                     count += 1
-                    blacklistCount[syscall] = count
+                    denylistCount[syscall] = count
 
                 #TODO Categorized system call statistics
                 for category in imageToCategory[imageName]:
@@ -491,12 +491,12 @@ if __name__ == '__main__':
             reportFileCategorized.flush()
         reportFileCategorized.close()
 
-#        sortedBlacklist = dict(sorted(blacklistCount, key=blacklistCount.get, reverse=True)[:20])
-        sortedBlacklist = [(k, blacklistCount[k]) for k in sorted(blacklistCount, key=blacklistCount.get, reverse=True)]
+#        sortedDenylist = dict(sorted(denylistCount, key=denylistCount.get, reverse=True)[:20])
+        sortedDenylist = [(k, denylistCount[k]) for k in sorted(denylistCount, key=denylistCount.get, reverse=True)]
         reportFileSyscall.write("ContainerCount" + SEPARATOR + "SyscallCount\n")
         reportFileSyscallTop.write("Syscall" + SEPARATOR + "Count\n")
         countDict = dict()
-        for syscall, count in sortedBlacklist:
+        for syscall, count in sortedDenylist:
             countPerCount = countDict.get(count, 0)
             countPerCount += 1
             countDict[count] = countPerCount
