@@ -52,6 +52,8 @@ class ContainerProfiler():
         self.denySyscallOriginalCount = 0
         self.denySyscallsFineGrain = None
         self.denySyscallFineGrainCount = 0
+        self.denySyscallsRestrictive = None
+        self.denySyscallRestrictiveCount = 0
         self.directSyscallCount = 0
         self.libcSyscallCount = 0
         self.languageSet = set()
@@ -198,6 +200,9 @@ class ContainerProfiler():
     def getDenylistedSyscallFineGrainCount(self):
         return self.denySyscallFineGrainCount
 
+    def getDenylistedSyscallRestrictiveCount(self):
+        return self.denySyscallRestrictiveCount
+
     def getDebloatStatus(self):
         return self.debloatStatus
 
@@ -215,6 +220,9 @@ class ContainerProfiler():
 
     def getDenylistedSyscallsFineGrain(self):
         return self.denySyscallsFineGrain
+
+    def getDenylistedSyscallsRestrictive(self):
+        return self.denySyscallsRestrictive
 
     def getDirectSyscallCount(self):
         return self.directSyscallCount
@@ -659,6 +667,10 @@ class ContainerProfiler():
                             denyListBinaryFineGrain.append(syscallMap[i])
                         i += 1
                     self.logger.info("%s binary profile denylist: %s", self.name, str(len(denyListBinaryFineGrain)))
+
+                    self.denySyscallsRestrictive = denyListBinaryFineGrain
+                    self.denySyscallRestrictiveCount = len(denyListBinaryFineGrain)
+
                     denyListBinaryProfile = seccompProfile.createProfile(denyListBinaryFineGrain)
                     if ( "/" in self.name ):
                         outputPath = resultsFolder + "/" + self.name.replace("/", "-") + ".restrictive.seccomp.json"
