@@ -15,7 +15,7 @@
         "id": "5"
     },
     "redis": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "redis",
         "image-url": "redis",
         "category": [
@@ -36,7 +36,7 @@
         "docker-path": "redis-server"
     },
     "mongo": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "mongo",
         "image-url": "mongo",
         "category": [
@@ -57,7 +57,7 @@
         "docker-path": "/home/test/mongod"
     },
     "postgres": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "postgres",
         "image-url": "postgres",
         "category": [
@@ -102,7 +102,7 @@
         "docker-path": "/home/test/nginx"
     },
     "mysql": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "mysql",
         "image-url": "mysql",
         "category": [
@@ -123,7 +123,7 @@
         "docker-path": "/home/test/mysql"
     },
     "httpd": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "httpd",
         "image-url": "httpd",
         "binaries": [
@@ -138,7 +138,7 @@
         "docker-path": "/home/test/httpd"
     },
     "memcached": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "memcached",
         "image-url": "memcached",
         "category": [

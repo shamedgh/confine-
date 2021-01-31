@@ -3,6 +3,7 @@ output
 results
 fgOutput/
 fgReport/
+stats/
 
 
 # Byte-compiled / optimized / DLL files

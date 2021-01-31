@@ -4,6 +4,9 @@ import logging
 import optparse
 import time
 import json
+
+sys.path.insert(0, './python-utils/')
+
 import constants as C
 import util
 import ast

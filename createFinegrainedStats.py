@@ -4,6 +4,9 @@ import logging
 import optparse
 import time
 import json
+
+sys.path.insert(0, './python-utils/')
+
 import constants as C
 import util
 import ast
@@ -268,7 +271,7 @@ if __name__ == '__main__':
         while i < TOPNCOUNT:
             imageName = rankToImageName.get(rankIndex, None)
             if ( imageName ):
-                if ( imageToDebloatStatus[imageName] ):
+                if ( imageToDebloatStatus.get(imageName, None) ):
                     syscallCount = imageToSyscallCount[imageName]
                     reportFileTop20Popularity.write(imageName + SEPARATOR + str(syscallCount) + SEPARATOR + str(rankIndex) + SEPARATOR + str(imageToCategory[imageName]) + "\n")
                     reportFileTop20Popularity.flush()
