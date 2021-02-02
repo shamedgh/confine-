@@ -12,6 +12,7 @@ LIBFILENAME = "libs.out"
 LANGFILENAME = ".lang.cache"
 BINLISTCACHE = ".binlist.cache"
 LIBLISTCACHE = ".liblist.cache"
+BINTOLIBCACHE = ".bintolib.cache"
 TOOLNAME = "CONFINE"
 
 ERRTOMSG = dict()

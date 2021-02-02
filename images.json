@@ -15,7 +15,7 @@
         "id": "5"
     },
     "redis": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "redis",
         "image-url": "redis",
         "category": [
@@ -36,7 +36,7 @@
         "docker-path": "redis-server"
     },
     "mongo": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "mongo",
         "image-url": "mongo",
         "category": [

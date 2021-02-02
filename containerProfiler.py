@@ -306,6 +306,7 @@ class ContainerProfiler():
         languageReady = False
         try:
             self.logger.debug("Checking cache in %s", tempOutputFolder)
+            myFile = open(tempOutputFolder + "/" + C.BINTOLIBCACHE, 'r')    #We need to have the mapping between binaries and their libraries to analyze them
             myFile = open(tempOutputFolder + "/" + C.CACHE, 'r')
             binaryReady = True
             myFile = open(tempOutputFolder + "/" + C.LIBFILENAME, 'r')
@@ -342,7 +343,7 @@ class ContainerProfiler():
         if ( self.name == "cirros" ):
             logSleepTime = 120
         
-
+        binaryToLibraryDict = dict()
         psListAll = set()
         #myForkStat = forkstat.ForkStat(self.logger)
         mySysdig = sysdig.Sysdig(self.logger)
@@ -410,7 +411,8 @@ class ContainerProfiler():
                         self.errorMessage = "PS List is None from extractPsNames(), error in sysdig, retrying this container"
                         return C.NOPROCESS
                     self.logger.info("len(psList) from sysdig: %d", len(psList))
-                    psList = psList.union(myContainer.extractLibsFromProc())
+                    currPsList, binaryToLibraryDict = myContainer.extractLibsFromProc()
+                    psList = psList.union(currPsList)
                     self.logger.debug("len(psList) after extracting proc list: %d", len(psList))
                     self.logger.debug("Container: %s PS List: %s", self.name, str(psList))
                     self.logger.debug("Container: %s extracted psList with %d elements", self.name, len(psList))
@@ -422,6 +424,7 @@ class ContainerProfiler():
 
                     psListAll.update(psList)
                     self.logger.info("Container: %s extracted psList with %d elements", self.name, len(psListAll))
+                    util.writeDictToFile(binaryToLibraryDict, tempOutputFolder + "/" + C.BINTOLIBCACHE)
 
         if ( self.status ):
             if ( not binaryReady ):
@@ -430,9 +433,18 @@ class ContainerProfiler():
                 if ( self.extractAllBinaries ):
                     psListAll.update(myContainer.extractAllBinaries())
 
+
                 for binaryPath in psListAll:
                     if ( binaryPath.strip() != "" ):
                         myContainer.copyFromContainerWithLibs(binaryPath, tempOutputFolder)
+
+                        if ( binaryToLibraryDict.get(binaryPath, None) ):
+                            librarySet = binaryToLibraryDict[binaryPath]
+                            self.logger.debug("binary: %s library set: %s", binaryPath, str(librarySet))
+                            for libraryPath in librarySet:
+                                myContainer.copyFromContainerWithLibs(libraryPath, tempOutputFolder)
+                        else:
+                            self.logger.debug("Binary: %s doesn't exist in binaryToLibraryDict", binaryPath)
                         #if ( not myContainer.copyFromContainerWithLibs(binaryPath, tempOutputFolder) ):
                         #    self.logger.error("Problem copying files from container!")
                 binaryReady = True
@@ -481,6 +493,8 @@ class ContainerProfiler():
 
                 funcFile.close()
 
+                binaryToLibraryDict = util.readDictFromFile(tempOutputFolder + "/" + C.BINTOLIBCACHE)
+
                 allSyscallsFineGrain = set()
                 libSyscalls = set()
 
@@ -494,17 +508,20 @@ class ContainerProfiler():
                     binaryPaths = os.listdir(tempOutputFolder)
                     self.logger.info("self.name: %s", self.name)
                     for binary in binaryPaths:
-                        self.logger.info("binary: %s", binary)
+                        self.logger.info("binary/library: %s", binary)
                         if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
                             self.logger.info("Binary: %s", binary)
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
-
-                            binarySyscalls = piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder))
+                            procLibrarySet = binaryToLibraryDict.get(binary, set())
+                            procLibraryDict = util.convertLibrarySetToDict(procLibrarySet)
+                            binarySyscalls = piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
                             allSyscallsFineGrain.update(binarySyscalls)
                             if binary in self.imageBinaryFiles:
                                 libSyscalls.update(binarySyscalls)
+                        else:
+                            self.logger.info("Skipped library: %s", binary)
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")
@@ -655,7 +672,10 @@ class ContainerProfiler():
                     # self.logger.info("Fine Grain filtered syscalls: %s", str(set(denyListFineGrain)))
                     libSyscallNames = set()
                     for syscall_num in libSyscalls:
-                        libSyscallNames.add(str(syscallMap[syscall_num]))
+                        if ( syscallMap.get(syscall_num, None) ):
+                            libSyscallNames.add(str(syscallMap[syscall_num]))
+                        else:
+                            self.logger.error("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num)
                     self.logger.info("%s syscalls: %s", self.name, str(libSyscallNames))
                     self.logger.info(self.imageBinaryFiles)
 

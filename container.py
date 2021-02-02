@@ -387,6 +387,7 @@ class Container():
         return pidToUserDict, pidToCmdDict
 
     def extractLibsFromProc(self):
+        binaryToLibraryDict = dict()
         libSet = set()
         if ( not self.containerId ):
             self.logger.error("Trying to extract binary libs from non-running container! self.containerId: %s", self.containerId)
@@ -423,7 +424,9 @@ class Container():
         cmdWithUserWithSh = "sudo docker {} exec -it {} su -s \"/bin/sh\" -c \"cat /proc/{}/maps\" {}"
         getPidOnHostCmd = "sudo ps -aux | grep {}"
         cmdOnHost = "sudo cat /proc/{}/maps"
+
         for pid in psList:
+            libSetPerPid = set()
             finalCmd = cmd.format(self.remote, self.containerId, pid)
             returncode, out, err = util.runCommand(finalCmd)
             if ( returncode != 0 ):
@@ -463,8 +466,58 @@ class Container():
                     permissions = splittedLine[1]
                     if ( permissions[2] == 'x' ):
                         libSet.add(libName)
+                        libSetPerPid.add(libName)
+                        self.logger.debug("extractLibsFromProc: adding lib to set: %s", libName)
+            binName = self.extractBinaryNameFromProcList(pid, pidToUserDict, pidToCmdDict)
+            binaryToLibraryDict[binName] = libSetPerPid
         self.logger.debug("libs from /proc: %s", str(libSet))
-        return libSet
+        return libSet, binaryToLibraryDict
+
+    def extractBinaryNameFromProcList(self, pid, pidToUserDict, pidToCmdDict):
+        binName = ""
+        cmd = "sudo docker {} exec -it {} ls -lh /proc/{}/exe"
+        cmdWithUser = "sudo docker {} exec -it {} runuser -l {} -c 'ls -lh /proc/{}/exe'"
+        cmdWithUserWithSh = "sudo docker {} exec -it {} su -s \"/bin/sh\" -c \"ls -lh /proc/{}/exe\" {}"
+        getPidOnHostCmd = "sudo ps -aux | grep {}"
+        cmdOnHost = "sudo ls -lh /proc/{}/exe"
+
+        finalCmd = cmd.format(self.remote, self.containerId, pid)
+        returncode, out, err = util.runCommand(finalCmd)
+        if ( returncode != 0 ):
+            self.logger.debug("Couldn't run ls -lh /proc/%s with default user, trying with runuser command", pid)
+            user = pidToUserDict.get(pid, None)
+            if ( not user ):
+                self.logger.debug("Can't retrieve username for pid: %s", pid)
+                user = "root"
+            finalCmd = cmdWithUser.format(self.remote, self.containerId, user, pid)
+            returncode, out, err = util.runCommand(finalCmd)
+            if ( returncode != 0 ):
+                self.logger.debug("Couldn't run ls -lh /proc/pid/exe with runuser, trying with su")
+                finalCmd = cmdWithUserWithSh.format(self.remote, self.containerId, pid, user)
+                returncode, out, err = util.runCommand(finalCmd)
+                if ( returncode != 0 ):
+                    self.logger.debug("Couldn't run ls -lh /proc/pid/exe with su, trying on host!")
+                    if ( pidToCmdDict.get(pid, None) ):
+                        getPidOnHostFinalCmd = getPidOnHostCmd.format(pidToCmdDict[pid])
+                        returncode, out, err = util.runCommand(getPidOnHostFinalCmd)
+                        if ( out != "" ):
+                            outLines = out.splitlines()
+                            hostOut = ""
+                            for outLine in outLines:
+                                hostPid = outLine.split()[1]
+                                cmdOnHostFinal = cmdOnHost.format(hostPid)
+                                returncode, tmpOut, err = util.runCommand(cmdOnHostFinal) 
+                                if ( returncode == 0 ):
+                                    hostOut += tmpOut + "\n"
+                            out = hostOut
+                    else:
+                        self.logger.debug("Can't extract maps from host because pidToCmd is empty for %s", pid)
+        if ( "->" in out ):
+            splittedOut = out.split("->")
+            binName = splittedOut[1].strip()
+            if ( "/" in binName ):
+                binName = binName[binName.rindex("/")+1:]
+        return binName
 
     def checkOs(self):
         cmd = "sudo docker {} exec -it {} cat /etc/*release"
