@@ -15,6 +15,10 @@ LIBLISTCACHE = ".liblist.cache"
 BINTOLIBCACHE = ".bintolib.cache"
 TOOLNAME = "CONFINE"
 
+SECCOMPCPROG = "seccomp"
+DOCKERENTRYSCRIPT = "docker-entrypoint.sh"
+DOCKERENTRYSCRIPTMODIFIED = "docker-entrypoint.wseccomp.sh"
+
 ERRTOMSG = dict()
 ERRTOMSG[SYSDIGERR] = "There was an error running sysdig, please make sure it is installed and the script has enough privileges to run it"
 ERRTOMSG[NOPROCESS] = "Sysdig was not able to identify any processes. This causes our dynamic analysis to fail and the static analysis cannot analyze anything"
