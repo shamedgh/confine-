@@ -772,7 +772,7 @@ class ContainerProfiler():
                             self.logger.info("Finished validation. Container for image: %s was hardened SUCCESSFULLY!", self.name)
                             self.logger.info("************************************************************************************")
                             self.debloatStatus = True
-                            self.restrictedDebloatStatus = True
+                            self.restrictedDebloatStatus = False
                             returnCode = 0
 
                             # TODO validate the more restrictive filter here
@@ -822,14 +822,17 @@ class ContainerProfiler():
                                                 else:
                                                     self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name)
                                                     self.errorMessage= "Container was hardened with problems. Dies after running!"
+                                                    self.restrictedDebloatStatus = False
                                                     returnCode = C.HSTOPS
                                             else:
                                                 self.logger.warning("Container for image: %s was hardened (more restrictively) with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(restrictedLogs), originalLogs, restrictedLogs)
                                                 self.errorMessage = "Unknown problem in hardening (more restrictive) container!"
+                                                self.restrictedDebloatStatus = False
                                                 returnCode = C.HLOGLEN
                                         else:
                                             self.errorMessage = "Unknown problem in hardening container!"
                                             self.logger.warning(self.errorMessage)
+                                            self.restrictedDebloatStatus = False
                                             returnCode = C.HNORUN
                                     else:
                                         self.logger.warning("docker-entrypoint.wseccomp.sh has not been created, skipping the validation check of the more restrictive filters")

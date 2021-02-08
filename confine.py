@@ -332,7 +332,7 @@ if __name__ == '__main__':
                         unionSet = currentSet.copy()
                         unionSet.update(defaultSyscallSet)
                         remainingSetSize = len(unionSet.difference(currentSet))-1   #-1 for clone system call
-                        reportFile.write(str(imageRank) + ";" + imageName + ";" + str(newProfile.getStatus()) + ";" + str(newProfile.getRunnableStatus()) + ";" + str(newProfile.getInstallStatus()) + ";" + str(len(originalSet)) + ";" + str(len(finegrainSet)) + ";" + str(len(restrictiveSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDebloatStatus()) + ";" + newProfile.getErrorMessage() + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(end-start) + ";" + str(newProfile.getLanguageSet()) + ";" + str(remainingSetSize) + "\n")
+                        reportFile.write(str(imageRank) + ";" + imageName + ";" + str(newProfile.getStatus()) + ";" + str(newProfile.getRunnableStatus()) + ";" + str(newProfile.getInstallStatus()) + ";" + str(len(originalSet)) + ";" + str(len(finegrainSet)) + ";" + str(len(restrictiveSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDebloatStatus()) + ";" + str(newProfile.getRestrictedDebloatStatus()) + ";" + newProfile.getErrorMessage() + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(end-start) + ";" + str(newProfile.getLanguageSet()) + ";" + str(remainingSetSize) + "\n")
 
                         statsTotalImage += 1
                         if ( newProfile.getStatus() ):
