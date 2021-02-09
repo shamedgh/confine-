@@ -54,7 +54,7 @@
         "docker-cmd": [
             "mongod"
         ],
-        "docker-path": "/home/test/mongod"
+        "docker-path": "/home/confine/mongod"
     },
     "postgres": {
         "enable": "false",
@@ -100,7 +100,7 @@
             "-g",
             "daemon off;"
         ],
-        "docker-path": "/home/test/nginx"
+        "docker-path": "/home/confine/nginx"
     },
     "mysql": {
         "enable": "false",
@@ -121,7 +121,7 @@
         "docker-cmd": [
             "mysql"
         ],
-        "docker-path": "/home/test/mysql"
+        "docker-path": "/home/confine/mysql"
     },
     "httpd": {
         "enable": "false",
@@ -136,7 +136,7 @@
             "-D", 
             "FOREGROUND"
         ],
-        "docker-path": "/home/test/httpd"
+        "docker-path": "/home/confine/httpd"
     },
     "memcached": {
         "enable": "false",
@@ -157,7 +157,7 @@
         "docker-cmd": [
             "memcached"
         ],
-        "docker-path": "/home/test/memcached"
+        "docker-path": "/home/confine/memcached"
     },
     "wordpress": {
         "enable": "false",

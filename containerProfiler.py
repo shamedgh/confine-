@@ -47,6 +47,7 @@ class ContainerProfiler():
         self.runnable = False
         self.installStatus = False
         self.debloatStatus = False
+        self.restrictedDebloatStatus = False
         self.errorMessage = ""
         self.denySyscallsOriginal = None
         self.denySyscallOriginalCount = 0
@@ -205,6 +206,9 @@ class ContainerProfiler():
 
     def getDebloatStatus(self):
         return self.debloatStatus
+
+    def getRestrictedDebloatStatus(self):
+        return self.restrictedDebloatStatus
 
     def getErrorMessage(self):
         return self.errorMessage
@@ -696,6 +700,8 @@ class ContainerProfiler():
                 self.denySyscallOriginalCount = len(denyListOriginal)
 
                 seccompProfile = seccomp.Seccomp(self.logger)
+                seccompCProgramPath = None
+                dockerStartArgsStr = None
 
                 if ( self.fineGrain ):
                     self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(denyListFineGrain)))
@@ -737,6 +743,7 @@ class ContainerProfiler():
                         outputPath = resultsFolder + "/" + self.name.replace("/", "-") + "-seccomp.c"
                     else:
                         outputPath = resultsFolder + "/" + self.name + "-seccomp.c"
+                    seccompCProgramPath = outputPath
                     outputFile = open(outputPath, 'w')
                     seccompTemplate = open("./seccomp-program/seccomp-1.txt", 'r')
                     for line in seccompTemplate:
@@ -752,8 +759,10 @@ class ContainerProfiler():
                         outputFile.write(line)
                     seccompTemplate.close()
 
+                    dockerStartArgsStr = ""
                     for arg in self.dockerStartArgs:
                         outputFile.write(f"\"{arg}\", ")
+                        dockerStartArgsStr += arg + " "
                     outputFile.write(f" NULL}};\n\texecv(\"{self.dockerPath}\", args);\n}}\n")
 
                     outputFile.flush()
@@ -783,6 +792,7 @@ class ContainerProfiler():
                     outputFineGrainFile.flush()
                     outputFineGrainFile.close()
                 self.logger.info("--->Validating generated Seccomp profile: %s", seccompPath)
+                myRestrictedContainer = None
                 if ( myContainer.runWithSeccompProfile(seccompPath) ):
                     time.sleep(logSleepTime)
                     debloatedLogs = myContainer.checkLogs()
@@ -793,7 +803,74 @@ class ContainerProfiler():
                             self.logger.info("Finished validation. Container for image: %s was hardened SUCCESSFULLY!", self.name)
                             self.logger.info("************************************************************************************")
                             self.debloatStatus = True
+                            self.restrictedDebloatStatus = False
                             returnCode = 0
+
+                            # TODO validate the more restrictive filter here
+                            # create a new container object (with args)
+                            # modify docker-entrypoint.sh (automatically?)
+                            # create seccomp binary (automatically?)
+                            # launch container
+
+                            if ( seccompCProgramPath ):
+                                cProgramStatus = False
+                                entrypointStatus = False
+                                if ( not os.path.isfile(os.path.join(tempOutputFolder, C.SECCOMPCPROG)) ):
+                                    cProgramStatus = self.compileSeccompCProgram(seccompCProgramPath, os.path.join(tempOutputFolder, C.SECCOMPCPROG))
+                                else:
+                                    cProgramStatus = True
+    
+                                if ( cProgramStatus ):
+                                    entrypointStatus = False
+                                    if ( not os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED) ) ):
+                                        if ( os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPT)) ):
+                                            entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + C.DOCKERENTRYSCRIPT, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
+                                        else:
+                                            self.logger.warning("Docker image does not seem to have entrypoint.sh")
+                                            entrypointStatus = False
+                                    else:
+                                        entrypointStatus = True
+                            
+                                    if ( os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED)) ):
+                                        restrictiveOptions = self.generateRestrictiveOptions(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED)
+                                        myRestrictedContainer = container.Container(self.imagePath, restrictiveOptions, self.logger, remote=None, args=dockerStartArgsStr)
+                                        self.logger.info("--->Validating more restrictive Seccomp profile: %s", seccompCProgramPath)
+                                        self.logger.info("Killing and deleting fine-grained hardened container")
+                                        myContainer.kill()
+                                        myContainer.delete()
+                                        if ( myRestrictedContainer.runWithSeccompProfile(seccompPath) ):
+                                            time.sleep(logSleepTime)
+                                            restrictedLogs = myRestrictedContainer.checkLogs()
+                                            restrictedLogs = restrictedLogs.replace("/home/confine/docker-entrypoint.wseccomp.sh", "/docker-entrypoint.sh")
+                                            if ( len(originalLogs) == len(restrictedLogs) ):
+                                                time.sleep(3)
+                                                if ( myRestrictedContainer.checkStatus() ):
+                                                    self.logger.info("************************************************************************************")
+                                                    self.logger.info("Finished more restricted validation. Container for image: %s was hardened SUCCESSFULLY!", self.name)
+                                                    self.logger.info("************************************************************************************")
+                                                    self.restrictedDebloatStatus = True
+                                                    returnCode = 0
+                                                else:
+                                                    self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name)
+                                                    self.errorMessage= "Container was hardened with problems. Dies after running!"
+                                                    self.restrictedDebloatStatus = False
+                                                    returnCode = C.HSTOPS
+                                            else:
+                                                self.logger.warning("Container for image: %s was hardened (more restrictively) with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(restrictedLogs), originalLogs, restrictedLogs)
+                                                self.errorMessage = "Unknown problem in hardening (more restrictive) container!"
+                                                self.restrictedDebloatStatus = False
+                                                returnCode = C.HLOGLEN
+                                        else:
+                                            self.errorMessage = "Unknown problem in hardening container!"
+                                            self.logger.warning(self.errorMessage)
+                                            self.restrictedDebloatStatus = False
+                                            returnCode = C.HNORUN
+                                    else:
+                                        self.logger.warning("docker-entrypoint.wseccomp.sh has not been created, skipping the validation check of the more restrictive filters")
+                                else:
+                                    self.logger.warning("seccomp C program has not been created, skipping the validation check of the more restrictive filters")
+                            else:
+                                self.logger.warning("seccomp C program path not set, supposing not enabled, skipping more restrictive validation")
                         else:
                             self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name)
                             self.errorMessage= "Container was hardened with problems. Dies after running!"
@@ -804,6 +881,12 @@ class ContainerProfiler():
                         returnCode = C.HLOGLEN
                     if ( self.isDependent ):
                         self.logger.info("Not killing container: %s because it is a dependent for hardening another container", self.name)
+                    elif ( myRestrictedContainer ):
+                        if ( not myRestrictedContainer.kill() and self.restrictedDebloatStatus ):
+                            self.logger.warning("Restricted container can't be killed even though successfully hardened! Hardening has been unsuccessfull!")
+                            self.errorMessage = "Restricted container can't be killed even though successfully hardened! Hardening has been unsuccessfull!"
+                            self.restrictedDebloatStatus = False
+                            returnCode = C.HNOKILL
                     else:
                         if ( not myContainer.kill() and self.debloatStatus ):
                             self.logger.warning("Container can't be killed even though successfully hardened! Hardening has been unsuccessfull!")
@@ -814,9 +897,51 @@ class ContainerProfiler():
                     self.errorMessage = "Unknown problem in hardening container!"
                     returnCode = C.HNORUN
                 if ( not self.isDependent ):
-                    self.logger.debug(str(myContainer.delete()))
+                    if ( myRestrictedContainer ):
+                        self.logger.debug(str(myRestrictedContainer.delete()))
+                    else:
+                        self.logger.debug(str(myContainer.delete()))
         return returnCode
 
+    def compileSeccompCProgram(self, inputPath, outputPath):
+        cmd = "gcc -o {} {}"
+        cmd = cmd.format(outputPath, inputPath)
+        self.logger.debug("generating Seccomp C program using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error generating seccomp C program: %s", err)
+            return False
+        return True
+
+    def generateModifiedEntrypointScript(self, inputPath, outputPath, cProgramFileName):
+        pathInContainer = "/home/confine"
+        cProgramPath = pathInContainer + "/" + cProgramFileName
+        cProgramPath = cProgramPath.replace("/", "\/")
+        cmd = "sed 's/exec \"$@\"/" + cProgramPath + "/g' " + inputPath + " >> " + outputPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        cmd = "sudo chmod +x {}"
+        cmd = cmd.format(outputPath)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.wseccomp.sh permission: %s", err)
+            return False
+        return True
+
+    def generateRestrictiveOptions(self, tempOutputFolder, entrypointScriptFileName):
+        #sudo docker run -v /library/path/in/local/:/home/test -td --entrypoint /home/test/docker-entrypoint.sh nginx
+        pathInContainer = "/home/confine"
+        entrypointScriptPath = pathInContainer + "/" + entrypointScriptFileName
+        tempOutputFolder = os.getcwd() + "/" + tempOutputFolder
+        options = self.options
+        options = options + " -v {}:{} " + " --entrypoint {}"
+        options = options.format(tempOutputFolder, pathInContainer, entrypointScriptPath)
+        self.logger.debug("using restrictive options to run container: %s", options)
+        return options
 
     def createFineGrainedSeccompProfile(self, tempOutputFolder, resultsFolder):
         self.logger.debug("tempOutputFolder: %s", tempOutputFolder)
