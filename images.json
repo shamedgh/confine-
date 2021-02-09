@@ -19,7 +19,7 @@
         "docker-cmd": [
             "couchbase-server"
         ],
-        "docker-path": "/home/test/couchbase-server",
+        "docker-path": "/home/confine/couchbase-server",
         "entrypoint": "entrypoint.sh"
     },
     "redis": {
@@ -41,7 +41,7 @@
         "docker-cmd": [
             "redis-server"
         ],
-        "docker-path": "/home/test/redis-server",
+        "docker-path": "/home/confine/redis-server",
         "entrypoint": "docker-entrypoint.sh"
     },
     "mongo": {
@@ -87,7 +87,7 @@
             "-e", 
             "POSTGRES_PASSWORD=password"
         ],
-        "docker-path": "/home/test/postgres",
+        "docker-path": "/home/confine/postgres",
         "entrypoint": "docker-entrypoint.sh"
     },
     "nginx": {
@@ -215,7 +215,7 @@
         "docker-cmd": [
             "node"
         ],
-        "docker-path": "/home/test/node",
+        "docker-path": "/home/confine/node",
         "entrypoint": "docker-entrypoint.sh"
     },
     "registry": {
@@ -239,7 +239,7 @@
         "docker-cmd": [
             "registry"
         ],
-        "docker-path": "/home/test/registry",
+        "docker-path": "/home/confine/registry",
         "entrypoint": "entrypoint.sh"
     },
     "traefik": {
@@ -261,7 +261,7 @@
         "docker-cmd": [
             "traefik"
         ],
-        "docker-path": "/home/test/traefik",
+        "docker-path": "/home/confine/traefik",
         "entrypoint": "entrypoint.sh"
     },
     "consul": {
@@ -289,7 +289,7 @@
             "-client",
             "0.0.0.0"
         ],
-        "docker-path": "/home/test/consul",
+        "docker-path": "/home/confine/consul",
         "entrypoint": "docker-entrypoint.sh"
     },
     "mariadb": {
@@ -312,7 +312,7 @@
         "docker-cmd": [
             "mysqld"
         ],
-        "docker-path": "/home/test/mysqld",
+        "docker-path": "/home/confine/mysqld",
         "entrypoint": "docker-entrypoint.sh"
     },
     "influxdb": {
@@ -334,7 +334,7 @@
         "docker-cmd": [
             "influxd"
         ],
-        "docker-path": "/home/test/influxd",
+        "docker-path": "/home/confine/influxd",
         "entrypoint": "entrypoint.sh"
     },
     "tomcat": {
@@ -357,7 +357,7 @@
             "catalina.sh",
             "run"
         ],
-        "docker-path": "/home/test/catalina.sh",
+        "docker-path": "/home/confine/catalina.sh",
         "entrypoint": ""
     },
     "php": {
@@ -380,7 +380,7 @@
         "docker-cmd": [
             "php"
         ],
-        "docker-path": "/home/test/php",
+        "docker-path": "/home/confine/php",
         "entrypoint": "docker-php-entrypoint"
     },
     "logstash": {
@@ -402,7 +402,7 @@
         "docker-cmd": [
             "logstash:7.10.2"
         ],
-        "docker-path": "/home/test/logstash",
+        "docker-path": "/home/confine/logstash",
         "entrypoint": "docker-entrypoint"
     },
     "cassandra": {
@@ -425,7 +425,7 @@
             "cassandra",
             "-f"
         ],
-        "docker-path": "/home/test/cassandra",
+        "docker-path": "/home/confine/cassandra",
         "entrypoint": "docker-entrypoint.sh"
     },
     "telegraf": {
@@ -448,7 +448,7 @@
         "docker-cmd": [
             "telegraf"
         ],
-        "docker-path": "/home/test/telegraf",
+        "docker-path": "/home/confine/telegraf",
         "entrypoint": "entrypoint.sh"
     },
     "solr": {
@@ -476,7 +476,7 @@
             "-p",
             "8983:8983"
         ],
-        "docker-path": "/home/test/solr",
+        "docker-path": "/home/confine/solr",
         "entrypoint": "docker-entrypoint.sh"
     },
     "eclipse-mosquitto": {
@@ -498,7 +498,7 @@
         "docker-cmd": [
             "mosquitto"
         ],
-        "docker-path": "/home/test/mosquitto",
+        "docker-path": "/home/confine/mosquitto",
         "entrypoint": "docker-entrypoint.sh"
     },
     "vault": {
@@ -523,7 +523,7 @@
             "server",
             "dev"
         ],
-        "docker-path": "/home/test/vault",
+        "docker-path": "/home/confine/vault",
         "entrypoint": "docker-entrypoint.sh"
     },
     "perl": {
@@ -546,7 +546,7 @@
         "docker-cmd": [
             "perl5.32.1"
         ],
-        "docker-path": "/home/test/perl5.32.1",
+        "docker-path": "/home/confine/perl5.32.1",
         "entrypoint": ""
     },
     "percona": {
@@ -569,7 +569,7 @@
         "docker-cmd": [
             "mysqld"
         ],
-        "docker-path": "/home/test/mysqld",
+        "docker-path": "/home/confine/mysqld",
         "entrypoint": "docker-entrypoint.sh"
     },
     "nats": {
@@ -593,7 +593,7 @@
         "docker-cmd": [
             "nats-server"
         ],
-        "docker-path": "/home/test/natsserver",
+        "docker-path": "/home/confine/natsserver",
         "entrypoint": ""
     }
 }
