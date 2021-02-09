@@ -1,6 +1,6 @@
 {
     "couchbase": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "couchbase",
         "image-url": "couchbase",
         "category": [
@@ -12,10 +12,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "5"
+        "id": "5",
+        "binaries": [
+            "couchbase-server"
+        ],
+        "docker-cmd": [
+            "couchbase-server"
+        ],
+        "docker-path": "/home/test/couchbase-server",
+        "entrypoint": "entrypoint.sh"
     },
     "redis": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "redis",
         "image-url": "redis",
         "category": [
@@ -33,10 +41,11 @@
         "docker-cmd": [
             "redis-server"
         ],
-        "docker-path": "/home/test/redis-server"
+        "docker-path": "/home/test/redis-server",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "mongo": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "mongo",
         "image-url": "mongo",
         "category": [
@@ -54,10 +63,11 @@
         "docker-cmd": [
             "mongod"
         ],
-        "docker-path": "/home/confine/mongod"
+        "docker-path": "/home/confine/mongod",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "postgres": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "postgres",
         "image-url": "postgres",
         "category": [
@@ -77,10 +87,11 @@
             "-e", 
             "POSTGRES_PASSWORD=password"
         ],
-        "docker-path": "/home/test/postgres"
+        "docker-path": "/home/test/postgres",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "nginx": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "nginx",
         "image-url": "nginx",
         "category": [
@@ -100,10 +111,11 @@
             "-g",
             "daemon off;"
         ],
-        "docker-path": "/home/confine/nginx"
+        "docker-path": "/home/confine/nginx",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "mysql": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "mysql",
         "image-url": "mysql",
         "category": [
@@ -121,10 +133,11 @@
         "docker-cmd": [
             "mysql"
         ],
-        "docker-path": "/home/confine/mysql"
+        "docker-path": "/home/confine/mysql",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "httpd": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "httpd",
         "image-url": "httpd",
         "binaries": [
@@ -136,10 +149,11 @@
             "-D", 
             "FOREGROUND"
         ],
-        "docker-path": "/home/confine/httpd"
+        "docker-path": "/home/confine/httpd",
+        "entrypoint": ""
     },
     "memcached": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "memcached",
         "image-url": "memcached",
         "category": [
@@ -157,10 +171,11 @@
         "docker-cmd": [
             "memcached"
         ],
-        "docker-path": "/home/confine/memcached"
+        "docker-path": "/home/confine/memcached",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "wordpress": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "wordpress",
         "image-url": "wordpress",
         "category": [
@@ -182,7 +197,7 @@
         "id": "38"
     },
     "node": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "node",
         "image-url": "node",
         "category": [
@@ -200,10 +215,11 @@
         "docker-cmd": [
             "node"
         ],
-        "docker-path": "/home/test/node"
+        "docker-path": "/home/test/node",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "registry": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "registry",
         "image-url": "registry",
         "category": [
@@ -223,10 +239,11 @@
         "docker-cmd": [
             "registry"
         ],
-        "docker-path": "/home/test/registry"
+        "docker-path": "/home/test/registry",
+        "entrypoint": "entrypoint.sh"
     },
     "traefik": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "traefik",
         "image-url": "traefik",
         "category": [
@@ -244,10 +261,11 @@
         "docker-cmd": [
             "traefik"
         ],
-        "docker-path": "/home/test/traefik"
+        "docker-path": "/home/test/traefik",
+        "entrypoint": "entrypoint.sh"
     },
     "consul": {
-        "enable": "false",
+        "enable": "true",
         "reason": "runs two programs, consul and dumb-init. might have problems, but should look into it",
         "image-name": "consul",
         "image-url": "consul",
@@ -265,12 +283,17 @@
             "consul"
         ],
         "docker-cmd": [
-            "consul"
+            "consul",
+            "agent",
+            "-dev",
+            "-client",
+            "0.0.0.0"
         ],
-        "docker-path": "/home/test/consul"
+        "docker-path": "/home/test/consul",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "mariadb": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "mariadb",
         "image-url": "mariadb",
         "category": [
@@ -283,15 +306,17 @@
         "dependencies": {},
         "id": "24",
         "binaries": [
-            "mariadbd"
+            "mariadbd",
+            "mysqld"
         ],
         "docker-cmd": [
-            "mariadbd"
+            "mysqld"
         ],
-        "docker-path": "/home/test/mariadbd"
+        "docker-path": "/home/test/mysqld",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "influxdb": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "influxdb",
         "image-url": "influxdb",
         "category": [
@@ -309,10 +334,11 @@
         "docker-cmd": [
             "influxd"
         ],
-        "docker-path": "/home/test/influxd"
+        "docker-path": "/home/test/influxd",
+        "entrypoint": "entrypoint.sh"
     },
     "tomcat": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "tomcat",
         "image-url": "tomcat",
         "category": [
@@ -331,10 +357,11 @@
             "catalina.sh",
             "run"
         ],
-        "docker-path": "/home/test/catalina.sh"
+        "docker-path": "/home/test/catalina.sh",
+        "entrypoint": ""
     },
     "php": {
-        "enable": "false",
+        "enable": "true",
         "reason": "vanilla installation, but runs php interpreter (might be worth looking into)",
         "image-name": "php",
         "image-url": "php",
@@ -353,10 +380,11 @@
         "docker-cmd": [
             "php"
         ],
-        "docker-path": "/home/test/php"
+        "docker-path": "/home/test/php",
+        "entrypoint": "docker-php-entrypoint"
     },
     "logstash": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "logstash",
         "image-url": "logstash:7.1.0",
         "category": [
@@ -372,12 +400,13 @@
             "logstash"
         ],
         "docker-cmd": [
-            "logstash"
+            "logstash:7.10.2"
         ],
-        "docker-path": "/home/test/logstash"
+        "docker-path": "/home/test/logstash",
+        "entrypoint": "docker-entrypoint"
     },
     "cassandra": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "cassandra",
         "image-url": "cassandra",
         "category": [
@@ -390,15 +419,17 @@
         "dependencies": {},
         "id": "46",
         "binaries": [
-            "logstash"
+            "cassandra"
         ],
         "docker-cmd": [
-            "logstash"
+            "cassandra",
+            "-f"
         ],
-        "docker-path": "/home/test/logstash"
+        "docker-path": "/home/test/cassandra",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "telegraf": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "telegraf",
         "image-url": "telegraf",
         "category": [
@@ -417,10 +448,11 @@
         "docker-cmd": [
             "telegraf"
         ],
-        "docker-path": "/home/test/telegraf"
+        "docker-path": "/home/test/telegraf",
+        "entrypoint": "entrypoint.sh"
     },
     "solr": {
-        "enable": "false",
+        "enable": "true",
         "reason": "based on java, runs another program with tini",
         "image-name": "solr",
         "image-url": "solr",
@@ -444,10 +476,11 @@
             "-p",
             "8983:8983"
         ],
-        "docker-path": "/home/test/solr"
+        "docker-path": "/home/test/solr",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "eclipse-mosquitto": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "eclipse-mosquitto",
         "image-url": "eclipse-mosquitto",
         "category": [
@@ -465,10 +498,11 @@
         "docker-cmd": [
             "mosquitto"
         ],
-        "docker-path": "/home/test/mosquitto"
+        "docker-path": "/home/test/mosquitto",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "vault": {
-        "enable": "false",
+        "enable": "true",
         "reason": "runs dumb-init and vault binary",
         "image-name": "vault",
         "image-url": "vault",
@@ -485,12 +519,15 @@
             "vault"
         ],
         "docker-cmd": [
-            "vault"
+            "vault",
+            "server",
+            "dev"
         ],
-        "docker-path": "/home/test/vault"
+        "docker-path": "/home/test/vault",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "perl": {
-        "enable": "false",
+        "enable": "true",
         "reason": "runs perl interpreter with an argument",
         "image-name": "perl",
         "image-url": "perl",
@@ -502,10 +539,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "62"
+        "id": "62",
+        "binaries": [
+            "perl5.32.1"
+        ],
+        "docker-cmd": [
+            "perl5.32.1"
+        ],
+        "docker-path": "/home/test/perl5.32.1",
+        "entrypoint": ""
     },
     "percona": {
-        "enable": "false",
+        "enable": "true",
         "reason": "should be the same as mysqld, since it's a fork of the same repo, but we'll still consider it",
         "image-name": "percona",
         "image-url": "percona",
@@ -517,7 +562,15 @@
         "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
         "args": "",
         "dependencies": {},
-        "id": "64"
+        "id": "64",
+        "binaries": [
+            "mysqld"
+        ],
+        "docker-cmd": [
+            "mysqld"
+        ],
+        "docker-path": "/home/test/mysqld",
+        "entrypoint": "docker-entrypoint.sh"
     },
     "nats": {
         "enable": "true",
@@ -533,6 +586,14 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "68"
+        "id": "68",
+        "binaries": [
+            "nats-server"
+        ],
+        "docker-cmd": [
+            "nats-server"
+        ],
+        "docker-path": "/home/test/natsserver",
+        "entrypoint": ""
     }
 }
