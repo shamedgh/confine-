@@ -1031,6 +1031,7 @@
     },
     "flink": {
         "enable": "false",
+        "reason": "didn't work with confine",
         "image-name": "flink",
         "image-url": "flink",
         "category": [
@@ -1044,7 +1045,7 @@
         "id": "69"
     },
     "groovy": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "groovy",
         "image-url": "groovy",
         "category": [
@@ -1055,10 +1056,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "70"
+        "id": "70",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "groovysh"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/groovysh"
     },
     "nats-streaming": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "nats-streaming",
         "image-url": "nats-streaming",
         "category": [
@@ -1069,10 +1078,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "71"
+        "id": "71",
+        "binaries": [
+            "nats-streaming"
+        ],
+        "docker-cmd": [
+            "nats-streaming"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/nats-streaming"
     },
     "jruby": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "jruby",
         "image-url": "jruby",
         "category": [
@@ -1083,10 +1100,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "72"
+        "id": "72",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "irb"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/jruby"
     },
     "rethinkdb": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "rethinkdb",
         "image-url": "rethinkdb",
         "category": [
@@ -1097,10 +1122,20 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "73"
+        "id": "73",
+        "binaries": [
+            "rethinkdb"
+        ],
+        "docker-cmd": [
+            "rethinkdb",
+            "--bind",
+            "all"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/rethinkdb"
     },
     "adminer": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "adminer",
         "image-url": "adminer",
         "category": [
@@ -1111,10 +1146,23 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "74"
+        "id": "74",
+        "binaries": [
+            "php"
+        ],
+        "docker-cmd": [
+            "php",
+            "-S",
+            "[::]:8080",
+            "-t",
+            "/var/www/html"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/adminer"
     },
     "fedora": {
         "enable": "false",
+        "reason": "vanilla distribution, doesn't run anything",
         "image-name": "fedora",
         "image-url": "fedora",
         "category": [
@@ -1129,7 +1177,7 @@
         "id": "75"
     },
     "zookeeper": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "zookeeper",
         "image-url": "zookeeper",
         "category": [
@@ -1141,10 +1189,19 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "76"
+        "id": "76",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "zkServer.sh",
+            "start-foreground"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/zookeeper"
     },
     "pypy": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "pypy",
         "image-url": "pypy",
         "category": [
@@ -1155,10 +1212,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "77"
+        "id": "77",
+        "binaries": [
+            "pypy3"
+        ],
+        "docker-cmd": [
+            "pypy3"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/pypy"
     },
     "kapacitor": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "kapacitor",
         "image-url": "kapacitor",
         "category": [
@@ -1172,10 +1237,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "78"
+        "id": "78",
+        "binaries": [
+            "kapacitord"
+        ],
+        "docker-cmd": [
+            "kapacitord"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/kapacitor"
     },
     "jetty": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "jetty",
         "image-url": "jetty",
         "category": [
@@ -1186,10 +1259,20 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "79"
+        "id": "79",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "java",
+            "-jar",
+            "/usr/local/jetty/start.jar"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/jetty"
     },
     "websphere-liberty": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "websphere-liberty",
         "image-url": "websphere-liberty",
         "category": [
@@ -1200,10 +1283,21 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "80"
+        "id": "80",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "/opt/ibm/wlp/bin/server",
+            "run",
+            "defaultServer"
+        ],
+        "entrypoint": "/opt/ibm/helpers/runtime/docker-server.sh",
+        "docker-path": "/home/confine/websphere-liberty"
     },
     "erlang": {
         "enable": "false",
+        "reason": "similar to couchbase, should look into, maybe we can find a solution. mostly for programs written with erlang",
         "image-name": "erlang",
         "image-url": "erlang",
         "category": [
@@ -1218,6 +1312,7 @@
     },
     "ibm-websphere-liberty": {
         "enable": "false",
+        "reason": "needs login, omit for now",
         "image-name": "ibm-websphere-liberty",
         "image-url": "store/ibmcorp/websphere-liberty:microProfile2",
         "category": [
@@ -1233,6 +1328,7 @@
     },
     "redmine": {
         "enable": "false",
+        "reason": "similar to couchbase, runs multiple programs",
         "image-name": "redmine",
         "image-url": "redmine",
         "category": [
@@ -1246,7 +1342,8 @@
         "id": "83"
     },
     "matomo": {
-        "enable": "false",
+        "enable": "true",
+        "reason": "executes httpd, don't know if we should apply technique to these type of images",
         "image-name": "matomo",
         "image-url": "matomo",
         "category": [
@@ -1257,10 +1354,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "84"
+        "id": "84",
+        "binaries": [
+            "apache"
+        ],
+        "docker-cmd": [
+            "apache2-foreground"
+        ],
+        "entrypoint": "/entrypoint.sh",
+        "docker-path": "/home/confine/matome"
     },
     "mongo-express": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "mongo-express",
         "image-url": "mongo-express",
         "category": [
@@ -1272,10 +1377,19 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "85"
+        "id": "85",
+        "binaries": [
+            "node"
+        ],
+        "docker-cmd": [
+            "mongo-express"
+        ],
+        "entrypoint": "/docker-entrypoint.sh",
+        "docker-path": "/home/confine/mongo-express"
     },
     "teamspeak": {
         "enable": "false",
+        "reason": "doesn't work in confine either",
         "image-name": "teamspeak",
         "image-url": "teamspeak",
         "category": [
@@ -1289,7 +1403,7 @@
         "id": "86"
     },
     "iojs": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "iojs",
         "image-url": "iojs",
         "category": [
@@ -1300,10 +1414,19 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "87"
+        "id": "87",
+        "binaries": [
+            "iojs"
+        ],
+        "docker-cmd": [
+            "iojs"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/iojs"
     },
     "swift": {
         "enable": "false",
+        "reason": "doesn't run anything",
         "image-name": "swift",
         "image-url": "swift",
         "category": [
@@ -1319,6 +1442,7 @@
     },
     "elixir": {
         "enable": "false",
+        "reason": "similar to couchbase, should look into, maybe we can find a solution. mostly for programs written with erlang",
         "image-name": "elixir",
         "image-url": "elixir",
         "category": [
@@ -1333,6 +1457,7 @@
     },
     "composer": {
         "enable": "false",
+        "reason": "doesn't work in confine either",
         "image-name": "composer",
         "image-url": "composer",
         "category": [
@@ -1347,6 +1472,7 @@
     },
     "mono": {
         "enable": "false",
+        "reason": "doesn't run anything",
         "image-name": "mono",
         "image-url": "mono",
         "category": [
@@ -1360,7 +1486,7 @@
         "id": "91"
     },
     "tomee": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "tomee",
         "image-url": "tomee",
         "category": [
@@ -1371,10 +1497,19 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "92"
+        "id": "92",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "catalina.sh",
+            "run"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/tomee"
     },
     "django": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "django",
         "image-url": "django",
         "category": [
@@ -1385,10 +1520,18 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "93"
+        "id": "93",
+        "binaries": [
+            "python3"
+        ],
+        "docker-cmd": [
+            "python3"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/django"
     },
     "piwik": {
-        "enable": "false",
+        "enable": "true",
         "image-name": "piwik",
         "image-url": "piwik",
         "category": [
@@ -1399,10 +1542,19 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "94"
+        "id": "94",
+        "binaries": [
+            "apache2"
+        ],
+        "docker-cmd": [
+            "apache2-foreground"
+        ],
+        "entrypoint": "/entrypoint.sh",
+        "docker-path": "/home/confine/piwik"
     },
     "haxe": {
         "enable": "false",
+        "reason": "doesn't work in confine either",
         "image-name": "haxe",
         "image-url": "haxe",
         "category": [
@@ -1417,6 +1569,7 @@
     },
     "rust": {
         "enable": "false",
+        "reason": "doesn't run anything",
         "image-name": "rust",
         "image-url": "rust",
         "category": [
@@ -1431,6 +1584,7 @@
     },
     "xwiki": {
         "enable": "false",
+        "reason": "runs multiple programs",
         "image-name": "xwiki",
         "image-url": "xwiki",
         "category": [
@@ -1445,6 +1599,7 @@
     },
     "odoo": {
         "enable": "false",
+        "reason": "dies after waiting for postgresql, has dependency, skip for now",
         "image-name": "odoo",
         "image-url": "odoo",
         "category": [
@@ -1459,6 +1614,7 @@
     },
     "arangodb": {
         "enable": "false",
+        "reason": "doesn't work in confine either",
         "image-name": "arangodb",
         "image-url": "arangodb",
         "category": [
@@ -1473,6 +1629,7 @@
     },
     "znc": {
         "enable": "false",
+        "reason": "doesn't work in confine either",
         "image-name": "znc",
         "image-url": "znc",
         "category": [
