@@ -507,6 +507,10 @@ class ContainerProfiler():
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
                     binaryPaths = os.listdir(tempOutputFolder)
                     self.logger.info("self.name: %s", self.name)
+
+                    existSet = set()
+                    missingSet = set()
+
                     for binary in binaryPaths:
                         self.logger.info("binary/library: %s", binary)
                         if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
@@ -516,12 +520,39 @@ class ContainerProfiler():
                             piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
                             procLibrarySet = binaryToLibraryDict.get(binary, set())
                             procLibraryDict = util.convertLibrarySetToDict(procLibrarySet)
-                            binarySyscalls = piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
+                            binarySyscalls, callgraphExists, callgraphMissing = piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
                             allSyscallsFineGrain.update(binarySyscalls)
                             if binary in self.imageBinaryFiles:
                                 libSyscalls.update(binarySyscalls)
+
+                            existSet.update(callgraphExists)
+                            missingSet.update(callgraphMissing)
                         else:
                             self.logger.info("Skipped library: %s", binary)
+
+                    libVerFile = open("lib-ver.csv", 'a+')
+                    for libVer in existSet:
+                        libSplit = libVer.split(".so.")
+                        libName = libSplit[0]
+                        libVersion = ""
+                        if len(libSplit) > 1:
+                            libVersion = libSplit[-1]
+                        libVerFile.write(f"{libName},{libVersion},yes\n")
+                    for libVer in missingSet:
+                        libSplit = libVer.split(".so.")
+                        libName = libSplit[0]
+                        libVersion = ""
+                        if len(libSplit) > 1:
+                            libVersion = libSplit[-1]
+                        else:
+                            libName = libName.split(".so")[0]
+                        libVerFile.write(f"{libName},{libVersion},no\n")
+                    libVerFile.close()
+
+                    # self.logger.info("==========================")
+                    self.logger.info(f"Callgraph Exists: {list(existSet)}")
+                    self.logger.info(f"Callgraph Missing: {list(missingSet)}")
+                    # self.logger.info("==========================")
 
                     self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")

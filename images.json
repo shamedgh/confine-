@@ -33,7 +33,7 @@
         "docker-cmd": [
             "redis-server"
         ],
-        "docker-path": "redis-server"
+        "docker-path": "/home/test/redis-server"
     },
     "mongo": {
         "enable": "false",
@@ -57,7 +57,7 @@
         "docker-path": "/home/test/mongod"
     },
     "postgres": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "postgres",
         "image-url": "postgres",
         "category": [
@@ -76,10 +76,11 @@
             "postgres", 
             "-e", 
             "POSTGRES_PASSWORD=password"
-        ]
+        ],
+        "docker-path": "/home/test/postgres"
     },
     "nginx": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "nginx",
         "image-url": "nginx",
         "category": [
@@ -102,7 +103,7 @@
         "docker-path": "/home/test/nginx"
     },
     "mysql": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "mysql",
         "image-url": "mysql",
         "category": [
@@ -123,7 +124,7 @@
         "docker-path": "/home/test/mysql"
     },
     "httpd": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "httpd",
         "image-url": "httpd",
         "binaries": [
@@ -138,7 +139,7 @@
         "docker-path": "/home/test/httpd"
     },
     "memcached": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "memcached",
         "image-url": "memcached",
         "category": [
@@ -179,5 +180,359 @@
             }
         },
         "id": "38"
+    },
+    "node": {
+        "enable": "false",
+        "image-name": "node",
+        "image-url": "node",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 928800368,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "13",
+        "binaries": [
+            "node"
+        ],
+        "docker-cmd": [
+            "node"
+        ],
+        "docker-path": "/home/test/node"
+    },
+    "registry": {
+        "enable": "false",
+        "image-name": "registry",
+        "image-url": "registry",
+        "category": [
+            "FeaturedImages",
+            "Storage",
+            "ApplicationServices"
+        ],
+        "pull-count": 686700906,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "18",
+        "binaries": [
+            "registry"
+        ],
+        "docker-cmd": [
+            "registry"
+        ],
+        "docker-path": "/home/test/registry"
+    },
+    "traefik": {
+        "enable": "false",
+        "image-name": "traefik",
+        "image-url": "traefik",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 778939787,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "19",
+        "binaries": [
+            "traefik"
+        ],
+        "docker-cmd": [
+            "traefik"
+        ],
+        "docker-path": "/home/test/traefik"
+    },
+    "consul": {
+        "enable": "false",
+        "reason": "runs two programs, consul and dumb-init. might have problems, but should look into it",
+        "image-name": "consul",
+        "image-url": "consul",
+        "category": [
+            "ApplicationInfrastructure",
+            "DevOpsTools"
+        ],
+        "pull-count": 434570502,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "23",
+        "binaries": [
+            "consul"
+        ],
+        "docker-cmd": [
+            "consul"
+        ],
+        "docker-path": "/home/test/consul"
+    },
+    "mariadb": {
+        "enable": "false",
+        "image-name": "mariadb",
+        "image-url": "mariadb",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 604169326,
+        "official": true,
+        "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
+        "args": "",
+        "dependencies": {},
+        "id": "24",
+        "binaries": [
+            "mariadbd"
+        ],
+        "docker-cmd": [
+            "mariadbd"
+        ],
+        "docker-path": "/home/test/mariadbd"
+    },
+    "influxdb": {
+        "enable": "false",
+        "image-name": "influxdb",
+        "image-url": "influxdb",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 244057690,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "31",
+        "binaries": [
+            "influxd"
+        ],
+        "docker-cmd": [
+            "influxd"
+        ],
+        "docker-path": "/home/test/influxd"
+    },
+    "tomcat": {
+        "enable": "false",
+        "image-name": "tomcat",
+        "image-url": "tomcat",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 181905298,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "35",
+        "binaries": [
+            "catalina.sh"
+        ],
+        "docker-cmd": [
+            "catalina.sh",
+            "run"
+        ],
+        "docker-path": "/home/test/catalina.sh"
+    },
+    "php": {
+        "enable": "false",
+        "reason": "vanilla installation, but runs php interpreter (might be worth looking into)",
+        "image-name": "php",
+        "image-url": "php",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 369323123,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "36",
+        "binaries": [
+            "php"
+        ],
+        "docker-cmd": [
+            "php"
+        ],
+        "docker-path": "/home/test/php"
+    },
+    "logstash": {
+        "enable": "false",
+        "image-name": "logstash",
+        "image-url": "logstash:7.1.0",
+        "category": [
+            "Analytics"
+        ],
+        "pull-count": 124276222,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "45",
+        "binaries": [
+            "logstash"
+        ],
+        "docker-cmd": [
+            "logstash"
+        ],
+        "docker-path": "/home/test/logstash"
+    },
+    "cassandra": {
+        "enable": "false",
+        "image-name": "cassandra",
+        "image-url": "cassandra",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 65206237,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "46",
+        "binaries": [
+            "logstash"
+        ],
+        "docker-cmd": [
+            "logstash"
+        ],
+        "docker-path": "/home/test/logstash"
+    },
+    "telegraf": {
+        "enable": "false",
+        "image-name": "telegraf",
+        "image-url": "telegraf",
+        "category": [
+            "DevOpsTools",
+            "Analytics"
+        ],
+        "pull-count": 125520750,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "47",
+        "binaries": [
+            "telegraf"
+        ],
+        "docker-cmd": [
+            "telegraf"
+        ],
+        "docker-path": "/home/test/telegraf"
+    },
+    "solr": {
+        "enable": "false",
+        "reason": "based on java, runs another program with tini",
+        "image-name": "solr",
+        "image-url": "solr",
+        "category": [
+            "Analytics",
+            "ApplicationServices"
+        ],
+        "pull-count": 43884862,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "55",
+        "binaries": [
+            "solr",
+            "solr-foreground",
+            "solr-fg"
+        ],
+        "docker-cmd": [
+            "solr",
+            "-p",
+            "8983:8983"
+        ],
+        "docker-path": "/home/test/solr"
+    },
+    "eclipse-mosquitto": {
+        "enable": "false",
+        "image-name": "eclipse-mosquitto",
+        "image-url": "eclipse-mosquitto",
+        "category": [
+            "ApplicationServices"
+        ],
+        "pull-count": 67988898,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "58",
+        "binaries": [
+            "mosquitto"
+        ],
+        "docker-cmd": [
+            "mosquitto"
+        ],
+        "docker-path": "/home/test/mosquitto"
+    },
+    "vault": {
+        "enable": "false",
+        "reason": "runs dumb-init and vault binary",
+        "image-name": "vault",
+        "image-url": "vault",
+        "category": [
+            "ApplicationServices"
+        ],
+        "pull-count": 67841457,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "59",
+        "binaries": [
+            "vault"
+        ],
+        "docker-cmd": [
+            "vault"
+        ],
+        "docker-path": "/home/test/vault"
+    },
+    "perl": {
+        "enable": "false",
+        "reason": "runs perl interpreter with an argument",
+        "image-name": "perl",
+        "image-url": "perl",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 55620666,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "62"
+    },
+    "percona": {
+        "enable": "false",
+        "reason": "should be the same as mysqld, since it's a fork of the same repo, but we'll still consider it",
+        "image-name": "percona",
+        "image-url": "percona",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 42267987,
+        "official": true,
+        "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
+        "args": "",
+        "dependencies": {},
+        "id": "64"
+    },
+    "nats": {
+        "enable": "true",
+        "reason": "seems to run a single server application, but can't connect to container to confirm. no bash available",
+        "image-name": "nats",
+        "image-url": "nats",
+        "category": [
+            "ApplicationServices",
+            "MessagingServices"
+        ],
+        "pull-count": 40137739,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "68"
     }
 }
