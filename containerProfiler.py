@@ -127,7 +127,8 @@ class ContainerProfiler():
             syscallSet, successCount, failCount = binAnalysis.extractDirectSyscalls()
             self.logger.debug("Successfull direct syscalls: %d list: %s, Failed direct syscalls: %d", successCount, str(syscallSet), failCount)
             #self.logger.warning("Failed syscalls: %d", failCount)
-            finalSyscallSet.update(syscallSet)
+            if ( syscallSet )
+                finalSyscallSet.update(syscallSet)
         return finalSyscallSet
 
     def extractAllImportedFunctions(self, folder, fileName):
@@ -527,9 +528,9 @@ class ContainerProfiler():
                             binarySyscalls= piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
 
                             binaryProfiler = binaryAnalysis.BinaryAnalysis(binaryPath, self.logger)
-                            directSyscallSet, successCount, failedCount  = binaryProfiler.extractDirectSyscalls()
-                            if ( directSyscallSet and len(directSyscallSet) > 0 ):
-                                binarySyscalls.update(directSyscallSet)
+                            binaryDirectSyscallSet, successCount, failedCount  = binaryProfiler.extractDirectSyscalls()
+                            if ( binaryDirectSyscallSet and len(binaryDirectSyscallSet) > 0 ):
+                                binarySyscalls.update(binaryDirectSyscallSet)
 
                             allSyscallsFineGrain.update(binarySyscalls)
                             if binary in self.imageBinaryFiles:
