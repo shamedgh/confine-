@@ -76,6 +76,9 @@ if __name__ == '__main__':
     parser.add_option("-b", "--binaryfolder", dest="binaryfolder", default=None, nargs=1,
                       help="Binary folder used to store all binaries")
 
+    parser.add_option("", "--popularappsfile", dest="popularappsfile", default=None, nargs=1,
+                      help="File which stores list of popular apps")
+
     parser.add_option("-d", "--debug", dest="debug", action="store_true", default=False,
                       help="Debug enabled/disabled")
 
@@ -83,6 +86,16 @@ if __name__ == '__main__':
     if isValidOpts(options):
         SEPARATOR = ";"
         rootLogger = setLogPath("containerstatgenerator.log")
+        
+        popularAppSet = set()
+        if ( options.popularappsfile ):
+            popularAppsFile = open(options.popularappsfile, 'r')
+            inputLine = popularAppsFile.readline()
+            while ( inputLine ):
+                popularAppSet.add(inputLine.strip())
+                inputLine = popularAppsFile.readline()
+            popularAppsFile.close()
+        print(popularAppSet)
 
         reportFilePopularityCdf = open(options.outputfolder + "/container.popularity.csv", 'w+')
         reportFilePopularityCdf.write("index" + SEPARATOR + "count\n")
@@ -136,6 +149,7 @@ if __name__ == '__main__':
         reportFileOrigCdf = open(options.outputfolder + "/container.cdf.orig.csv", 'w+')
         reportFileFineCdf = open(options.outputfolder + "/container.cdf.fine.csv", 'w+')
         reportFileRestrictiveCdf = open(options.outputfolder + "/container.cdf.restrictive.csv", 'w+')
+        reportFilePopularApps = open(options.outputfolder + "/container.popular.apps.csv", 'w+')
         #reportFileCdf.write("index" + SEPARATOR + "count\n")
         reportFileTop20Popularity = open(options.outputfolder + "/container.debloat.stats.top20.popularity.csv", 'w+')
         reportFileTop20Debloatable = open(options.outputfolder + "/container.debloat.stats.top20.debloatable.csv", 'w+')
@@ -174,6 +188,13 @@ if __name__ == '__main__':
                 syscallCountOrig = int(splittedLine[5])
                 syscallCountFine = int(splittedLine[6])
                 syscallCountRestrictive = int(splittedLine[7])
+                print ( "syscallCountOrig: " + syscallCountOrig)
+                if ( imageName in popularAppSet ):
+                    print( "imageName is found")
+                    reportFilePopularApps.write(imageName + SEPARATOR + syscallCountOrig + SEPARATOR + syscallCountFine + SEPARATOR + syscallCountRestrictive + "\n")
+                    reportFilePopularApps.flush()
+                else:
+                    print ( "imageName: " + imageName + " not found" )
                 debloatStatus = splittedLine[10] == "True"
                 langSetStr = splittedLine[15]
 
@@ -265,6 +286,7 @@ if __name__ == '__main__':
         reportFileOrigCdf.close()
         reportFileFineCdf.close()
         reportFileRestrictiveCdf.close()
+        reportFilePopularApps.close()
 
         rankIndex = 1
         i = 0
