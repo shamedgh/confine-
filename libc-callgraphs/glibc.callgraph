@@ -10794,6 +10794,7 @@ __libc_message  : syscall( 2 )
 _dl_get_origin  : syscall( 89 )
 __closedir  : syscall( 3 )
 __getdents  : syscall( 78 )
+__getdents  : syscall( 217 )
 opendir_tail  : syscall( 3 )
 __opendirat  : syscall( 257 )
 __opendir  : syscall( 2 )
@@ -11149,6 +11150,8 @@ sendfile : syscall ( 40 )
 sync_file_range : syscall ( 277 )
 getrlimit  :  __getrlimit
 __getrlimit : syscall ( 97 )
+__getrlimit : syscall ( 302 )
+__setrlimit : syscall ( 302 )
 getrlimit64  :  __getrlimit
 __getrlimit : syscall ( 97 )
 __getrlimit64  :  __getrlimit
