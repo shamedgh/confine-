@@ -1,4 +1,47 @@
 {
+    "oracle-database-enterprise-edition": {
+        "enable": "true",
+        "image-name": "oracle-database-enterprise-edition",
+        "image-url": "store/oracle/database-enterprise:12.2.0.1",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 0,
+        "official": false,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "1"
+    },
+    "oracle-serverjre-8": {
+        "enable": "true",
+        "image-name": "oracle-serverjre-8",
+        "image-url": "store/oracle/serverjre:8",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 0,
+        "official": false,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "2"
+    },
+    "oracle-weblogic-server-12c": {
+        "enable": "true",
+        "image-name": "oracle-weblogic-server-12c",
+        "image-url": "store/oracle/weblogic:12.2.1.3-dev-190111",
+        "category": [
+            "ApplicationFrameworks",
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 0,
+        "official": false,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "4"
+    },
     "couchbase": {
         "enable": "false",
         "image-name": "couchbase",
@@ -12,7 +55,15 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "5"
+        "id": "5",
+        "binaries": [
+            "couchbase-server"
+        ],
+        "docker-cmd": [
+            "couchbase-server"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/couchbase-server"
     },
     "redis": {
         "enable": "false",
@@ -33,7 +84,8 @@
         "docker-cmd": [
             "redis-server"
         ],
-        "docker-path": "redis-server"
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/redis-server"
     },
     "mongo": {
         "enable": "false",
@@ -54,6 +106,7 @@
         "docker-cmd": [
             "mongod"
         ],
+        "entrypoint": "docker-entrypoint.sh",
         "docker-path": "/home/confine/mongod"
     },
     "postgres": {
@@ -76,10 +129,12 @@
             "postgres", 
             "-e", 
             "POSTGRES_PASSWORD=password"
-        ]
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/postgres"
     },
     "nginx": {
-        "enable": "true",
+        "enable": "false",
         "image-name": "nginx",
         "image-url": "nginx",
         "category": [
@@ -99,6 +154,7 @@
             "-g",
             "daemon off;"
         ],
+        "entrypoint": "docker-entrypoint.sh",
         "docker-path": "/home/confine/nginx"
     },
     "mysql": {
@@ -120,6 +176,7 @@
         "docker-cmd": [
             "mysql"
         ],
+        "entrypoint": "docker-entrypoint.sh",
         "docker-path": "/home/confine/mysql"
     },
     "httpd": {
@@ -135,6 +192,7 @@
             "-D", 
             "FOREGROUND"
         ],
+        "entrypoint": "",
         "docker-path": "/home/confine/httpd"
     },
     "memcached": {
@@ -156,28 +214,777 @@
         "docker-cmd": [
             "memcached"
         ],
+        "entrypoint": "docker-entrypoint.sh",
         "docker-path": "/home/confine/memcached"
     },
-    "wordpress": {
+    "node": {
         "enable": "false",
-        "image-name": "wordpress",
-        "image-url": "wordpress",
+        "image-name": "node",
+        "image-url": "node",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 928800368,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "13",
+        "binaries": [
+            "node"
+        ],
+        "docker-cmd": [
+            "node"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/node"
+    },
+    "registry": {
+        "enable": "false",
+        "image-name": "registry",
+        "image-url": "registry",
+        "category": [
+            "FeaturedImages",
+            "Storage",
+            "ApplicationServices"
+        ],
+        "pull-count": 686700906,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "18",
+        "binaries": [
+            "registry"
+        ],
+        "docker-cmd": [
+            "registry"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/registry"
+    },
+    "traefik": {
+        "enable": "false",
+        "image-name": "traefik",
+        "image-url": "traefik",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 778939787,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "19",
+        "binaries": [
+            "traefik"
+        ],
+        "docker-cmd": [
+            "traefik"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/traefik"
+    },
+    "consul": {
+        "enable": "false",
+        "reason": "runs two programs, consul and dumb-init. might have problems, but should look into it",
+        "image-name": "consul",
+        "image-url": "consul",
+        "category": [
+            "ApplicationInfrastructure",
+            "DevOpsTools"
+        ],
+        "pull-count": 434570502,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "23",
+        "binaries": [
+            "consul"
+        ],
+        "docker-cmd": [
+            "consul",
+            "agent",
+            "-dev",
+            "-client",
+            "0.0.0.0"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/consul"
+    },
+    "mariadb": {
+        "enable": "false",
+        "image-name": "mariadb",
+        "image-url": "mariadb",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 604169326,
+        "official": true,
+        "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
+        "args": "",
+        "dependencies": {},
+        "id": "24",
+        "binaries": [
+            "mariadbd",
+            "mysqld"
+        ],
+        "docker-cmd": [
+            "mysqld"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/mysqld"
+    },
+    "influxdb": {
+        "enable": "false",
+        "image-name": "influxdb",
+        "image-url": "influxdb",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 244057690,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "31",
+        "binaries": [
+            "influxd"
+        ],
+        "docker-cmd": [
+            "influxd"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/influxd"
+    },
+    "tomcat": {
+        "enable": "false",
+        "image-name": "tomcat",
+        "image-url": "tomcat",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 181905298,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "35",
+        "binaries": [
+            "catalina.sh"
+        ],
+        "docker-cmd": [
+            "catalina.sh",
+            "run"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/catalina.sh"
+    },
+    "php": {
+        "enable": "false",
+        "reason": "vanilla installation, but runs php interpreter (might be worth looking into)",
+        "image-name": "php",
+        "image-url": "php",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 369323123,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "36",
+        "binaries": [
+            "php"
+        ],
+        "docker-cmd": [
+            "php"
+        ],
+        "entrypoint": "docker-php-entrypoint",
+        "docker-path": "/home/confine/php"
+    },
+    "logstash": {
+        "enable": "false",
+        "image-name": "logstash",
+        "image-url": "logstash:7.1.0",
+        "category": [
+            "Analytics"
+        ],
+        "pull-count": 124276222,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "45",
+        "binaries": [
+            "logstash"
+        ],
+        "docker-cmd": [
+            "logstash:7.10.2"
+        ],
+        "entrypoint": "docker-entrypoint",
+        "docker-path": "/home/confine/logstash"
+    },
+    "cassandra": {
+        "enable": "false",
+        "image-name": "cassandra",
+        "image-url": "cassandra",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 65206237,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "46",
+        "binaries": [
+            "cassandra"
+        ],
+        "docker-cmd": [
+            "cassandra",
+            "-f"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/cassandra"
+    },
+    "telegraf": {
+        "enable": "false",
+        "image-name": "telegraf",
+        "image-url": "telegraf",
+        "category": [
+            "DevOpsTools",
+            "Analytics"
+        ],
+        "pull-count": 125520750,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "47",
+        "binaries": [
+            "telegraf"
+        ],
+        "docker-cmd": [
+            "telegraf"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/telegraf"
+    },
+    "solr": {
+        "enable": "false",
+        "reason": "based on java, runs another program with tini",
+        "image-name": "solr",
+        "image-url": "solr",
+        "category": [
+            "Analytics",
+            "ApplicationServices"
+        ],
+        "pull-count": 43884862,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "55",
+        "binaries": [
+            "solr",
+            "solr-foreground",
+            "solr-fg"
+        ],
+        "docker-cmd": [
+            "solr",
+            "-p",
+            "8983:8983"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/solr"
+    },
+    "eclipse-mosquitto": {
+        "enable": "false",
+        "image-name": "eclipse-mosquitto",
+        "image-url": "eclipse-mosquitto",
         "category": [
             "ApplicationServices"
         ],
-        "pull-count": 303530959,
+        "pull-count": 67988898,
         "official": true,
-        "options": "-e WORDPRESS_DB_PASSWORD=wpuser@ -p 80:80 -v /tmp/html:/var/www/html",
+        "options": "",
         "args": "",
-        "dependencies":
-        {
-            "mariadb": {
-                "image-name": "mysql",
-                "image-url": "mysql",
-                "options": "-e MYSQL_ROOT_PASSWORD=aqwe123 -e MYSQL_USER=wpuser -e MYSQL_PASSWORD=wpuser@ -e MYSQL_DATABASE=wordpress_db",
-                "link": true
-            }
-        },
-        "id": "38"
+        "dependencies": {},
+        "id": "58",
+        "binaries": [
+            "mosquitto"
+        ],
+        "docker-cmd": [
+            "mosquitto"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/mosquitto"
+    },
+    "vault": {
+        "enable": "false",
+        "reason": "runs dumb-init and vault binary",
+        "image-name": "vault",
+        "image-url": "vault",
+        "category": [
+            "ApplicationServices"
+        ],
+        "pull-count": 67841457,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "59",
+        "binaries": [
+            "vault"
+        ],
+        "docker-cmd": [
+            "vault",
+            "server",
+            "dev"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/vault"
+    },
+    "perl": {
+        "enable": "false",
+        "reason": "runs perl interpreter with an argument",
+        "image-name": "perl",
+        "image-url": "perl",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 55620666,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "62",
+        "binaries": [
+            "perl5.32.1"
+        ],
+        "docker-cmd": [
+            "perl5.32.1"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/perl5.32.1"
+    },
+    "percona": {
+        "enable": "false",
+        "reason": "should be the same as mysqld, since it's a fork of the same repo, but we'll still consider it",
+        "image-name": "percona",
+        "image-url": "percona",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 42267987,
+        "official": true,
+        "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
+        "args": "",
+        "dependencies": {},
+        "id": "64",
+        "binaries": [
+            "mysqld"
+        ],
+        "docker-cmd": [
+            "mysqld"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/mysqld"
+    },
+    "nats": {
+        "enable": "false",
+        "reason": "seems to run a single server application, but can't connect to container to confirm. no bash available",
+        "image-name": "nats",
+        "image-url": "nats",
+        "category": [
+            "ApplicationServices",
+            "MessagingServices"
+        ],
+        "pull-count": 40137739,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "68",
+        "binaries": [
+            "nats-server"
+        ],
+        "docker-cmd": [
+            "nats-server"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/natsserver"
+    },
+    "groovy": {
+        "enable": "true",
+        "image-name": "groovy",
+        "image-url": "groovy",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 37274600,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "70",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "groovysh"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/groovysh"
+    },
+    "nats-streaming": {
+        "enable": "true",
+        "image-name": "nats-streaming",
+        "image-url": "nats-streaming",
+        "category": [
+            ""
+        ],
+        "pull-count": 36490880,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "71",
+        "binaries": [
+            "nats-streaming"
+        ],
+        "docker-cmd": [
+            "nats-streaming"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/nats-streaming"
+    },
+    "jruby": {
+        "enable": "true",
+        "image-name": "jruby",
+        "image-url": "jruby",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 36018083,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "72",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "irb"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/jruby"
+    },
+    "rethinkdb": {
+        "enable": "true",
+        "image-name": "rethinkdb",
+        "image-url": "rethinkdb",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 44183816,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "73",
+        "binaries": [
+            "rethinkdb"
+        ],
+        "docker-cmd": [
+            "rethinkdb",
+            "--bind",
+            "all"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/rethinkdb"
+    },
+    "adminer": {
+        "enable": "true",
+        "image-name": "adminer",
+        "image-url": "adminer",
+        "category": [
+            "Databases"
+        ],
+        "pull-count": 44818209,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "74",
+        "binaries": [
+            "php"
+        ],
+        "docker-cmd": [
+            "php",
+            "-S",
+            "[::]:8080",
+            "-t",
+            "/var/www/html"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/adminer"
+    },
+    "zookeeper": {
+        "enable": "true",
+        "image-name": "zookeeper",
+        "image-url": "zookeeper",
+        "category": [
+            "ApplicationFrameworks",
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 41933621,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "76",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "zkServer.sh",
+            "start-foreground"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/zookeeper"
+    },
+    "pypy": {
+        "enable": "true",
+        "image-name": "pypy",
+        "image-url": "pypy",
+        "category": [
+            "ProgrammingLanguages"
+        ],
+        "pull-count": 19452616,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "77",
+        "binaries": [
+            "pypy3"
+        ],
+        "docker-cmd": [
+            "pypy3"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/pypy"
+    },
+    "kapacitor": {
+        "enable": "true",
+        "image-name": "kapacitor",
+        "image-url": "kapacitor",
+        "category": [
+            "DevOpsTools",
+            "ApplicationFrameworks",
+            "ApplicationInfrastructure",
+            "Monitoring"
+        ],
+        "pull-count": 16466766,
+        "official": false,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "78",
+        "binaries": [
+            "kapacitord"
+        ],
+        "docker-cmd": [
+            "kapacitord"
+        ],
+        "entrypoint": "entrypoint.sh",
+        "docker-path": "/home/confine/kapacitor"
+    },
+    "jetty": {
+        "enable": "true",
+        "image-name": "jetty",
+        "image-url": "jetty",
+        "category": [
+            "ApplicationInfrastructure"
+        ],
+        "pull-count": 20686724,
+        "official": false,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "79",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "java",
+            "-jar",
+            "/usr/local/jetty/start.jar"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/jetty"
+    },
+    "websphere-liberty": {
+        "enable": "true",
+        "image-name": "websphere-liberty",
+        "image-url": "websphere-liberty",
+        "category": [
+            ""
+        ],
+        "pull-count": 14026951,
+        "official": false,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "80",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "/opt/ibm/wlp/bin/server",
+            "run",
+            "defaultServer"
+        ],
+        "entrypoint": "/opt/ibm/helpers/runtime/docker-server.sh",
+        "docker-path": "/home/confine/websphere-liberty"
+    },
+    "matomo": {
+        "enable": "true",
+        "reason": "executes httpd, don't know if we should apply technique to these type of images",
+        "image-name": "matomo",
+        "image-url": "matomo",
+        "category": [
+            ""
+        ],
+        "pull-count": 12110556,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "84",
+        "binaries": [
+            "apache"
+        ],
+        "docker-cmd": [
+            "apache2-foreground"
+        ],
+        "entrypoint": "/entrypoint.sh",
+        "docker-path": "/home/confine/matome"
+    },
+    "mongo-express": {
+        "enable": "true",
+        "image-name": "mongo-express",
+        "image-url": "mongo-express",
+        "category": [
+            "DevOpsTools",
+            "ApplicationFrameworks"
+        ],
+        "pull-count": 21051070,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "85",
+        "binaries": [
+            "node"
+        ],
+        "docker-cmd": [
+            "mongo-express"
+        ],
+        "entrypoint": "/docker-entrypoint.sh",
+        "docker-path": "/home/confine/mongo-express"
+    },
+    "iojs": {
+        "enable": "true",
+        "image-name": "iojs",
+        "image-url": "iojs",
+        "category": [
+            ""
+        ],
+        "pull-count": 15837914,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "87",
+        "binaries": [
+            "iojs"
+        ],
+        "docker-cmd": [
+            "iojs"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/iojs"
+    },
+    "tomee": {
+        "enable": "true",
+        "image-name": "tomee",
+        "image-url": "tomee",
+        "category": [
+            "ApplicationFrameworks"
+        ],
+        "pull-count": 11025797,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "92",
+        "binaries": [
+            "java"
+        ],
+        "docker-cmd": [
+            "catalina.sh",
+            "run"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/tomee"
+    },
+    "django": {
+        "enable": "true",
+        "image-name": "django",
+        "image-url": "django",
+        "category": [
+            ""
+        ],
+        "pull-count": 16232876,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "93",
+        "binaries": [
+            "python3"
+        ],
+        "docker-cmd": [
+            "python3"
+        ],
+        "entrypoint": "",
+        "docker-path": "/home/confine/django"
+    },
+    "piwik": {
+        "enable": "true",
+        "image-name": "piwik",
+        "image-url": "piwik",
+        "category": [
+            "Analytics"
+        ],
+        "pull-count": 15401425,
+        "official": true,
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "94",
+        "binaries": [
+            "apache2"
+        ],
+        "docker-cmd": [
+            "apache2-foreground"
+        ],
+        "entrypoint": "/entrypoint.sh",
+        "docker-path": "/home/confine/piwik"
     }
 }

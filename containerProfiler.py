@@ -511,6 +511,10 @@ class ContainerProfiler():
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
                     binaryPaths = os.listdir(tempOutputFolder)
                     self.logger.info("self.name: %s", self.name)
+
+                    existSet = set()
+                    missingSet = set()
+
                     for binary in binaryPaths:
                         self.logger.info("binary/library: %s", binary)
                         if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
@@ -520,7 +524,7 @@ class ContainerProfiler():
                             piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
                             procLibrarySet = binaryToLibraryDict.get(binary, set())
                             procLibraryDict = util.convertLibrarySetToDict(procLibrarySet)
-                            binarySyscalls = piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
+                            binarySyscalls= piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
                             allSyscallsFineGrain.update(binarySyscalls)
                             if binary in self.imageBinaryFiles:
                                 libSyscalls.update(binarySyscalls)
@@ -690,7 +694,8 @@ class ContainerProfiler():
                     i = 1
                     while i < 400:
                         if i not in libSyscalls and syscallMap.get(i, None) and syscallMap[i] not in exceptList:
-                            denyListBinaryFineGrain.append(syscallMap[i])
+                            if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
+                                denyListBinaryFineGrain.append(syscallMap[i])
                         i += 1
                     self.logger.info("%s binary profile denylist: %s", self.name, str(len(denyListBinaryFineGrain)))
 
@@ -772,7 +777,7 @@ class ContainerProfiler():
                             self.logger.info("Finished validation. Container for image: %s was hardened SUCCESSFULLY!", self.name)
                             self.logger.info("************************************************************************************")
                             self.debloatStatus = True
-                            self.restrictedDebloatStatus = True
+                            self.restrictedDebloatStatus = False
                             returnCode = 0
 
                             # TODO validate the more restrictive filter here
@@ -822,14 +827,17 @@ class ContainerProfiler():
                                                 else:
                                                     self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name)
                                                     self.errorMessage= "Container was hardened with problems. Dies after running!"
+                                                    self.restrictedDebloatStatus = False
                                                     returnCode = C.HSTOPS
                                             else:
                                                 self.logger.warning("Container for image: %s was hardened (more restrictively) with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(restrictedLogs), originalLogs, restrictedLogs)
                                                 self.errorMessage = "Unknown problem in hardening (more restrictive) container!"
+                                                self.restrictedDebloatStatus = False
                                                 returnCode = C.HLOGLEN
                                         else:
                                             self.errorMessage = "Unknown problem in hardening container!"
                                             self.logger.warning(self.errorMessage)
+                                            self.restrictedDebloatStatus = False
                                             returnCode = C.HNORUN
                                     else:
                                         self.logger.warning("docker-entrypoint.wseccomp.sh has not been created, skipping the validation check of the more restrictive filters")
