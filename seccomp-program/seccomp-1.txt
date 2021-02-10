@@ -31,9 +31,6 @@ struct sock_filter filter[] = {
 
     BPF_STMT(BPF_LD+BPF_W+BPF_ABS, offsetof(struct seccomp_data, nr)),
 
-    Allow(prlimit64),
-    Allow(getdents64),
-    Allow(io_setup),
     Allow(exit_group),
     Allow(brk),
     Allow(mmap),

@@ -525,6 +525,12 @@ class ContainerProfiler():
                             procLibrarySet = binaryToLibraryDict.get(binary, set())
                             procLibraryDict = util.convertLibrarySetToDict(procLibrarySet)
                             binarySyscalls= piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
+
+                            binaryProfiler = binaryAnalysis.BinaryAnalysis(binaryPath, self.logger)
+                            directSyscallSet, successCount, failedCount  = binaryProfiler.extractDirectSyscalls()
+                            if ( directSyscallSet and len(directSyscallSet) > 0 ):
+                                binarySyscalls.update(directSyscallSet)
+
                             allSyscallsFineGrain.update(binarySyscalls)
                             if binary in self.imageBinaryFiles:
                                 libSyscalls.update(binarySyscalls)
