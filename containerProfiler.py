@@ -127,7 +127,7 @@ class ContainerProfiler():
             syscallSet, successCount, failCount = binAnalysis.extractDirectSyscalls()
             self.logger.debug("Successfull direct syscalls: %d list: %s, Failed direct syscalls: %d", successCount, str(syscallSet), failCount)
             #self.logger.warning("Failed syscalls: %d", failCount)
-            if ( syscallSet )
+            if ( syscallSet ):
                 finalSyscallSet.update(syscallSet)
         return finalSyscallSet
 
@@ -693,8 +693,8 @@ class ContainerProfiler():
                             libSyscallNames.add(str(syscallMap[syscall_num]))
                         else:
                             self.logger.error("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num)
-                    self.logger.info("%s syscalls: %s", self.name, str(libSyscallNames))
-                    self.logger.info(self.imageBinaryFiles)
+                    # self.logger.info("%s syscalls: %s", self.name, str(libSyscallNames))
+                    # self.logger.info(self.imageBinaryFiles)
 
                     # generate denylist and seccomp profile for more restrictive filter
                     denyListBinaryFineGrain = []
