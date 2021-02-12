@@ -241,9 +241,7 @@
             "postgres"
         ],
         "docker-cmd": [
-            "postgres", 
-            "-e", 
-            "POSTGRES_PASSWORD=password"
+            "postgres"
         ],
         "entrypoint": "docker-entrypoint.sh",
         "docker-path": "/home/confine/postgres"
@@ -286,13 +284,13 @@
         "dependencies": {},
         "id": "16",
         "binaries": [
-            "mysql"
+            "mysqld"
         ],
         "docker-cmd": [
-            "mysql"
+            "mysqld"
         ],
         "entrypoint": "docker-entrypoint.sh",
-        "docker-path": "/home/confine/mysql"
+        "docker-path": "/home/confine/mysqld"
     },
     "hello-world": {
         "enable": "false",
@@ -635,7 +633,7 @@
         "dependencies": {},
         "id": "35",
         "binaries": [
-            "catalina.sh"
+            "java"
         ],
         "docker-cmd": [
             "catalina.sh",
@@ -813,10 +811,10 @@
         "dependencies": {},
         "id": "45",
         "binaries": [
-            "logstash"
+            "java"
         ],
         "docker-cmd": [
-            "logstash:7.10.2"
+            "logstash:7.10.1"
         ],
         "entrypoint": "docker-entrypoint",
         "docker-path": "/home/confine/logstash"
@@ -988,9 +986,7 @@
         "dependencies": {},
         "id": "55",
         "binaries": [
-            "solr",
-            "solr-foreground",
-            "solr-fg"
+            "java"
         ],
         "docker-cmd": [
             "solr",
