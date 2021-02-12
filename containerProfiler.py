@@ -487,6 +487,7 @@ class ContainerProfiler():
 
                 self.logger.info("--->Starting INTEGRATE phase, extracting the list required system calls")
                 functionStartsOriginal = set()
+                functionStartsOriginal.update(piecewise.Piecewise.libcStartNodes)
                 # functionStartsFineGrain = set()
 
                 funcFile.seek(0)
@@ -501,7 +502,7 @@ class ContainerProfiler():
                 binaryToLibraryDict = util.readDictFromFile(tempOutputFolder + "/" + C.BINTOLIBCACHE)
 
                 allSyscallsFineGrain = set()
-                libSyscalls = set()
+                binaryOnlySyscalls = set()
 
                 if ( self.fineGrain ):
                     #TODO Fix fine grained analysis
@@ -522,6 +523,7 @@ class ContainerProfiler():
                             self.logger.info("Binary: %s", binary)
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
+                            startFunctions.update(piecewise.Piecewise.libcStartNodes)
                             piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
                             procLibrarySet = binaryToLibraryDict.get(binary, set())
                             procLibraryDict = util.convertLibrarySetToDict(procLibrarySet)
@@ -534,7 +536,7 @@ class ContainerProfiler():
 
                             allSyscallsFineGrain.update(binarySyscalls)
                             if binary in self.imageBinaryFiles:
-                                libSyscalls.update(binarySyscalls)
+                                binaryOnlySyscalls.update(binarySyscalls)
                         else:
                             self.logger.info("Skipped library: %s", binary)
 
@@ -599,7 +601,8 @@ class ContainerProfiler():
                         leaves = muslGraph.getLeavesFromStartNode(function, muslSyscallList, list())
                     else:
                         leaves = glibcGraph.getLeavesFromStartNode(function, glibcSyscallList, list())
-                    #self.logger.debug("function: %s, tmpSet: %s", function, tmpSet)
+                    if ( "syscall( 318 )" in leaves ):
+                        self.logger.debug("function: %s, leaves: %s", function, leaves)
                     tmpSet = tmpSet.union(leaves)
                 for syscallStr in tmpSet:
                     syscallStr = syscallStr.replace("syscall( ", "syscall(")
@@ -687,20 +690,21 @@ class ContainerProfiler():
                     self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(denyListFineGrain)))
                     # self.logger.info("denylistFineGrain - denyListOriginal: %s", str(set(denyListFineGrain).difference(set(denyListOriginal))))
                     # self.logger.info("Fine Grain filtered syscalls: %s", str(set(denyListFineGrain)))
-                    libSyscallNames = set()
-                    for syscall_num in libSyscalls:
+                    binaryOnlySyscallNames = set()
+                    for syscall_num in binaryOnlySyscalls:
+                        self.logger.debug("binaryOnlySyscall: %d", syscall_num)
                         if ( syscallMap.get(syscall_num, None) ):
-                            libSyscallNames.add(str(syscallMap[syscall_num]))
+                            binaryOnlySyscallNames.add(str(syscallMap[syscall_num]))
                         else:
                             self.logger.error("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num)
-                    # self.logger.info("%s syscalls: %s", self.name, str(libSyscallNames))
+                    # self.logger.info("%s syscalls: %s", self.name, str(binaryOnlySyscallNames))
                     # self.logger.info(self.imageBinaryFiles)
 
                     # generate denylist and seccomp profile for more restrictive filter
                     denyListBinaryFineGrain = []
                     i = 1
                     while i < 400:
-                        if i not in libSyscalls and syscallMap.get(i, None) and syscallMap[i] not in exceptList:
+                        if i not in binaryOnlySyscalls and syscallMap.get(i, None):# and syscallMap[i] not in exceptList:       #exceptList was used only for the Docker initialization, it shouldn't be needed for the serving phase
                             if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
                                 denyListBinaryFineGrain.append(syscallMap[i])
                         i += 1
@@ -726,16 +730,17 @@ class ContainerProfiler():
                         outputPath = resultsFolder + "/" + self.name + "-seccomp.c"
                     seccompCProgramPath = outputPath
                     outputFile = open(outputPath, 'w')
-                    seccompTemplate = open("./seccomp-program/seccomp-1.txt", 'r')
+                    seccompTemplate = open("./seccomp-program/seccomp-deny-1.txt", 'r')
                     for line in seccompTemplate:
                         outputFile.write(line)
                     seccompTemplate.close()
 
                     # add allowed syscalls
-                    for syscall_name in libSyscallNames:
+                    for syscall_name in denyListBinaryFineGrain:#binaryOnlySyscallNames:
+                        #outputFile.write(f"Kill({syscall_name}),\n\t")
                         outputFile.write(f"Allow({syscall_name}),\n\t")
 
-                    seccompTemplate = open("./seccomp-program/seccomp-2.txt", 'r')
+                    seccompTemplate = open("./seccomp-program/seccomp-deny-2.txt", 'r')
                     for line in seccompTemplate:
                         outputFile.write(line)
                     seccompTemplate.close()
@@ -823,7 +828,7 @@ class ContainerProfiler():
                                             time.sleep(logSleepTime)
                                             restrictedLogs = myRestrictedContainer.checkLogs()
                                             restrictedLogs = restrictedLogs.replace("/home/confine/docker-entrypoint.wseccomp.sh", "/docker-entrypoint.sh")
-                                            if ( len(originalLogs) == len(restrictedLogs) ):
+                                            if ( len(originalLogs) == len(restrictedLogs) or ( len(originalLogs) > len(restrictedLogs) and len(restrictedLogs) >= (0.99*len(originalLogs)) ) or ( len(restrictedLogs) > len(originalLogs) and len(originalLogs) >= (0.99*len(originalLogs)) ) ):
                                                 time.sleep(3)
                                                 if ( myRestrictedContainer.checkStatus() ):
                                                     self.logger.info("************************************************************************************")

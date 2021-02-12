@@ -282,7 +282,7 @@ if __name__ == '__main__':
                 dockerPath = imageVals.get("docker-path", "")
 
                 retryCount = 0
-                while ( retryCount < 2 ):
+                while ( retryCount < 1 ):
                     start = time.time()
                     newProfile = containerProfiler.ContainerProfiler(
                         imageName, 
