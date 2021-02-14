@@ -147,6 +147,7 @@ class Container():
         self.logger.debug("Running container %s", self.imageName)
         cmd = "sudo docker {} run -l {} --name {} {} --security-opt seccomp={} -td {} {}"
         cmd = cmd.format(self.remote, C.TOOLNAME, self.containerName, self.options, seccompPath, self.imageName, self.args)
+        self.logger.debug("Running container with command: %s", cmd)
         returncode, out, err = util.runCommand(cmd)
         self.containerId = out.strip()
         if ( returncode != 0 ):

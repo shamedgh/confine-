@@ -98,6 +98,9 @@ if __name__ == '__main__':
     parser.add_option("", "--othercfgfolder", dest="cfgfolderpath", default=None, nargs=1,
                       help="Path to other cfg files")
 
+    parser.add_option("", "--defaultentrypoint", dest="defaultentrypoint", default="./docker-entrypoint-template.sh", nargs=1,
+                      help="Default dockerEntryPoint template path")
+
     parser.add_option("", "--finegrain", dest="finegrain", action="store_true", default=False,
                       help="Enable/Disable finegrained library function debloating")
 
@@ -231,6 +234,7 @@ if __name__ == '__main__':
                     depBinaryFiles = []
                     depDockerStartArgs = ""
                     depDockerPath = ""
+                    depDockerEntryPoint = depVals.get("entrypoint", "")
 
                     retryCount = 0
                     while ( retryCount < 2 ):
@@ -241,6 +245,8 @@ if __name__ == '__main__':
                             depBinaryFiles,
                             depDockerStartArgs,
                             depDockerPath,
+                            depDockerEntryPoint,
+                            options.defaultentrypoint,
                             options.libccfginput, 
                             options.muslcfginput, 
                             glibcFuncList, 
@@ -280,6 +286,7 @@ if __name__ == '__main__':
                 imageBinaryFiles = imageVals.get("binaries", [])
                 dockerStartArgs = imageVals.get("docker-cmd",[])
                 dockerPath = imageVals.get("docker-path", "")
+                dockerEntryPoint = imageVals.get("entrypoint", "")
 
                 retryCount = 0
                 while ( retryCount < 1 ):
@@ -291,6 +298,8 @@ if __name__ == '__main__':
                         imageBinaryFiles, 
                         dockerStartArgs,
                         dockerPath,
+                        dockerEntryPoint,
+                        options.defaultentrypoint,
                         options.libccfginput, 
                         options.muslcfginput, 
                         glibcFuncList, 
@@ -304,7 +313,7 @@ if __name__ == '__main__':
                     returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
                     end = time.time()
                     #if ( returncode != C.SYSDIGERR ):
-                    if ( returncode == 0 ):
+                    if ( returncode == 0 or returncode != 0):   # Added dummy bool check to write failed results to file as well
                     #    if ( retryCount != 0 ):
                     #        retryCount += 1
                     #else:

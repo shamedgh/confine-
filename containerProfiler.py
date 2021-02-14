@@ -23,13 +23,15 @@ class ContainerProfiler():
     """
     This class can be used to create a seccomp profile for a container through static anlyasis of the useful binaries
     """
-    def __init__(self, name, imagePath, options, imageBinaryFiles, dockerStartArgs, dockerPath, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
+    def __init__(self, name, imagePath, options, imageBinaryFiles, dockerStartArgs, dockerPath, dockerEntryPoint, dockerTemplateEntryPoint, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
         self.logger = logger
         self.name = name
         self.imagePath = imagePath
         self.imageBinaryFiles = imageBinaryFiles
         self.dockerStartArgs = dockerStartArgs
         self.dockerPath = dockerPath
+        self.dockerEntryPoint = dockerEntryPoint
+        self.dockerTemplateEntryPoint = dockerTemplateEntryPoint
         #self.name = name
         #if ( "/" in self.name ):
         #    self.name = self.name.replace("/","-")
@@ -302,7 +304,7 @@ class ContainerProfiler():
 
         #time.sleep(10)
 
-        exceptList = ["access","arch_prctl","brk","close","execve","exit_group","fcntl","fstat","geteuid","lseek","mmap","mprotect","munmap","openat","prlimit64","read","rt_sigaction","rt_sigprocmask","set_robust_list","set_tid_address","stat","statfs","write","setns","capget","capset","chdir","fchown","futex","getdents64","getpid","getppid","lstat","openat","prctl","setgid","setgroups","setuid","stat","io_setup","getdents","clone","readlinkat","newfstatat","getrandom","sigaltstack","getresgid","getresuid","setresgid","setresuid","alarm","getsid","getpgrp", "epoll_pwait", "vfork"]
+        exceptList = ["access","arch_prctl","brk","close","execve","exit_group","fcntl","fstat","geteuid","lseek","mmap","mprotect","munmap","openat","prlimit64","read","rt_sigaction","rt_sigprocmask","set_robust_list","set_tid_address","stat","statfs","write","setns","capget","capset","chdir","fchown","futex","getdents64","getpid","getppid","lstat","openat","prctl","setgid","setgroups","setuid","stat","io_setup","getdents","clone","readlinkat","newfstatat","getrandom","sigaltstack","getresgid","getresuid","setresgid","setresuid","alarm","getsid","getpgrp", "epoll_pwait", "vfork", "fstatfs"]
 
         javaExceptList = ["open", "getcwd", "openat", "close", "fopen", "fclose", "link", "unlink", "unlinkat", "mknod", "rename", "renameat", "mkdir", "rmdir", "readlink", "realpath", "symlink", "stat", "lstat", "fstat", "fstatat", "chown", "lchown", "fchown", "chmod", "fchmod", "utimes", "futimes", "lutimes", "readdir", "read", "write", "access", "getpwuid", "getgrgid", "statvfs", "clock_getres", "get_mempolicy", "gettid", "getcpu", "fallocate", "memfd_create", "fstatat64", "newfstatat"]
         
@@ -524,7 +526,10 @@ class ContainerProfiler():
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             startFunctions.update(piecewise.Piecewise.libcStartNodes)
-                            piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
+                            if ( isMusl ):
+                                piecewiseObj = piecewise.Piecewise(binaryPath, "", self.muslCfgpath, self.cfgFolderPath, self.logger, cfginputseparator="->")
+                            else:
+                                piecewiseObj = piecewise.Piecewise(binaryPath, "", self.glibcCfgpath, self.cfgFolderPath, self.logger)
                             procLibrarySet = binaryToLibraryDict.get(binary, set())
                             procLibraryDict = util.convertLibrarySetToDict(procLibrarySet)
                             binarySyscalls= piecewiseObj.extractAccessibleSystemCallsFromBinary(startFunctions, altLibPath=os.path.abspath(tempOutputFolder), procLibraryDict=procLibraryDict)
@@ -640,6 +645,8 @@ class ContainerProfiler():
                     while ( syscallLine ):
                         staticSyscallList.append(int(syscallLine.strip()))
                         syscallLine = staticSyscallListFile.readline()
+                    allSyscallsFineGrain.update(staticSyscallList)
+                    binaryOnlySyscalls.update(staticSyscallList)
                 except Exception as e:
                     self.logger.debug("Can't extract syscalls from: %s", os.path.join(self.goFolderPath, self.name + ".syscalls (probably not a golang developed application)"))
                 self.logger.debug("After reading file: %s len(staticSyscallList): %d", os.path.join(self.goFolderPath, self.name + ".syscalls"), len(staticSyscallList))
@@ -649,11 +656,13 @@ class ContainerProfiler():
 
                 self.logger.info("Generating final system call filter list")
                 denyListOriginal = []
+
                 i = 1
                 while i < 400:
                     if ( (self.directSyscallCount == 0 and self.libcSyscallCount == 0) or (isMusl and i in muslWrapperList) or (i in glibcWrapperList) ):
                         if ( i not in directSyscallSet and i not in staticSyscallList and i not in allSyscallsOriginal and syscallMap.get(i, None) and syscallMap[i] not in exceptList):
                             if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
+                                self.logger.debug("syscallMap[%d]: %s", i, syscallMap[i])
                                 denyListOriginal.append(syscallMap[i])
                     i += 1
 
@@ -737,8 +746,8 @@ class ContainerProfiler():
 
                     # add allowed syscalls
                     for syscall_name in denyListBinaryFineGrain:#binaryOnlySyscallNames:
-                        #outputFile.write(f"Kill({syscall_name}),\n\t")
-                        outputFile.write(f"Allow({syscall_name}),\n\t")
+                        outputFile.write(f"Kill({syscall_name}),\n\t")
+                        #outputFile.write(f"Allow({syscall_name}),\n\t")
 
                     seccompTemplate = open("./seccomp-program/seccomp-deny-2.txt", 'r')
                     for line in seccompTemplate:
@@ -809,8 +818,10 @@ class ContainerProfiler():
                                 if ( cProgramStatus ):
                                     entrypointStatus = False
                                     if ( not os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED) ) ):
-                                        if ( os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPT)) ):
-                                            entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + C.DOCKERENTRYSCRIPT, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
+                                        if ( self.dockerEntryPoint == "" ):
+                                            self.createDockerEntryPointFromTemplate(tempOutputFolder, C.DOCKERENTRYSCRIPT)
+                                        if ( os.path.isfile(os.path.join(tempOutputFolder, self.dockerEntryPoint)) ):
+                                            entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + self.dockerEntryPoint, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
                                         else:
                                             self.logger.warning("Docker image does not seem to have entrypoint.sh")
                                             entrypointStatus = False
@@ -889,8 +900,19 @@ class ContainerProfiler():
                         self.logger.debug(str(myContainer.delete()))
         return returnCode
 
+    def createDockerEntryPointFromTemplate(self, outputPath, fileName):
+        cmd = "cp {} {}"
+        cmd = cmd.format(self.dockerTemplateEntryPoint, outputPath + "/" + fileName)
+        self.logger.debug("generating Docker entrypoint from template: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error generating docker entrypoint: %s", err)
+            return False
+        self.dockerEntryPoint = fileName
+        return True
+
     def compileSeccompCProgram(self, inputPath, outputPath):
-        cmd = "gcc -o {} {}"
+        cmd = "gcc -static -o {} {}"
         cmd = cmd.format(outputPath, inputPath)
         self.logger.debug("generating Seccomp C program using command: %s", cmd)
         returncode, out, err = util.runCommand(cmd)
