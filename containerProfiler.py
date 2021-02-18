@@ -23,7 +23,7 @@ class ContainerProfiler():
     """
     This class can be used to create a seccomp profile for a container through static anlyasis of the useful binaries
     """
-    def __init__(self, name, imagePath, options, imageBinaryFiles, dockerStartArgs, dockerPath, dockerEntryPoint, dockerTemplateEntryPoint, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
+    def __init__(self, name, imagePath, options, imageBinaryFiles, dockerStartArgs, dockerPath, dockerEntryPoint, dockerEntryPointModify, dockerTemplateEntryPoint, glibccfgpath, muslcfgpath, glibcfunclist, muslfunclist, strictmode, gofolderpath, cfgfolderpath, fineGrain, extractAllBinaries, logger, isDependent=False):
         self.logger = logger
         self.name = name
         self.imagePath = imagePath
@@ -31,6 +31,7 @@ class ContainerProfiler():
         self.dockerStartArgs = dockerStartArgs
         self.dockerPath = dockerPath
         self.dockerEntryPoint = dockerEntryPoint
+        self.dockerEntryPointModify = True if dockerEntryPointModify == 'true' else False
         self.dockerTemplateEntryPoint = dockerTemplateEntryPoint
         #self.name = name
         #if ( "/" in self.name ):
@@ -305,6 +306,8 @@ class ContainerProfiler():
         #time.sleep(10)
 
         exceptList = ["access","arch_prctl","brk","close","execve","exit_group","fcntl","fstat","geteuid","lseek","mmap","mprotect","munmap","openat","prlimit64","read","rt_sigaction","rt_sigprocmask","set_robust_list","set_tid_address","stat","statfs","write","setns","capget","capset","chdir","fchown","futex","getdents64","getpid","getppid","lstat","openat","prctl","setgid","setgroups","setuid","stat","io_setup","getdents","clone","readlinkat","newfstatat","getrandom","sigaltstack","getresgid","getresuid","setresgid","setresuid","alarm","getsid","getpgrp", "epoll_pwait", "vfork", "fstatfs"]
+        
+        binExceptList = ["execve", "exit group", "brk", "mmap", "munmap", "prctl", "write", "fstat"]
 
         javaExceptList = ["open", "getcwd", "openat", "close", "fopen", "fclose", "link", "unlink", "unlinkat", "mknod", "rename", "renameat", "mkdir", "rmdir", "readlink", "realpath", "symlink", "stat", "lstat", "fstat", "fstatat", "chown", "lchown", "fchown", "chmod", "fchmod", "utimes", "futimes", "lutimes", "readdir", "read", "write", "access", "getpwuid", "getgrgid", "statvfs", "clock_getres", "get_mempolicy", "gettid", "getcpu", "fallocate", "memfd_create", "fstatat64", "newfstatat"]
         
@@ -713,7 +716,7 @@ class ContainerProfiler():
                     denyListBinaryFineGrain = []
                     i = 1
                     while i < 400:
-                        if i not in binaryOnlySyscalls and syscallMap.get(i, None):# and syscallMap[i] not in exceptList:       #exceptList was used only for the Docker initialization, it shouldn't be needed for the serving phase
+                        if i not in binaryOnlySyscalls and syscallMap.get(i, None) and syscallMap[i] not in binExceptList:# and syscallMap[i] not in exceptList:       #exceptList was used only for the Docker initialization, it shouldn't be needed for the serving phase
                             if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
                                 denyListBinaryFineGrain.append(syscallMap[i])
                         i += 1
@@ -791,7 +794,8 @@ class ContainerProfiler():
                 if ( myContainer.runWithSeccompProfile(seccompPath) ):
                     time.sleep(logSleepTime)
                     debloatedLogs = myContainer.checkLogs()
-                    if ( len(originalLogs) == len(debloatedLogs) ):
+                    #if ( len(originalLogs) == len(debloatedLogs) ):
+                    if ( len(originalLogs) == len(debloatedLogs) or ( len(originalLogs) > len(debloatedLogs) and len(debloatedLogs) >= (0.99*len(originalLogs)) ) or ( len(debloatedLogs) > len(originalLogs) and len(originalLogs) >= (0.99*len(originalLogs)) ) ):
                         time.sleep(3)
                         if ( myContainer.checkStatus() ):
                             self.logger.info("************************************************************************************")
@@ -817,7 +821,7 @@ class ContainerProfiler():
     
                                 if ( cProgramStatus ):
                                     entrypointStatus = False
-                                    if ( not os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED) ) ):
+                                    if ( self.dockerEntryPointModify and not os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED) ) ):
                                         if ( self.dockerEntryPoint == "" ):
                                             self.createDockerEntryPointFromTemplate(tempOutputFolder, C.DOCKERENTRYSCRIPT)
                                         if ( os.path.isfile(os.path.join(tempOutputFolder, self.dockerEntryPoint)) ):
@@ -827,9 +831,15 @@ class ContainerProfiler():
                                             entrypointStatus = False
                                     else:
                                         entrypointStatus = True
+
+                                    dockerEntryPointPath = ""
+                                    if ( self.dockerEntryPointModify ):
+                                        dockerEntryPointFileName = C.DOCKERENTRYSCRIPTMODIFIED
+                                    else:
+                                        dockerEntryPointFileName = self.dockerEntryPoint
                             
-                                    if ( os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED)) ):
-                                        restrictiveOptions = self.generateRestrictiveOptions(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED)
+                                    if ( entrypointStatus ):
+                                        restrictiveOptions = self.generateRestrictiveOptions(tempOutputFolder, dockerEntryPointFileName)
                                         myRestrictedContainer = container.Container(self.imagePath, restrictiveOptions, self.logger, remote=None, args=dockerStartArgsStr)
                                         self.logger.info("--->Validating more restrictive Seccomp profile: %s", seccompCProgramPath)
                                         self.logger.info("Killing and deleting fine-grained hardened container")

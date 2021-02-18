@@ -190,6 +190,9 @@ if __name__ == '__main__':
         reportFile = open(reportFilePath + ".csv", 'a+')
         reportFileSummary = open(options.reportfolder + "/container.stats.csv", 'w+')
         reportFileDetailed = open(reportFilePath + ".details.csv", 'a+')
+        reportFileDetailedOriginal = open(reportFilePath + ".details.orig.csv", 'a+')
+        reportFileDetailedFinegrain = open(reportFilePath + ".details.fine.csv", 'a+')
+        reportFileDetailedRestricted = open(reportFilePath + ".details.rest.csv", 'a+')
         reportFileCategorized = open(options.reportfolder + "/syscall.categorized.csv", 'w+')
         reportFileLanguageBased = open(options.reportfolder + "/container.language.stats.csv", 'w+')
 
@@ -235,6 +238,7 @@ if __name__ == '__main__':
                     depDockerStartArgs = ""
                     depDockerPath = ""
                     depDockerEntryPoint = depVals.get("entrypoint", "")
+                    depDockerEntryPointModify = depVals.get("entrypoint-modify", "true")
 
                     retryCount = 0
                     while ( retryCount < 2 ):
@@ -246,6 +250,7 @@ if __name__ == '__main__':
                             depDockerStartArgs,
                             depDockerPath,
                             depDockerEntryPoint,
+                            depDockerEntryPointModify,
                             options.defaultentrypoint,
                             options.libccfginput, 
                             options.muslcfginput, 
@@ -287,6 +292,7 @@ if __name__ == '__main__':
                 dockerStartArgs = imageVals.get("docker-cmd",[])
                 dockerPath = imageVals.get("docker-path", "")
                 dockerEntryPoint = imageVals.get("entrypoint", "")
+                dockerEntryPointModify = imageVals.get("entrypoint-modify", "true")
 
                 retryCount = 0
                 while ( retryCount < 1 ):
@@ -299,6 +305,7 @@ if __name__ == '__main__':
                         dockerStartArgs,
                         dockerPath,
                         dockerEntryPoint,
+                        dockerEntryPointModify,
                         options.defaultentrypoint,
                         options.libccfginput, 
                         options.muslcfginput, 
@@ -356,6 +363,15 @@ if __name__ == '__main__':
                         if ( newProfile.getDebloatStatus() ):
                             reportFileDetailed.write(str(imageRank) + ";" + imageName + ";" + str(len(currentSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(currentSet) + "\n")
                             reportFileDetailed.flush()
+
+                            reportFileDetailedOriginal.write(str(imageRank) + ";" + imageName + ";" + str(len(originalSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(originalSet) + "\n")
+                            reportFileDetailedOriginal.flush()
+
+                            reportFileDetailedFinegrain.write(str(imageRank) + ";" + imageName + ";" + str(len(finegrainSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(finegrainSet) + "\n")
+                            reportFileDetailedFinegrain.flush()
+
+                            reportFileDetailedRestricted.write(str(imageRank) + ";" + imageName + ";" + str(len(restrictiveSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(restrictiveSet) + "\n")
+                            reportFileDetailedRestricted.flush()
                             for category in imageCategoryList:
                                 reportFileCategorized.write(category + "," + str(len(currentSet)) + "\n")
                                 reportFileCategorized.flush()
