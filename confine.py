@@ -98,6 +98,9 @@ if __name__ == '__main__':
     parser.add_option("", "--othercfgfolder", dest="cfgfolderpath", default=None, nargs=1,
                       help="Path to other cfg files")
 
+    parser.add_option("", "--defaultentrypoint", dest="defaultentrypoint", default="./docker-entrypoint-template.sh", nargs=1,
+                      help="Default dockerEntryPoint template path")
+
     parser.add_option("", "--finegrain", dest="finegrain", action="store_true", default=False,
                       help="Enable/Disable finegrained library function debloating")
 
@@ -187,6 +190,9 @@ if __name__ == '__main__':
         reportFile = open(reportFilePath + ".csv", 'a+')
         reportFileSummary = open(options.reportfolder + "/container.stats.csv", 'w+')
         reportFileDetailed = open(reportFilePath + ".details.csv", 'a+')
+        reportFileDetailedOriginal = open(reportFilePath + ".details.orig.csv", 'a+')
+        reportFileDetailedFinegrain = open(reportFilePath + ".details.fine.csv", 'a+')
+        reportFileDetailedRestricted = open(reportFilePath + ".details.rest.csv", 'a+')
         reportFileCategorized = open(options.reportfolder + "/syscall.categorized.csv", 'w+')
         reportFileLanguageBased = open(options.reportfolder + "/container.language.stats.csv", 'w+')
 
@@ -231,6 +237,8 @@ if __name__ == '__main__':
                     depBinaryFiles = []
                     depDockerStartArgs = ""
                     depDockerPath = ""
+                    depDockerEntryPoint = depVals.get("entrypoint", "")
+                    depDockerEntryPointModify = depVals.get("entrypoint-modify", "true")
 
                     retryCount = 0
                     while ( retryCount < 2 ):
@@ -241,6 +249,9 @@ if __name__ == '__main__':
                             depBinaryFiles,
                             depDockerStartArgs,
                             depDockerPath,
+                            depDockerEntryPoint,
+                            depDockerEntryPointModify,
+                            options.defaultentrypoint,
                             options.libccfginput, 
                             options.muslcfginput, 
                             glibcFuncList, 
@@ -280,9 +291,11 @@ if __name__ == '__main__':
                 imageBinaryFiles = imageVals.get("binaries", [])
                 dockerStartArgs = imageVals.get("docker-cmd",[])
                 dockerPath = imageVals.get("docker-path", "")
+                dockerEntryPoint = imageVals.get("entrypoint", "")
+                dockerEntryPointModify = imageVals.get("entrypoint-modify", "true")
 
                 retryCount = 0
-                while ( retryCount < 2 ):
+                while ( retryCount < 1 ):
                     start = time.time()
                     newProfile = containerProfiler.ContainerProfiler(
                         imageName, 
@@ -291,6 +304,9 @@ if __name__ == '__main__':
                         imageBinaryFiles, 
                         dockerStartArgs,
                         dockerPath,
+                        dockerEntryPoint,
+                        dockerEntryPointModify,
+                        options.defaultentrypoint,
                         options.libccfginput, 
                         options.muslcfginput, 
                         glibcFuncList, 
@@ -304,7 +320,7 @@ if __name__ == '__main__':
                     returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
                     end = time.time()
                     #if ( returncode != C.SYSDIGERR ):
-                    if ( returncode == 0 ):
+                    if ( returncode == 0 or returncode != 0):   # Added dummy bool check to write failed results to file as well
                     #    if ( retryCount != 0 ):
                     #        retryCount += 1
                     #else:
@@ -347,6 +363,15 @@ if __name__ == '__main__':
                         if ( newProfile.getDebloatStatus() ):
                             reportFileDetailed.write(str(imageRank) + ";" + imageName + ";" + str(len(currentSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(currentSet) + "\n")
                             reportFileDetailed.flush()
+
+                            reportFileDetailedOriginal.write(str(imageRank) + ";" + imageName + ";" + str(len(originalSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(originalSet) + "\n")
+                            reportFileDetailedOriginal.flush()
+
+                            reportFileDetailedFinegrain.write(str(imageRank) + ";" + imageName + ";" + str(len(finegrainSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(finegrainSet) + "\n")
+                            reportFileDetailedFinegrain.flush()
+
+                            reportFileDetailedRestricted.write(str(imageRank) + ";" + imageName + ";" + str(len(restrictiveSet)) + ";" + str(len(unionSet)-len(defaultSyscallSet)) + ";" + str(len(unionSet)) + ";" + str(newProfile.getDirectSyscallCount()) + ";" + str(newProfile.getLibcSyscallCount()) + ";" + str(restrictiveSet) + "\n")
+                            reportFileDetailedRestricted.flush()
                             for category in imageCategoryList:
                                 reportFileCategorized.write(category + "," + str(len(currentSet)) + "\n")
                                 reportFileCategorized.flush()

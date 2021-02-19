@@ -197,7 +197,7 @@ if __name__ == '__main__':
                 else:
                     print ( "imageName: " + imageName + " not found" )
                 debloatStatus = splittedLine[10] == "True"
-                langSetStr = splittedLine[15]
+                langSetStr = splittedLine[16]
 
                 imageToDebloatStatus[imageName] = debloatStatus
 

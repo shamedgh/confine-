@@ -1,0 +1,18 @@
+BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW),
+};
+struct sock_fprog filterprog = {
+    .len = sizeof(filter)/sizeof(filter[0]),
+    .filter = filter
+};
+
+int main(int argc, char **argv) {
+    if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+        perror("Could not start seccomp:");
+        exit(1);
+    }
+    if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &filterprog) == -1) {
+        perror("Could not start seccomp:");
+        exit(1);
+    }
+
+    char *args[] = {

@@ -552,7 +552,8 @@
         "id": "30"
     },
     "influxdb": {
-        "enable": "true",
+        "enable": "false",
+        "reason": "didn't work in Confine, leaving out",
         "image-name": "influxdb",
         "image-url": "influxdb",
         "category": [
@@ -1092,7 +1093,7 @@
     },
     "joomla": {
         "enable": "false",
-        "reason": "the same as apache httpd",
+        "reason": "requires dependent container, not considering for now",
         "image-name": "joomla",
         "image-url": "joomla",
         "category": [
