@@ -398,3 +398,11 @@ _Uelf64_load_debuglink->strrchr
 _Uelf64_load_debuglink->strcat
 _Uelf64_load_debuglink->llvm.stackrestore
 _ULx86_64_get_reg->_ULx86_64_access_reg
+mincore_validate->syscall(1)
+mincore_validate->syscall(1)
+msync_validate->syscall(1)
+msync_validate->syscall(1)
+mincore_validate->syscall(1)
+mincore_validate->syscall(1)
+msync_validate->syscall(1)
+msync_validate->syscall(1)

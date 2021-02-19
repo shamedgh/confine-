@@ -63208,3 +63208,7 @@ EVP_SealInit->EVP_CIPHER_CTX_key_length
 EVP_SealInit->EVP_PKEY_encrypt_old
 EVP_SealInit->RAND_bytes
 dh_param_print->do_dh_print
+sh_init->syscall(325)
+sh_init->syscall(1)
+syscall_random->syscall(318)
+syscall_random->syscall(0)

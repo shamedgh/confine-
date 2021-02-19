@@ -425,3 +425,12 @@ numa_warn->llvm.va_end
 move_pages->syscall
 node_parse_failure->numa_warn
 numa_tonodemask_memory_v2->dombind
+get_mempolicy->syscall(239)
+mbind->syscall(237)
+set_mempolicy->syscall(238)
+migrate_pages->syscall(256)
+move_pages->syscall(279)
+numa_sched_setaffinity_v1->syscall(203)
+numa_sched_setaffinity_v2->syscall(203)
+numa_sched_getaffinity_v1->syscall(204)
+numa_sched_getaffinity_v2->syscall(204)

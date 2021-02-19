@@ -44339,3 +44339,4 @@ PyThread_acquire_lock_timed->fix_status
 PyThread_acquire_lock_timed->sem_trywait
 PyThread_acquire_lock_timed->sem_wait
 wrap_ternaryfunc->PyArg_UnpackTuple
+os_getrandom_impl->syscall(318)

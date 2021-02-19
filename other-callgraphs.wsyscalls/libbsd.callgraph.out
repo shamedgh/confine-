@@ -663,3 +663,6 @@ reallocarray->__errno_location
 reallocarray->realloc
 reallocf->realloc
 reallocf->free
+getentropy_getrandom->syscall(318)
+getentropy_getrandom->syscall(0)
+getentropy_sysctl->syscall(156)

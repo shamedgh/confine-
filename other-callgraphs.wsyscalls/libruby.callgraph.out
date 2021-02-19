@@ -52828,3 +52828,5 @@ rb_file_s_atime->rb_syserr_fail_path_in
 rb_file_s_atime->rb_get_path
 rb_file_s_atime->rb_stat
 rb_file_s_atime->stat_atime
+simple_copy_file_range->syscall(326)
+fill_random_bytes_syscall->syscall(318)

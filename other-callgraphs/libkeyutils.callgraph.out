@@ -83,3 +83,6 @@ keyctl_update->keyctl
 keyctl_unlink->keyctl
 keyctl_assume_authority->keyctl
 keyctl_restrict_keyring->keyctl
+add_key->syscall(248)
+request_key->syscall(249)
+__keyctl->syscall(250)

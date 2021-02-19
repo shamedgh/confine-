@@ -1396,3 +1396,5 @@ krb5int_arcfour_encrypt->krb5int_hmac_keyblock
 alloc_data.202->calloc
 zapfree.134->free
 zapfree.134->zap.135
+k5_get_os_entropy->syscall(318)
+k5_get_os_entropy->syscall(0)
