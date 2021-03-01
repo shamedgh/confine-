@@ -2,8 +2,11 @@ import os, sys, subprocess, signal
 import logging
 import optparse
 import requests
-import util
 import json
+
+sys.path.insert(0, './python-utils/')
+
+import util
 
 def isValidOpts(opts):
     """

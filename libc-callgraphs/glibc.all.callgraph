@@ -1,4 +1,5 @@
 pthread_create : syscall( 56 )
+unlink: unlinkat
 _dl_map_object : _dl_map_object_from_fd
 _dl_map_object : _dl_signal_error
 _dl_map_object : open_verify

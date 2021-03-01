@@ -882,7 +882,7 @@
         "id": "48"
     },
     "ghost": {
-        "enable": "false",
+        "enable": "true",
         "reason": "runs single node application, similar to node, won't consider for now",
         "image-name": "ghost",
         "image-url": "ghost",
@@ -894,7 +894,17 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "49"
+        "id": "49",
+        "binaries": [
+            "node"
+        ],
+        "docker-cmd": [
+            "node",
+            "current/index.js"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/node"
+
     },
     "kong": {
         "enable": "false",

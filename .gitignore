@@ -3,9 +3,12 @@ opendaylight.images.list
 output
 results
 fgOutput/
+fgOutput.bak/
 fgReport/
+fgReport.dimva.final/
 stats/
-
+stats.dimva.final/
+temp.for.libaio
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

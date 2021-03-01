@@ -41,3 +41,15 @@ io_cancel_0_4->syscall(210)
 io_setup->syscall(206)
 io_destroy->syscall(207)
 __io_pgetevents->syscall(333)
+io_queue_wait_0_4->io_queue_wait
+io_getevents_0_4->io_getevents
+io_cancel_0_4->io_cancel
+compat0_1_io_cancel->io_cancel
+compat0_1_io_queue_wait->io_queue_wait
+compat0_1_io_getevents->io_getevents
+io_queue_wait->io_queue_wait_0_4
+io_getevents->io_getevents_0_4
+io_cancel->io_cancel_0_4
+io_cancel->compat0_1_io_cancel
+io_queue_wait->compat0_1_io_queue_wait
+io_getevents->compat0_1_io_getevents

@@ -5,3 +5,6 @@ postgres
 mysql
 memcached
 httpd
+node
+registry
+mariadb
