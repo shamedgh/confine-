@@ -1,0 +1,8 @@
+
+###New commands:
+
+Create stats regarding number of libraries with callgraphs and without them. Also the number of binaries and libraries required for each container
+
+`
+python3.7 createLibSpecStats.py --binaryfolder fgOutput/ --callgraphpath other-callgraphs.wsyscalls/
+`
