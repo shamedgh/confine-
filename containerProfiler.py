@@ -517,15 +517,15 @@ class ContainerProfiler():
                     #4. Use fine grained version or all imported for libraries without CFG
                     self.logger.info("--->Starting Fine Grain Syscall Extraction")
                     binaryPaths = os.listdir(tempOutputFolder)
-                    self.logger.info("self.name: %s", self.name)
+                    self.logger.debug("self.name: %s", self.name)
 
                     existSet = set()
                     missingSet = set()
 
                     for binary in binaryPaths:
-                        self.logger.info("binary/library: %s", binary)
+                        self.logger.debug("binary/library: %s", binary)
                         if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
-                            self.logger.info("Binary: %s", binary)
+                            self.logger.debug("Binary: %s", binary)
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             startFunctions.update(piecewise.Piecewise.libcStartNodes)
@@ -546,9 +546,9 @@ class ContainerProfiler():
                             if binary in self.imageBinaryFiles:
                                 binaryOnlySyscalls.update(binarySyscalls)
                         else:
-                            self.logger.info("Skipped library: %s", binary)
+                            self.logger.debug("Skipped library: %s", binary)
 
-                    self.logger.info("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
+                    self.logger.debug("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
                     self.logger.info("<---Finished Direct Syscall Extraction\n")
 
                     # libsWithCfg = set()
@@ -708,7 +708,7 @@ class ContainerProfiler():
                         if ( syscallMap.get(syscall_num, None) ):
                             binaryOnlySyscallNames.add(str(syscallMap[syscall_num]))
                         else:
-                            self.logger.error("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num)
+                            self.logger.debug("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num)
                     # self.logger.info("%s syscalls: %s", self.name, str(binaryOnlySyscallNames))
                     # self.logger.info(self.imageBinaryFiles)
 
