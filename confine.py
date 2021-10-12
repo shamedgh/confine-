@@ -11,6 +11,17 @@ sys.path.insert(0, './python-utils/')
 import constants as C
 import util
 
+CONFINESTR = """
+  /$$$$$$   /$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$$$
+ /$$__  $$ /$$__  $$| $$$ | $$| $$_____/|_  $$_/| $$$ | $$| $$_____/
+| $$  \__/| $$  \ $$| $$$$| $$| $$        | $$  | $$$$| $$| $$      
+| $$      | $$  | $$| $$ $$ $$| $$$$$     | $$  | $$ $$ $$| $$$$$   
+| $$      | $$  | $$| $$  $$$$| $$__/     | $$  | $$  $$$$| $$__/   
+| $$    $$| $$  | $$| $$\  $$$| $$        | $$  | $$\  $$$| $$      
+|  $$$$$$/|  $$$$$$/| $$ \  $$| $$       /$$$$$$| $$ \  $$| $$$$$$$$
+ \______/  \______/ |__/  \__/|__/      |______/|__/  \__/|________/
+"""
+
 def isValidOpts(opts):
     """
     Check if the required options are sane to be accepted
@@ -53,6 +64,7 @@ def setLogPath(logPath):
 
 #    ch = logging.StreamHandler(sys.stdout)
     consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(util.ColorFormatter())
     rootLogger.addHandler(consoleHandler)
     return rootLogger
 #    rootLogger.addHandler(ch)
@@ -123,10 +135,8 @@ if __name__ == '__main__':
     if isValidOpts(options):
         rootLogger = setLogPath("containerprofiler.log")
 
-        if ( options.finegrain ):
-            rootLogger.info("////////////////////////////////////////////////////")
-            rootLogger.info("WARNING: You have enabled finegrain through the --finegrain option which is NOT fully operational yet. Use at your own risk.")
-            rootLogger.info("////////////////////////////////////////////////////")
+        initLogExtra = {'phase': 'INIT'}
+        finalLogExtra = {'phase': 'FINAL'}
 
         #Read list of libc and musl functions
         glibcFuncList = None
@@ -143,6 +153,8 @@ if __name__ == '__main__':
             if ( not muslFuncList ):
                 rootLogger.error("Problem extracting list of functions from musl")
                 sys.exit(-1)
+
+        print(CONFINESTR)
 
         #Load list of default filtered system calls
         defaultProfileFile = open(options.defaultprofile, 'r')
@@ -190,7 +202,7 @@ if __name__ == '__main__':
                     reportLine = reportFile.readline()
                 reportFile.close()
             except IOError as e:
-                rootLogger.info("Report file doesn't exist, no previous reports exist, creating...")
+                rootLogger.info("Report file doesn't exist, no previous reports exist, creating...", extra=initLogExtra)
 
 
         reportFile = open(reportFilePath + ".csv", 'a+')
@@ -224,10 +236,10 @@ if __name__ == '__main__':
             depLinkSet = set()
             imageName = imageVals.get("image-name", imageKey)
             if ( imageVals.get("enable", "false") == "true" and imageName not in skipList ):
-                rootLogger.info("------------------------------------------------------------------------")
-                rootLogger.info("////////////////////////////////////////////////////////////////////////")
-                rootLogger.info("----->Starting analysis for image: %s<-----", imageName)
-                rootLogger.info("////////////////////////////////////////////////////////////////////////\n")
+                #rootLogger.info("------------------------------------------------------------------------")
+                #rootLogger.info("////////////////////////////////////////////////////////////////////////")
+                rootLogger.info("Starting analysis for image: %s", imageName, extra=initLogExtra)
+                #rootLogger.info("////////////////////////////////////////////////////////////////////////\n")
                 killAllContainers = container.killToolContainers(rootLogger)
                 #rootLogger.info("Killing all containers related to toolset returned: %s", killAllContainers)
                 deleteAllContainers = container.deleteStoppedContainers(rootLogger)
@@ -274,7 +286,7 @@ if __name__ == '__main__':
                         returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + depImageName + "/", options.reportfolder)
                         #if ( returncode != C.SYSDIGERR ):
                         if ( returncode == 0 ):
-                            rootLogger.info("Hardened dependent image: %s for main image: %s", depImageName, imageName)
+                            rootLogger.info("Hardened dependent image: %s for main image: %s", depImageName, imageName, extra=initLogExtra)
                             retryCount += 1
                         else:
                             rootLogger.error("Tried hardening container: %s returned: %d:%s", depImageName, returncode, C.ERRTOMSG[returncode])
@@ -402,11 +414,11 @@ if __name__ == '__main__':
                                 count += 1
                                 langDict[successStatus] = count
                                 langCount[lang] = langDict
-                        rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////")
-                        rootLogger.info("----->Finished extracting system calls for %s, sleeping for 5 seconds<-----", imageName)
-                        rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////")
-                        rootLogger.info("---------------------------------------------------------------------------------------\n")
-                        time.sleep(5)
+                        #rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////", extra=initLogExtra)
+                        rootLogger.info("Finished extracting system calls for %s", imageName, extra=finalLogExtra)
+                        #rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////", extra=initLogExtra)
+                        #rootLogger.info("---------------------------------------------------------------------------------------\n", extra=initLogExtra)
+                        time.sleep(1)
                     else:
                         rootLogger.error("Tried hardening container: %s returned: %d:%s", imageName, returncode, C.ERRTOMSG[returncode])
                     retryCount += 1

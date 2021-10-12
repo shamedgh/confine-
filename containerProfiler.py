@@ -256,6 +256,11 @@ class ContainerProfiler():
         return self.containerName
 
     def createSeccompProfile(self, tempOutputFolder, resultsFolder):
+        monitorLogExtra = {'phase': 'MONITOR'}
+        analysisLogExtra = {'phase': 'ANALYSIS'}
+        integrateLogExtra = {'phase': 'INTEGRATE'}
+        multiphaseLogExtra = {'phase': 'MULTIPHASE'}
+        validationLogExtra = {'phase': 'VALIDATION'}
         returnCode = 0
         if os.geteuid() != 0:
             self.logger.error("This script must be run as ROOT only!")
@@ -335,9 +340,9 @@ class ContainerProfiler():
         #    myFile = open(tempOutputFolder + "/" + C.LANGFILENAME, 'r')
         #    languageReady = True
         except OSError as e:
-            self.logger.info("Cache doesn't exist, must extract binaries and libraries")
+            self.logger.info("Cache doesn't exist, must extract binaries and libraries", extra=monitorLogExtra)
 
-        self.logger.debug("binaryReady: %s libFileReady: %s", str(binaryReady), str(libFileReady))
+        self.logger.debug("binaryReady: %s libFileReady: %s", str(binaryReady), str(libFileReady), extra=monitorLogExtra)
 
 
         myContainer = container.Container(self.imagePath, self.options, self.logger)
@@ -352,8 +357,8 @@ class ContainerProfiler():
             self.logger.debug("Successfully created directory: %s", tempOutputFolder)
 
         ttr = 10
-        logSleepTime = 60
-        sysdigTotalRunCount = 3
+        logSleepTime = 20
+        sysdigTotalRunCount = 1
         if ( binaryReady ):
             sysdigTotalRunCount = 1
         sysdigRunCount = 1
@@ -367,7 +372,7 @@ class ContainerProfiler():
         binaryToLibraryDict = dict()
         psListAll = set()
 
-        self.logger.info("--->Starting MONITOR phase:")
+        #self.logger.info("Starting...", extra=monitorLogExtra)
         while ( sysdigRunCount <= sysdigTotalRunCount ):
             myMonitor = processMonitorFactory.Factory(self.logger, self.monitoringTool, psListFilePath=self.binLibList)
             #mySysdig = sysdig.Sysdig(self.logger)
@@ -375,82 +380,82 @@ class ContainerProfiler():
             self.logger.debug("Trying to kill and delete container which might not be running in loop... Not a problem if returns error")
             str(myContainer.kill())
             str(myContainer.delete())
-            self.logger.info("Running sysdig multiple times. Run count: %d from total: %d", sysdigRunCount, sysdigTotalRunCount)
+            #self.logger.info("Running sysdig multiple times. Run count: %d from total: %d", sysdigRunCount, sysdigTotalRunCount, extra=monitorLogExtra)
             sysdigRunCount += 1
             #sysdigResult = mySysdig.runSysdigWithDuration(logSleepTime)
             monitorResult = myMonitor.runWithDuration(logSleepTime)
             if ( not monitorResult ):
-                self.logger.error("Running sysdig with execve failed, not continuing for container: %s", self.name)
-                self.logger.error("Please make sure sysdig is installed and you are running the script with root privileges. If problem consists please contact our support team.")
+                self.logger.error("Running sysdig with execve failed, not continuing for container: %s", self.name, extra=monitorLogExtra)
+                self.logger.error("Please make sure sysdig is installed and you are running the script with root privileges. If problem consists please contact our support team.", extra=monitorLogExtra)
                 self.errorMessage = "Running sysdig with execve failed"
 
             if ( monitorResult and myContainer.runWithoutSeccomp() ):#myContainer.run() ):
                 self.status = True
-                self.logger.info("Ran container sleeping for %d seconds to generate logs and extract execve system calls", logSleepTime)
+                self.logger.info("Ran container, sleeping for %d seconds to generate logs and extract execve system calls", logSleepTime, extra=monitorLogExtra)
                 time.sleep(logSleepTime)
                 myMonitor.waitUntilComplete()
                 originalLogs = myContainer.checkLogs()
-                self.logger.debug("originalLog: %s", originalLogs)
+                self.logger.debug("originalLog: %s", originalLogs, extra=monitorLogExtra)
                 time.sleep(10)
                 if ( not myContainer.checkStatus() ):
-                    self.logger.warning("Container exited after running, trying to run in attached mode!")
-                    self.logger.debug(str(myContainer.delete()))
+                    self.logger.warning("Container exited after running, trying to run in attached mode!", extra=monitorLogExtra)
+                    self.logger.debug(str(myContainer.delete()), extra=monitorLogExtra)
                     if ( not myContainer.runInAttachedMode() ):
                         self.errorMessage = "Container didn't run in attached mode either, forfeiting!"
-                        self.logger.error("Container didn't run in attached mode either, forfeiting!")
-                        self.logger.error("There is a problem launching a container for %s. Please validate you can run the container without Confine. If so, contact our support team.", self.name)
-                        self.logger.debug(str(myContainer.delete()))
+                        self.logger.error("Container didn't run in attached mode either, forfeiting!", extra=monitorLogExtra)
+                        self.logger.error("There is a problem launching a container for %s. Please validate you can run the container without Confine. If so, contact our support team.", self.name, extra=monitorLogExtra)
+                        self.logger.debug(str(myContainer.delete()), extra=monitorLogExtra)
                         return C.NOATTACH
                     else:
                         time.sleep(10)
                         if ( not myContainer.checkStatus() ):
                             self.errorMessage = "Container got killed after running in attached mode as well!"
-                            self.logger.error("Container got killed after running in attached mode as well, forfeiting!")
-                            self.logger.error("There is a problem launching a container for %s. Please validate you can run the container without Confine. If so, contact our support team.", self.name)
-                            self.logger.debug(str(myContainer.kill()))
-                            self.logger.debug(str(myContainer.delete()))
+                            self.logger.error("Container got killed after running in attached mode as well, forfeiting!", extra=monitorLogExtra)
+                            self.logger.error("There is a problem launching a container for %s. Please validate you can run the container without Confine. If so, contact our support team.", self.name, extra=monitorLogExtra)
+                            self.logger.debug(str(myContainer.kill()), extra=monitorLogExtra)
+                            self.logger.debug(str(myContainer.delete()), extra=monitorLogExtra)
                             return C.CONSTOP
                 self.runnable = True
-                self.logger.debug("Ran container %s successfully, sleeping for %d seconds", self.name, ttr)
+                self.logger.debug("Ran container %s successfully, sleeping for %d seconds", self.name, ttr, extra=monitorLogExtra)
                 time.sleep(ttr)
-                self.logger.debug("Finished sleeping, extracting psNames for %s", self.name)
-                self.logger.debug("Starting to identify running processes and required binaries and libraries through dynamic analysis.")
+                self.logger.debug("Finished sleeping, extracting psNames for %s", self.name, extra=monitorLogExtra)
+                self.logger.debug("Starting to identify running processes and required binaries and libraries through dynamic analysis.", extra=monitorLogExtra)
 
                 if ( not binaryReady ):
                     psList = myMonitor.extractPsNames("execve", myContainer.getContainerName(), myContainer.getContainerId())
 
                     if ( not psList ):
-                        self.logger.error("PS List is None from extractPsNames(). Retrying this container: %s", self.name)
-                        self.logger.debug(str(myContainer.kill()))
-                        self.logger.debug(str(myContainer.delete()))
+                        self.logger.error("PS List is None from extractPsNames(). Retrying this container: %s", self.name, extra=monitorLogExtra)
+                        self.logger.debug(str(myContainer.kill()), extra=monitorLogExtra)
+                        self.logger.debug(str(myContainer.delete()), extra=monitorLogExtra)
                         self.errorMessage = "PS List is None from extractPsNames(), error in sysdig, retrying this container"
                         return C.SYSDIGERR
                     if ( len(psList) == 0 ):
-                        self.logger.error("PS List is None from extractPsNames(). Retrying this container: %s", self.name)
-                        self.logger.debug(str(myContainer.kill()))
-                        self.logger.debug(str(myContainer.delete()))
+                        self.logger.error("PS List is None from extractPsNames(). Retrying this container: %s", self.name, extra=monitorLogExtra)
+                        self.logger.debug(str(myContainer.kill()), extra=monitorLogExtra)
+                        self.logger.debug(str(myContainer.delete()), extra=monitorLogExtra)
                         self.errorMessage = "PS List is None from extractPsNames(), error in sysdig, retrying this container"
                         return C.NOPROCESS
-                    self.logger.info("len(psList) from sysdig: %d", len(psList))
+                    self.logger.info("len(psList) from sysdig: %d", len(psList), extra=monitorLogExtra)
                     currPsList, binaryToLibraryDict = myContainer.extractLibsFromProc()
                     psList = psList.union(currPsList)
-                    self.logger.debug("len(psList) after extracting proc list: %d", len(psList))
-                    self.logger.debug("Container: %s PS List: %s", self.name, str(psList))
-                    self.logger.debug("Container: %s extracted psList with %d elements", self.name, len(psList))
-                    self.logger.debug("Entering not binaryReady")
+                    self.logger.debug("len(psList) after extracting proc list: %d", len(psList), extra=monitorLogExtra)
+                    self.logger.debug("Container: %s PS List: %s", self.name, str(psList), extra=monitorLogExtra)
+                    self.logger.debug("Container: %s extracted psList with %d elements", self.name, len(psList), extra=monitorLogExtra)
+                    self.logger.debug("Entering not binaryReady", extra=monitorLogExtra)
                     if ( not util.deleteAllFilesInFolder(tempOutputFolder, self.logger) ):
-                        self.logger.error("Failed to delete files in temporary output folder, exiting...")
+                        self.logger.error("Failed to delete files in temporary output folder, exiting...", extra=monitorLogExtra)
                         self.errorMessage = "Failed to delete files in temporary output folder"
                         sys.exit(-1)
 
                     psListAll.update(psList)
-                    self.logger.info("Container: %s extracted psList with %d elements", self.name, len(psListAll))
+                    #self.logger.info("Container: %s extracted psList with %d elements", self.name, len(psListAll), extra=monitorLogExtra)
                     util.writeDictToFile(binaryToLibraryDict, tempOutputFolder + "/" + C.BINTOLIBCACHE)
 
         if ( self.status ):
             if ( not binaryReady ):
-                self.logger.info("Container: %s PS List: %s", self.name, str(psListAll))
-                self.logger.info("Starting to copy identified binaries and libraries (This can take some time...)")#Will try to copy from different paths. Some might not exist. Errors are normal.")
+                #self.logger.info("Container: %s PS List: %s", self.name, str(psListAll), extra=monitorLogExtra)
+                self.logger.info("Starting to copy identified binaries and libraries (This can take some time...)", extra=monitorLogExtra)#Will try to copy from different paths. Some might not exist. Errors are normal.")
                 if ( self.extractAllBinaries ):
                     psListAll.update(myContainer.extractAllBinaries())
 
@@ -461,11 +466,11 @@ class ContainerProfiler():
 
                         if ( binaryToLibraryDict.get(binaryPath, None) ):
                             librarySet = binaryToLibraryDict[binaryPath]
-                            self.logger.debug("binary: %s library set: %s", binaryPath, str(librarySet))
+                            self.logger.debug("binary: %s library set: %s", binaryPath, str(librarySet), extra=monitorLogExtra)
                             for libraryPath in librarySet:
                                 myContainer.copyFromContainerWithLibs(libraryPath, tempOutputFolder)
                         else:
-                            self.logger.debug("Binary: %s doesn't exist in binaryToLibraryDict", binaryPath)
+                            self.logger.debug("Binary: %s doesn't exist in binaryToLibraryDict", binaryPath, extra=monitorLogExtra)
                         #if ( not myContainer.copyFromContainerWithLibs(binaryPath, tempOutputFolder) ):
                         #    self.logger.error("Problem copying files from container!")
                 binaryReady = True
@@ -473,22 +478,20 @@ class ContainerProfiler():
                 myFile.write("complete")
                 myFile.flush()
                 myFile.close()
-                self.logger.info("Finished copying identified binaries and libraries")
-                self.logger.info("<---Finished MONITOR phase\n")
+                self.logger.info("Finished copying identified binaries and libraries", extra=monitorLogExtra)
+                self.logger.info("Finished Monitoring phase", extra=monitorLogExtra)
 
             self.logger.debug(str(myContainer.kill()))
             self.logger.debug(str(myContainer.delete()))
 
             if ( binaryReady ):
-                self.logger.info("--->Starting Direct Syscall Extraction")
-                self.logger.info("Extracting direct system call invocations")
+                self.logger.info("Starting Analysis Phase...", extra=analysisLogExtra)
+                #self.logger.info("Starting Direct Syscall Extraction...", extra=analysisLogExtra)
                 directSyscallSet = self.extractDirectSyscalls(tempOutputFolder)
-                self.logger.info("<---Finished Direct Syscall Extraction\n")
                 if ( not libFileReady ):
-                    self.logger.info("--->Starting ANALYZE phase")
-                    self.logger.info("Extracting imported functions and storing in libs.out")
+                    self.logger.info("Extracting imported functions and storing in libs.out", extra=analysisLogExtra)
                     self.extractAllImportedFunctions(tempOutputFolder, C.LIBFILENAME)
-                    self.logger.info("<---Finished ANALYZE phase\n")
+                    #self.logger.info("<---Finished ANALYZE phase\n")
                 #if ( not languageReady ):
                 self.extractBinaryType(tempOutputFolder)
                 isMusl = self.usesMusl(tempOutputFolder)
@@ -496,12 +499,11 @@ class ContainerProfiler():
                 funcFile = open(funcFilePath, 'r')
                 funcLine = funcFile.readline()
                 if ( not funcLine and not os.path.isfile(os.path.join(self.goFolderPath, self.name + ".syscalls")) and len(directSyscallSet) == 0 ):
-                    self.logger.info("%s container can't be hardened because no functions can be extracted from binaries and no direct syscalls found", self.name)
+                    self.logger.info("%s container can't be hardened because no functions can be extracted from binaries and no direct syscalls found", self.name, extra=analysisLogExtra)
                     self.errorMessage = "container can't be hardened because no functions can be extracted from binaries and no direct syscalls found"
                     return C.NOFUNCS
 
 
-                self.logger.info("--->Starting INTEGRATE phase, extracting the list required system calls")
                 functionStartsOriginal = set()
                 functionStartsOriginal.update(piecewise.Piecewise.libcStartNodes)
                 # functionStartsFineGrain = set()
@@ -526,17 +528,17 @@ class ContainerProfiler():
                     #2. Extract leaves from all imported functions in libs.out 
                     #3. Create a list of required functions for each library
                     #4. Use fine grained version or all imported for libraries without CFG
-                    self.logger.info("--->Starting Fine Grain Syscall Extraction")
+                    #self.logger.info("Starting multi-phase Syscall Extraction...", extra=multiphaseLogExtra)
                     binaryPaths = os.listdir(tempOutputFolder)
-                    self.logger.debug("self.name: %s", self.name)
+                    self.logger.debug("self.name: %s", self.name, extra=multiphaseLogExtra)
 
                     existSet = set()
                     missingSet = set()
 
                     for binary in binaryPaths:
-                        self.logger.debug("binary/library: %s", binary)
+                        self.logger.debug("binary/library: %s", binary, extra=multiphaseLogExtra)
                         if binary.strip() != "" and binary[0:3] != "lib" and ".so" not in binary:
-                            self.logger.debug("Binary: %s", binary)
+                            self.logger.debug("Binary: %s", binary, extra=multiphaseLogExtra)
                             binaryPath = tempOutputFolder + binary
                             startFunctions = self.extractAllImportedFunctionsFromBinary(tempOutputFolder, binary)
                             startFunctions.update(piecewise.Piecewise.libcStartNodes)
@@ -557,10 +559,10 @@ class ContainerProfiler():
                             if binary in self.imageBinaryFiles:
                                 binaryOnlySyscalls.update(binarySyscalls)
                         else:
-                            self.logger.debug("Skipped library: %s", binary)
+                            self.logger.debug("Skipped library: %s", binary, extra=multiphaseLogExtra)
 
-                    self.logger.debug("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain))
-                    self.logger.info("<---Finished Direct Syscall Extraction\n")
+                    self.logger.debug("Extracted fine grain syscalls: %s", str(allSyscallsFineGrain), extra=multiphaseLogExtra)
+                    self.logger.debug("Finished Direct Syscall Extraction per binary\n", extra=multiphaseLogExtra)
 
                     # libsWithCfg = set()
                     # libsInLibc = set()
@@ -612,7 +614,7 @@ class ContainerProfiler():
                     #             self.logger.warning("Function extraction for file: %s failed!", fileName)
                     #     functionStartsFineGrain.update(set(functionList))
 
-                self.logger.info("Traversing libc call graph to identify required system calls")
+                #self.logger.info("Traversing libc call graph to identify required system calls", extra=multiphaseLogExtra)
                 tmpSet = set()
                 allSyscallsOriginal = set()
                 for function in functionStartsOriginal:
@@ -621,7 +623,7 @@ class ContainerProfiler():
                     else:
                         leaves = glibcGraph.getLeavesFromStartNode(function, glibcSyscallList, list())
                     if ( "syscall( 318 )" in leaves ):
-                        self.logger.debug("function: %s, leaves: %s", function, leaves)
+                        self.logger.debug("function: %s, leaves: %s", function, leaves, extra=multiphaseLogExtra)
                     tmpSet = tmpSet.union(leaves)
                 for syscallStr in tmpSet:
                     syscallStr = syscallStr.replace("syscall( ", "syscall(")
@@ -631,7 +633,7 @@ class ContainerProfiler():
                     allSyscallsOriginal.add(syscallNum)
 
 
-                self.logger.debug("allSyscallsOriginal: %s", str(allSyscallsOriginal))
+                self.logger.debug("allSyscallsOriginal: %s", str(allSyscallsOriginal), extra=multiphaseLogExtra)
                 # allSyscallsFineGrain = set()
                 # if ( self.fineGrain ):
                 #     tmpSet = set()
@@ -662,13 +664,15 @@ class ContainerProfiler():
                     allSyscallsFineGrain.update(staticSyscallList)
                     binaryOnlySyscalls.update(staticSyscallList)
                 except Exception as e:
-                    self.logger.debug("Can't extract syscalls from: %s", os.path.join(self.goFolderPath, self.name + ".syscalls (probably not a golang developed application)"))
-                self.logger.debug("After reading file: %s len(staticSyscallList): %d", os.path.join(self.goFolderPath, self.name + ".syscalls"), len(staticSyscallList))
+                    self.logger.debug("Can't extract syscalls from: %s", os.path.join(self.goFolderPath, self.name + ".syscalls (probably not a golang developed application)"), extra=integrateLogExtra)
+                self.logger.debug("After reading file: %s len(staticSyscallList): %d", os.path.join(self.goFolderPath, self.name + ".syscalls"), len(staticSyscallList), extra=integrateLogExtra)
 
+                self.logger.info("...Analysis Phase Done", extra=analysisLogExtra)
+                self.logger.info("Starting Integrate phase, extracting the list required system calls", extra=integrateLogExtra)
                 syscallMapper = syscall.Syscall(self.logger)
                 syscallMap = syscallMapper.createMap()
 
-                self.logger.info("Generating final system call filter list")
+                self.logger.info("Generating final system call filter list", extra=integrateLogExtra)
                 denyListOriginal = []
 
                 i = 1
@@ -690,8 +694,8 @@ class ContainerProfiler():
                                     denyListFineGrain.append(syscallMap[i])
                         i += 1
 
-                self.logger.info("************************************************************************************")
-                self.logger.info("Container Name: %s Num of filtered syscalls (original): %s", self.name, str(len(denyListOriginal)))
+                #self.logger.info("************************************************************************************", extra=integrateLogExtra)
+                self.logger.info("Container Name: %s Num of filtered syscalls (initialization-phase): %s", self.name, str(len(denyListOriginal)), extra=integrateLogExtra)
 
                 # allSyscallsOriginalMapped = set()
                 # for syscall_num in allSyscallsOriginal:
@@ -699,8 +703,8 @@ class ContainerProfiler():
                 # all_syscalls = set(syscallMap.values())
 
                 # self.logger.info("All syscalls original: %s", str(all_syscalls.difference(set(denyListOriginal))))
-                self.logger.info("************************************************************************************")
-                self.logger.info("<---Finished INTEGRATE phase\n")
+                #self.logger.info("************************************************************************************", extra=integrateLogExtra)
+                #self.logger.info("Done\n", extra=integrateLogExtra)
 
                 self.denySyscallsOriginal = denyListOriginal
                 self.denySyscallOriginalCount = len(denyListOriginal)
@@ -710,7 +714,7 @@ class ContainerProfiler():
                 dockerStartArgsStr = None
 
                 if ( self.fineGrain ):
-                    self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(denyListFineGrain)))
+                    # self.logger.info("Container Name: %s Num of filtered syscalls (fine grained): %s", self.name, str(len(denyListFineGrain)))
                     # self.logger.info("denylistFineGrain - denyListOriginal: %s", str(set(denyListFineGrain).difference(set(denyListOriginal))))
                     # self.logger.info("Fine Grain filtered syscalls: %s", str(set(denyListFineGrain)))
                     binaryOnlySyscallNames = set()
@@ -719,7 +723,7 @@ class ContainerProfiler():
                         if ( syscallMap.get(syscall_num, None) ):
                             binaryOnlySyscallNames.add(str(syscallMap[syscall_num]))
                         else:
-                            self.logger.debug("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num)
+                            self.logger.debug("fine-grained syscall extraction: non-valid system call number is being extracted. this should not happen! %d", syscall_num, extra=multiphaseLogExtra)
                     # self.logger.info("%s syscalls: %s", self.name, str(binaryOnlySyscallNames))
                     # self.logger.info(self.imageBinaryFiles)
 
@@ -731,7 +735,7 @@ class ContainerProfiler():
                             if ( ("Java" in self.languageSet and syscallMap[i] not in javaExceptList) or ("Java" not in self.languageSet) ):
                                 denyListBinaryFineGrain.append(syscallMap[i])
                         i += 1
-                    self.logger.info("%s binary profile denylist: %s", self.name, str(len(denyListBinaryFineGrain)))
+                    self.logger.info("Container name: %s Num of filtered syscalls (post-initialization): %s", self.name, str(len(denyListBinaryFineGrain)), extra=integrateLogExtra)
 
                     self.denySyscallsRestrictive = denyListBinaryFineGrain
                     self.denySyscallRestrictiveCount = len(denyListBinaryFineGrain)
@@ -794,13 +798,17 @@ class ContainerProfiler():
                 outputFile.flush()
                 outputFile.close()
                 seccompPath = outputPath
-                if ( self.fineGrain ):
-                    seccompPath = outputFineGrainPath
-                    outputFineGrainFile = open(outputFineGrainPath, 'w')
-                    outputFineGrainFile.write(denyListFineGrainProfile)
-                    outputFineGrainFile.flush()
-                    outputFineGrainFile.close()
-                self.logger.info("--->Validating generated Seccomp profile: %s", seccompPath)
+
+                ''' disabling library debloating '''
+                #if ( self.fineGrain ):
+                #    seccompPath = outputFineGrainPath
+                #    outputFineGrainFile = open(outputFineGrainPath, 'w')
+                #    outputFineGrainFile.write(denyListFineGrainProfile)
+                #    outputFineGrainFile.flush()
+                #    outputFineGrainFile.close()
+                ''' end of disabling library debloating '''
+
+                self.logger.info("Validating initialization-phase Seccomp profile: %s", seccompPath, extra=validationLogExtra)
                 myRestrictedContainer = None
                 if ( myContainer.runWithSeccompProfile(seccompPath) ):
                     time.sleep(logSleepTime)
@@ -809,9 +817,9 @@ class ContainerProfiler():
                     if ( len(originalLogs) == len(debloatedLogs) or ( len(originalLogs) > len(debloatedLogs) and len(debloatedLogs) >= (0.99*len(originalLogs)) ) or ( len(debloatedLogs) > len(originalLogs) and len(originalLogs) >= (0.99*len(originalLogs)) ) ):
                         time.sleep(3)
                         if ( myContainer.checkStatus() ):
-                            self.logger.info("************************************************************************************")
-                            self.logger.info("Finished validation. Container for image: %s was hardened SUCCESSFULLY!", self.name)
-                            self.logger.info("************************************************************************************")
+                            #self.logger.info("************************************************************************************")
+                            self.logger.info("Finished validating initialization-phase profile. Container for image: %s was hardened SUCCESSFULLY!", self.name, extra=validationLogExtra)
+                            #self.logger.info("************************************************************************************")
                             self.debloatStatus = True
                             self.restrictedDebloatStatus = False
                             returnCode = 0
@@ -838,7 +846,7 @@ class ContainerProfiler():
                                         if ( os.path.isfile(os.path.join(tempOutputFolder, self.dockerEntryPoint)) ):
                                             entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + self.dockerEntryPoint, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
                                         else:
-                                            self.logger.warning("Docker image does not seem to have entrypoint.sh")
+                                            self.logger.warning("Docker image does not seem to have entrypoint.sh", extra=mulitphaseLogExtra)
                                             entrypointStatus = False
                                     else:
                                         entrypointStatus = True
@@ -852,8 +860,8 @@ class ContainerProfiler():
                                     if ( entrypointStatus ):
                                         restrictiveOptions = self.generateRestrictiveOptions(tempOutputFolder, dockerEntryPointFileName)
                                         myRestrictedContainer = container.Container(self.imagePath, restrictiveOptions, self.logger, remote=None, args=dockerStartArgsStr)
-                                        self.logger.info("--->Validating more restrictive Seccomp profile: %s", seccompCProgramPath)
-                                        self.logger.info("Killing and deleting fine-grained hardened container")
+                                        self.logger.info("Validating post-initialization Seccomp profile: %s", seccompCProgramPath, extra=validationLogExtra)
+                                        #self.logger.info("Killing and deleting fine-grained hardened container")
                                         myContainer.kill()
                                         myContainer.delete()
                                         if ( myRestrictedContainer.runWithSeccompProfile(seccompPath) ):
@@ -863,18 +871,18 @@ class ContainerProfiler():
                                             if ( len(originalLogs) == len(restrictedLogs) or ( len(originalLogs) > len(restrictedLogs) and len(restrictedLogs) >= (0.99*len(originalLogs)) ) or ( len(restrictedLogs) > len(originalLogs) and len(originalLogs) >= (0.99*len(originalLogs)) ) ):
                                                 time.sleep(3)
                                                 if ( myRestrictedContainer.checkStatus() ):
-                                                    self.logger.info("************************************************************************************")
-                                                    self.logger.info("Finished more restricted validation. Container for image: %s was hardened SUCCESSFULLY!", self.name)
-                                                    self.logger.info("************************************************************************************")
+                                                    #self.logger.info("************************************************************************************")
+                                                    self.logger.info("Finished post-initialization profile validation. Container for image: %s was hardened SUCCESSFULLY!", self.name, extra=validationLogExtra)
+                                                    #self.logger.info("************************************************************************************")
                                                     self.restrictedDebloatStatus = True
                                                     returnCode = 0
                                                 else:
-                                                    self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name)
+                                                    self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name, extra=validationLogExtra)
                                                     self.errorMessage= "Container was hardened with problems. Dies after running!"
                                                     self.restrictedDebloatStatus = False
                                                     returnCode = C.HSTOPS
                                             else:
-                                                self.logger.warning("Container for image: %s was hardened (more restrictively) with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(restrictedLogs), originalLogs, restrictedLogs)
+                                                self.logger.warning("Container for image: %s was hardened (more restrictively) with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(restrictedLogs), originalLogs, restrictedLogs, extra=validationLogExtra)
                                                 self.errorMessage = "Unknown problem in hardening (more restrictive) container!"
                                                 self.restrictedDebloatStatus = False
                                                 returnCode = C.HLOGLEN
@@ -884,24 +892,24 @@ class ContainerProfiler():
                                             self.restrictedDebloatStatus = False
                                             returnCode = C.HNORUN
                                     else:
-                                        self.logger.warning("docker-entrypoint.wseccomp.sh has not been created, skipping the validation check of the more restrictive filters")
+                                        self.logger.warning("docker-entrypoint.wseccomp.sh has not been created, skipping the validation check of the more restrictive filters", extra=validationLogExtra)
                                 else:
-                                    self.logger.warning("seccomp C program has not been created, skipping the validation check of the more restrictive filters")
+                                    self.logger.warning("seccomp C program has not been created, skipping the validation check of the more restrictive filters", extra=validationLogExtra)
                             else:
-                                self.logger.warning("seccomp C program path not set, supposing not enabled, skipping more restrictive validation")
+                                self.logger.warning("seccomp C program path not set, supposing not enabled, skipping more restrictive validation", extra=validationLogExtra)
                         else:
-                            self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name)
+                            self.logger.warning("Container for image: %s was hardened with problems. Dies after running!", self.name, extra=validationLogExtra)
                             self.errorMessage= "Container was hardened with problems. Dies after running!"
                             returnCode = C.HSTOPS
                     else:
-                        self.logger.warning("Container for image: %s was hardened with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(debloatedLogs), originalLogs, debloatedLogs)
+                        self.logger.warning("Container for image: %s was hardened with problems: len(original): %d len(seccomp): %d original: %s seccomp: %s", self.name, len(originalLogs), len(debloatedLogs), originalLogs, debloatedLogs, extra=validationLogExtra)
                         self.errorMessage = "Unknown problem in hardening container!"
                         returnCode = C.HLOGLEN
                     if ( self.isDependent ):
-                        self.logger.info("Not killing container: %s because it is a dependent for hardening another container", self.name)
+                        self.logger.info("Not killing container: %s because it is a dependent for hardening another container", self.name, extra=validationLogExtra)
                     elif ( myRestrictedContainer ):
                         if ( not myRestrictedContainer.kill() and self.restrictedDebloatStatus ):
-                            self.logger.warning("Restricted container can't be killed even though successfully hardened! Hardening has been unsuccessfull!")
+                            self.logger.warning("Restricted container can't be killed even though successfully hardened! Hardening has been unsuccessfull!", extra=validationLogExtra)
                             self.errorMessage = "Restricted container can't be killed even though successfully hardened! Hardening has been unsuccessfull!"
                             self.restrictedDebloatStatus = False
                             returnCode = C.HNOKILL
