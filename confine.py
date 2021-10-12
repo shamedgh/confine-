@@ -147,11 +147,11 @@ if __name__ == '__main__':
             rootLogger.info("////////////////////////////////////////////////////")
             glibcFuncList = util.extractAllFunctions(options.libcfuncpath, rootLogger)
             if ( not glibcFuncList ):
-                rootLogger.error("Problem extracting list of functions from glibc")
+                rootLogger.error("Problem extracting list of functions from glibc", extra=initLogExtra)
                 sys.exit(-1)
             muslFuncList = util.extractAllFunctions(options.muslfuncpath, rootLogger)
             if ( not muslFuncList ):
-                rootLogger.error("Problem extracting list of functions from musl")
+                rootLogger.error("Problem extracting list of functions from musl", extra=initLogExtra)
                 sys.exit(-1)
 
         print(CONFINESTR)
@@ -171,10 +171,10 @@ if __name__ == '__main__':
             try:
                 os.mkdir(reportFolder, accessRights)
             except OSError:
-                rootLogger.error("There was a problem creating the results (-r) folder")
+                rootLogger.error("There was a problem creating the results (-r) folder", extra=initLogExtra)
                 sys.exit(-1)
         elif ( os.path.isfile(reportFolder) ):
-            rootLogger.error("The folder specified for the results (-r) already exists and is a file. Please change the path or delete the file and re-run the script.")
+            rootLogger.error("The folder specified for the results (-r) already exists and is a file. Please change the path or delete the file and re-run the script.", extra=initLogExtra)
             sys.exit(-1)
 
         outputFolder = options.outputfolder
@@ -184,10 +184,10 @@ if __name__ == '__main__':
             try:
                 os.mkdir(outputFolder, accessRights)
             except OSError:
-                rootLogger.error("There was a problem creating the output (-o) folder")
+                rootLogger.error("There was a problem creating the output (-o) folder", extra=initLogExtra)
                 sys.exit(-1)
         elif ( os.path.isfile(outputFolder) ):
-            rootLogger.error("The folder specified for the output (-o) already exists and is a file. Please change the path or delete the file and re-run the script.")
+            rootLogger.error("The folder specified for the output (-o) already exists and is a file. Please change the path or delete the file and re-run the script.", extra=initLogExtra)
             sys.exit(-1)
 
         #Check for previous report file and skip profiling previous containers
@@ -219,8 +219,8 @@ if __name__ == '__main__':
             imageToPropertyStr = inputFile.read()
             imageToPropertyMap = json.loads(imageToPropertyStr)
         except Exception as e:
-            rootLogger.error("Trying to load image list map json from: %s, but doesn't exist: %s", options.input, str(e))
-            rootLogger.error("Exiting...")
+            rootLogger.error("Trying to load image list map json from: %s, but doesn't exist: %s", options.input, str(e), extra=initLogExtra)
+            rootLogger.error("Exiting...", extra=initLogExtra)
             sys.exit(-1)
 
         statsTotalImage = 0
@@ -289,7 +289,7 @@ if __name__ == '__main__':
                             rootLogger.info("Hardened dependent image: %s for main image: %s", depImageName, imageName, extra=initLogExtra)
                             retryCount += 1
                         else:
-                            rootLogger.error("Tried hardening container: %s returned: %d:%s", depImageName, returncode, C.ERRTOMSG[returncode])
+                            rootLogger.error("Tried hardening container: %s returned: %d:%s", depImageName, returncode, C.ERRTOMSG[returncode], extra=initLogExtra)
                         retryCount += 1
                         if ( depLink and newProfile.getContainerName()):
                             #rootLogger.info("depLink is TRUE")
@@ -420,7 +420,7 @@ if __name__ == '__main__':
                         #rootLogger.info("---------------------------------------------------------------------------------------\n", extra=initLogExtra)
                         time.sleep(1)
                     else:
-                        rootLogger.error("Tried hardening container: %s returned: %d:%s", imageName, returncode, C.ERRTOMSG[returncode])
+                        rootLogger.error("Tried hardening container: %s returned: %d:%s", imageName, returncode, C.ERRTOMSG[returncode], extra=finalLogExtra)
                     retryCount += 1
             else:
                 rootLogger.debug("Skipping %s because is disabled in the JSON file", imageName)
