@@ -1,3 +1,5 @@
+*.tar.gz
+*.json
 myimages.json
 opendaylight.images.list
 output
