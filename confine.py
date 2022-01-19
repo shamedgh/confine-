@@ -11,6 +11,17 @@ sys.path.insert(0, './python-utils/')
 import constants as C
 import util
 
+CONFINESTR = """
+  /$$$$$$   /$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$$$
+ /$$__  $$ /$$__  $$| $$$ | $$| $$_____/|_  $$_/| $$$ | $$| $$_____/
+| $$  \__/| $$  \ $$| $$$$| $$| $$        | $$  | $$$$| $$| $$      
+| $$      | $$  | $$| $$ $$ $$| $$$$$     | $$  | $$ $$ $$| $$$$$   
+| $$      | $$  | $$| $$  $$$$| $$__/     | $$  | $$  $$$$| $$__/   
+| $$    $$| $$  | $$| $$\  $$$| $$        | $$  | $$\  $$$| $$      
+|  $$$$$$/|  $$$$$$/| $$ \  $$| $$       /$$$$$$| $$ \  $$| $$$$$$$$
+ \______/  \______/ |__/  \__/|__/      |______/|__/  \__/|________/
+"""
+
 def isValidOpts(opts):
     """
     Check if the required options are sane to be accepted
@@ -53,6 +64,7 @@ def setLogPath(logPath):
 
 #    ch = logging.StreamHandler(sys.stdout)
     consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(util.ColorFormatter())
     rootLogger.addHandler(consoleHandler)
     return rootLogger
 #    rootLogger.addHandler(ch)
@@ -86,6 +98,9 @@ if __name__ == '__main__':
     parser.add_option("-r", "--reportfolder", dest="reportfolder", default=None, nargs=1,
                       help="Report file path")
 
+    parser.add_option("", "--monitoringtool", dest="monitoringtool", default="sysdig", nargs=1,
+                      help="Monitoring tool to be used for dynamic analysis")
+
     parser.add_option("-p", "--defaultprofile", dest="defaultprofile", default=None, nargs=1,
                       help="Report file path")
 
@@ -110,6 +125,9 @@ if __name__ == '__main__':
     parser.add_option("", "--skip", dest="skippreviousruns", action="store_true", default=False,
                       help="Skip running analysis for containers ran previously")
 
+    parser.add_option("", "--binliblist", dest="binliblist", default=None, nargs=1,
+                      help="Path to file containing list of binaries and libraries")
+
     parser.add_option("-d", "--debug", dest="debug", action="store_true", default=False,
                       help="Debug enabled/disabled")
 
@@ -117,10 +135,8 @@ if __name__ == '__main__':
     if isValidOpts(options):
         rootLogger = setLogPath("containerprofiler.log")
 
-        if ( options.finegrain ):
-            rootLogger.info("////////////////////////////////////////////////////")
-            rootLogger.info("WARNING: You have enabled finegrain through the --finegrain option which is NOT fully operational yet. Use at your own risk.")
-            rootLogger.info("////////////////////////////////////////////////////")
+        initLogExtra = {'phase': 'INIT'}
+        finalLogExtra = {'phase': 'FINAL'}
 
         #Read list of libc and musl functions
         glibcFuncList = None
@@ -131,12 +147,14 @@ if __name__ == '__main__':
             rootLogger.info("////////////////////////////////////////////////////")
             glibcFuncList = util.extractAllFunctions(options.libcfuncpath, rootLogger)
             if ( not glibcFuncList ):
-                rootLogger.error("Problem extracting list of functions from glibc")
+                rootLogger.error("Problem extracting list of functions from glibc", extra=initLogExtra)
                 sys.exit(-1)
             muslFuncList = util.extractAllFunctions(options.muslfuncpath, rootLogger)
             if ( not muslFuncList ):
-                rootLogger.error("Problem extracting list of functions from musl")
+                rootLogger.error("Problem extracting list of functions from musl", extra=initLogExtra)
                 sys.exit(-1)
+
+        print(CONFINESTR)
 
         #Load list of default filtered system calls
         defaultProfileFile = open(options.defaultprofile, 'r')
@@ -153,10 +171,10 @@ if __name__ == '__main__':
             try:
                 os.mkdir(reportFolder, accessRights)
             except OSError:
-                rootLogger.error("There was a problem creating the results (-r) folder")
+                rootLogger.error("There was a problem creating the results (-r) folder", extra=initLogExtra)
                 sys.exit(-1)
         elif ( os.path.isfile(reportFolder) ):
-            rootLogger.error("The folder specified for the results (-r) already exists and is a file. Please change the path or delete the file and re-run the script.")
+            rootLogger.error("The folder specified for the results (-r) already exists and is a file. Please change the path or delete the file and re-run the script.", extra=initLogExtra)
             sys.exit(-1)
 
         outputFolder = options.outputfolder
@@ -166,10 +184,10 @@ if __name__ == '__main__':
             try:
                 os.mkdir(outputFolder, accessRights)
             except OSError:
-                rootLogger.error("There was a problem creating the output (-o) folder")
+                rootLogger.error("There was a problem creating the output (-o) folder", extra=initLogExtra)
                 sys.exit(-1)
         elif ( os.path.isfile(outputFolder) ):
-            rootLogger.error("The folder specified for the output (-o) already exists and is a file. Please change the path or delete the file and re-run the script.")
+            rootLogger.error("The folder specified for the output (-o) already exists and is a file. Please change the path or delete the file and re-run the script.", extra=initLogExtra)
             sys.exit(-1)
 
         #Check for previous report file and skip profiling previous containers
@@ -184,7 +202,7 @@ if __name__ == '__main__':
                     reportLine = reportFile.readline()
                 reportFile.close()
             except IOError as e:
-                rootLogger.info("Report file doesn't exist, no previous reports exist, creating...")
+                rootLogger.info("Report file doesn't exist, no previous reports exist, creating...", extra=initLogExtra)
 
 
         reportFile = open(reportFilePath + ".csv", 'a+')
@@ -201,8 +219,8 @@ if __name__ == '__main__':
             imageToPropertyStr = inputFile.read()
             imageToPropertyMap = json.loads(imageToPropertyStr)
         except Exception as e:
-            rootLogger.error("Trying to load image list map json from: %s, but doesn't exist: %s", options.input, str(e))
-            rootLogger.error("Exiting...")
+            rootLogger.error("Trying to load image list map json from: %s, but doesn't exist: %s", options.input, str(e), extra=initLogExtra)
+            rootLogger.error("Exiting...", extra=initLogExtra)
             sys.exit(-1)
 
         statsTotalImage = 0
@@ -218,10 +236,10 @@ if __name__ == '__main__':
             depLinkSet = set()
             imageName = imageVals.get("image-name", imageKey)
             if ( imageVals.get("enable", "false") == "true" and imageName not in skipList ):
-                rootLogger.info("------------------------------------------------------------------------")
-                rootLogger.info("////////////////////////////////////////////////////////////////////////")
-                rootLogger.info("----->Starting analysis for image: %s<-----", imageName)
-                rootLogger.info("////////////////////////////////////////////////////////////////////////\n")
+                #rootLogger.info("------------------------------------------------------------------------")
+                #rootLogger.info("////////////////////////////////////////////////////////////////////////")
+                rootLogger.info("Starting analysis for image: %s", imageName, extra=initLogExtra)
+                #rootLogger.info("////////////////////////////////////////////////////////////////////////\n")
                 killAllContainers = container.killToolContainers(rootLogger)
                 #rootLogger.info("Killing all containers related to toolset returned: %s", killAllContainers)
                 deleteAllContainers = container.deleteStoppedContainers(rootLogger)
@@ -261,15 +279,17 @@ if __name__ == '__main__':
                             options.cfgfolderpath, 
                             options.finegrain, 
                             options.allbinaries, 
+                            options.binliblist,
+                            options.monitoringtool,
                             rootLogger, 
                             True)
                         returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + depImageName + "/", options.reportfolder)
                         #if ( returncode != C.SYSDIGERR ):
                         if ( returncode == 0 ):
-                            rootLogger.info("Hardened dependent image: %s for main image: %s", depImageName, imageName)
+                            rootLogger.info("Hardened dependent image: %s for main image: %s", depImageName, imageName, extra=initLogExtra)
                             retryCount += 1
                         else:
-                            rootLogger.error("Tried hardening container: %s returned: %d:%s", depImageName, returncode, C.ERRTOMSG[returncode])
+                            rootLogger.error("Tried hardening container: %s returned: %d:%s", depImageName, returncode, C.ERRTOMSG[returncode], extra=initLogExtra)
                         retryCount += 1
                         if ( depLink and newProfile.getContainerName()):
                             #rootLogger.info("depLink is TRUE")
@@ -316,6 +336,8 @@ if __name__ == '__main__':
                         options.cfgfolderpath, 
                         options.finegrain, 
                         options.allbinaries, 
+                        options.binliblist,
+                        options.monitoringtool,
                         rootLogger)
                     returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
                     end = time.time()
@@ -392,13 +414,13 @@ if __name__ == '__main__':
                                 count += 1
                                 langDict[successStatus] = count
                                 langCount[lang] = langDict
-                        rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////")
-                        rootLogger.info("----->Finished extracting system calls for %s, sleeping for 5 seconds<-----", imageName)
-                        rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////")
-                        rootLogger.info("---------------------------------------------------------------------------------------\n")
-                        time.sleep(5)
+                        #rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////", extra=initLogExtra)
+                        rootLogger.info("Finished extracting system calls for %s", imageName, extra=finalLogExtra)
+                        #rootLogger.info("///////////////////////////////////////////////////////////////////////////////////////", extra=initLogExtra)
+                        #rootLogger.info("---------------------------------------------------------------------------------------\n", extra=initLogExtra)
+                        time.sleep(1)
                     else:
-                        rootLogger.error("Tried hardening container: %s returned: %d:%s", imageName, returncode, C.ERRTOMSG[returncode])
+                        rootLogger.error("Tried hardening container: %s returned: %d:%s", imageName, returncode, C.ERRTOMSG[returncode], extra=finalLogExtra)
                     retryCount += 1
             else:
                 rootLogger.debug("Skipping %s because is disabled in the JSON file", imageName)
