@@ -357,7 +357,7 @@ class ContainerProfiler():
             self.logger.debug("Successfully created directory: %s", tempOutputFolder)
 
         ttr = 10
-        logSleepTime = 20
+        logSleepTime = 60
         sysdigTotalRunCount = 1
         if ( binaryReady ):
             sysdigTotalRunCount = 1
@@ -846,7 +846,7 @@ class ContainerProfiler():
                                         if ( os.path.isfile(os.path.join(tempOutputFolder, self.dockerEntryPoint)) ):
                                             entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + self.dockerEntryPoint, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
                                         else:
-                                            self.logger.warning("Docker image does not seem to have entrypoint.sh", extra=mulitphaseLogExtra)
+                                            self.logger.warning("Docker image does not seem to have entrypoint.sh", extra=multiphaseLogExtra)
                                             entrypointStatus = False
                                     else:
                                         entrypointStatus = True

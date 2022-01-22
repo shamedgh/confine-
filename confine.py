@@ -64,7 +64,7 @@ def setLogPath(logPath):
 
 #    ch = logging.StreamHandler(sys.stdout)
     consoleHandler = logging.StreamHandler()
-    consoleHandler.setFormatter(util.ColorFormatter())
+    #consoleHandler.setFormatter(util.ColorFormatter())
     rootLogger.addHandler(consoleHandler)
     return rootLogger
 #    rootLogger.addHandler(ch)

@@ -113,10 +113,11 @@ class Container():
 
     def runWithoutSeccomp(self):
         # The command list cannot contain empty strings
-        cmd = list(filter(None,
-                ["docker", self.remote, "run", "-l", C.TOOLNAME, "--security-opt", 
-                 "seccomp=unconfined", "--name", self.containerName, self.options,
-                 "-td", self.imageName, self.args]))
+        cmdList = ["docker", self.remote, "run", "-l", C.TOOLNAME, "--security-opt", 
+                 "seccomp=unconfined", "--name", self.containerName]
+        cmdList.extend(self.options.split())
+        cmdList.extend(["-td", self.imageName, self.args])
+        cmd = list(filter(None,cmdList))
         self.logger.debug("Running container %s, cmd=%s", self.imageName, cmd)
         proc = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         (stdout, stderr) = proc.communicate()
