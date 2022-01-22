@@ -46,7 +46,7 @@
     },
       "redis": {
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, confine, and confine-",
         "image-name": "redis",
         "image-url": "redis",
         "options": "",
@@ -64,7 +64,7 @@
     },
     "nginx": {
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, confine, and confine-",
         "image-name": "nginx",
         "image-url": "nginx",
         "options": "",
@@ -84,7 +84,7 @@
     },
   	"postgres": {
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-(check it, didn't work in the new version)",
+	"status": "worked on angr, confine, and confine-(check it, didn't work in the new version)",
         "image-name": "postgres",
         "image-url": "postgres",
         "options": "-e POSTGRES_PASSWORD=password",
@@ -102,7 +102,7 @@
     },
     "node": {
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-",
+	"status": "wworked on angr, confine, and confine-",
         "image-name": "node",
         "image-url": "node",
         "options": "",
@@ -120,7 +120,7 @@
     },	
  	"mysql": {
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, confine, and confine-(check it, didn't work in the new version)",
         "image-name": "mysql",
         "image-url": "mysql",
         "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
@@ -157,7 +157,7 @@
     },
     "httpd": {
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-",
+	"status": "wworked on angr, confine, and confine-",
         "image-name": "httpd",
         "image-url": "httpd",
         "binaries": [
@@ -186,7 +186,7 @@
     },
 	"memcached": {
         "enable": "false",
-		"status": "worked on angr, cofine, and confine-",
+		"status": "worked on angr, confine, and confine-, (check it shows error druning running but works)",
         "image-name": "memcached",
         "image-url": "memcached",
         "options": "",
@@ -259,7 +259,7 @@
     },
 	"mariadb": {	
         "enable": "false",
-	"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, confine, and confine-(check it, didn't work in the new version)",
         "image-name": "mariadb",
         "image-url": "mariadb",
         "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
@@ -373,7 +373,7 @@
     },
 	"nextcloud": {
         "enable": "false",
-	"status": "worked on angr and confine, and confine-",
+	"status": "worked on angr and confine, and confine-, however it stopped after start",
         "image-name": "nextcloud",
         "image-url": "nextcloud",
         "binaries": [
@@ -599,6 +599,24 @@
         "dependencies": {},
         "id": "39"
     },
+		"matomo": {
+        "enable": "true",
+		"status": "worked on angr, confine, and confine-(check it, didn't work in the new version)",
+        "image-name": "matomo",
+        "image-url": "matomo",
+        "options": "",
+        "args": "",
+        "dependencies": {},
+        "id": "40",
+        "binaries": [
+            "apache2"
+        ],
+        "docker-cmd": [
+            "apache2-foreground"
+        ],
+        "entrypoint": "/entrypoint.sh",
+        "docker-path": "/home/confine/matome"
+    },
 	"adminer": {
         "enable": "false",
         "image-name": "adminer",
@@ -608,7 +626,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "40",
+        "id": "41",
         "binaries": [
             "php"
         ],
@@ -630,7 +648,7 @@
         "options": "-network networks -e ME_CONFIG_MONGODB_SERVER=mongof -p 8081:8081",
         "args": "",
         "dependencies": {},
-        "id": "41",
+        "id": "42",
         "binaries": [
             "node"
         ],
@@ -642,13 +660,13 @@
     },
 	"ghost": {
         "enable": "false",
-	"status": "worked in angr, confine ,and confine-",
+	"status": "worked on angr, confine, and confine-",
         "image-name": "ghost",
         "image-url": "ghost",
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "42",
+        "id": "43",
         "binaries": [
             "node"
         ],
@@ -668,7 +686,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "43",
+        "id": "44",
         "binaries": [
             "java"
         ],
@@ -680,13 +698,13 @@
     },
 	"zookeeper": {
         "enable": "false",
-	"status": "worked on angr and confine,and confine-",
+	"status": "worked on angr and confine, but in confine- the seccomp profile created but didn't work",
         "image-name": "zookeeper",
         "image-url": "zookeeper",
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "44",
+        "id": "45",
         "binaries": [
             "java"
         ],
@@ -706,7 +724,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "45"
+        "id": "46"
     },
 	"kong": {
         "enable": "false",
@@ -717,7 +735,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "46"
+        "id": "47"
     },
 	"kibana": {
         "enable": "false",
@@ -728,7 +746,7 @@
         "options": "-p 5601:5601",
         "args": "",
         "dependencies": {},
-        "id": "47"
+        "id": "48"
     },
 	"solr": {
         "enable": "false",
@@ -739,7 +757,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "48",
+        "id": "49",
         "binaries": [
             "java"
         ],
@@ -760,7 +778,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "49"
+        "id": "50"
     },
 	"java": {
         "enable": "false",
@@ -771,7 +789,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "50"
+        "id": "51"
     },
 	"couchdb": {
         "enable": "false",
@@ -782,7 +800,7 @@
         "options": "-e COUCHDB_USER=admin -e COUCHDB_PASSWORD=password",
         "args": "",
         "dependencies": {},
-        "id": "51"
+        "id": "52"
     },
 	"cassandra": {
         "enable": "false",
@@ -793,7 +811,6 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "46",
         "binaries": [
             "cassandra"
         ],
@@ -801,7 +818,7 @@
             "cassandra",
             "-f"
         ],
-		"id": "52",
+		"id": "53",
         "entrypoint": "docker-entrypoint.sh",
         "docker-path": "/home/confine/cassandra"
     },
@@ -814,7 +831,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "53",
+        "id": "54",
         "binaries": [
             "nats-server"
         ],
@@ -833,17 +850,17 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "54"
+        "id": "55"
     },
 	"percona": {
         "enable": "false",
-	"status": "worked on angr , but did not didn't work in confine- and confine, needs option but it doesn't work in confine ",
+	"status": "worked on angr, confine, and confine- (stopped after a few second in muliti-stage, didn't work in this version, check it, option error)",
         "image-name": "percona",
         "image-url": "percona",
         "options": " -e MYSQL_ROOT_PASSWORD=my-secret-pw ",
         "args": "",
         "dependencies": {},
-        "id": "55",
+        "id": "56",
         "binaries": [
             "mysqld"
         ],
@@ -862,7 +879,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "56"
+        "id": "57"
     },
 	"buildpack-deps": {
         "enable": "false",
@@ -873,7 +890,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "57"
+        "id": "58"
     },
 	"perl": {
         "enable": "false",
@@ -883,7 +900,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "58",
+        "id": "59",
         "binaries": [
             "perl5.32.1"
         ],
@@ -902,7 +919,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "59",
+        "id": "60",
         "binaries": [
             "nats-streaming"
         ],
@@ -920,7 +937,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "60",
+        "id": "61",
         "binaries": [
             "???"
         ],
@@ -938,7 +955,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "61",
+        "id": "62",
         "binaries": [
             "java"
         ],
@@ -962,7 +979,7 @@
             "apache2-foreground"
         ],
 		"dependencies": {},
-        "id": "62",
+        "id": "63",
         "entrypoint": "docker-php-entrypoint",
         "docker-path": "/home/confine/drupal"
 
@@ -976,7 +993,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "63"
+        "id": "64"
     },
 	"owncloud": {
         "enable": "false",
@@ -989,7 +1006,7 @@
         ],
         "args": "",
         "dependencies": {},
-        "id": "64",
+        "id": "65",
 		"docker-cmd": [
             "apache2-foreground"
         ],
@@ -1006,7 +1023,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "65",
+        "id": "66",
         "binaries": [
             "couchbase-server"
         ],
@@ -1025,7 +1042,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "66"
+        "id": "67"
     },
 	"pypy": {
         "enable": "false",
@@ -1035,7 +1052,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "67",
+        "id": "68",
         "binaries": [
             "pypy3"
         ],
@@ -1054,7 +1071,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "68",
+        "id": "69",
         "binaries": [
             "rethinkdb"
         ],
@@ -1075,7 +1092,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "69"
+        "id": "70"
     },
 	"fedora": {
         "enable": "false",
@@ -1086,7 +1103,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "70"
+        "id": "71"
     },
 	"jruby": {
         "enable": "false",
@@ -1096,7 +1113,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "71",
+        "id": "72",
         "binaries": [
             "java"
         ],
@@ -1115,7 +1132,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "72"
+        "id": "73"
     },
 	"odoo": {
         "enable": "false",
@@ -1126,7 +1143,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "73"
+        "id": "74"
     },
 	"elixir": {
         "enable": "false",
@@ -1137,7 +1154,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "74"
+        "id": "75"
     },
 	"adoptopenjdk": {
         "enable": "false",
@@ -1147,7 +1164,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "75"
+        "id": "76"
     },
 	"kapacitor": {
         "enable": "false",
@@ -1158,7 +1175,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "76",
+        "id": "77",
         "binaries": [
             "kapacitord"
         ],
@@ -1177,7 +1194,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-		"id": "77"
+		"id": "78"
     },
 	"erlang": {
         "enable": "false",
@@ -1188,7 +1205,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "78"
+        "id": "79"
     },
 	"websphere-liberty": {
         "enable": "false",
@@ -1198,7 +1215,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "79",
+        "id": "80",
         "binaries": [
             "java"
         ],
@@ -1219,7 +1236,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "80"
+        "id": "8"
     },
 	"mediawiki": {
         "enable": "true",
@@ -1232,7 +1249,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "81",
+        "id": "82",
 		"docker-cmd": [
             "apache2-foreground"
         ],
@@ -1247,7 +1264,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "82"
+        "id": "83"
     },
 	"swift": {
         "enable": "false",
@@ -1258,7 +1275,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "83"
+        "id": "84"
     },
 	"amazoncorretto": {
         "enable": "false",
@@ -1269,7 +1286,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "84"
+        "id": "85"
     },
 	"oraclelinux": {
         "enable": "false",
@@ -1280,7 +1297,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "85"
+        "id": "86"
     },
 	"haxe": {
         "enable": "false",
@@ -1291,7 +1308,7 @@
         "options": "",
         "args": "",
         "dependencies": {},
-        "id": "86"
+        "id": "87"
     },
 
 	"phpmyadmin": {
@@ -1310,7 +1327,7 @@
             
         }
 		},
-        "id": "87",
+        "id": "88",
         "binaries": [
             ""
         ],
