@@ -46,7 +46,7 @@
     },
       "redis": {
         "enable": "false",
-		"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, cofine, and confine-",
         "image-name": "redis",
         "image-url": "redis",
         "options": "",
@@ -64,7 +64,7 @@
     },
     "nginx": {
         "enable": "false",
-		    "status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, cofine, and confine-",
         "image-name": "nginx",
         "image-url": "nginx",
         "options": "",
@@ -84,7 +84,7 @@
     },
   	"postgres": {
         "enable": "false",
-		    "status": "worked on angr, cofine, and confine-(check it, didn't work in the new version)",
+	"status": "worked on angr, cofine, and confine-(check it, didn't work in the new version)",
         "image-name": "postgres",
         "image-url": "postgres",
         "options": "-e POSTGRES_PASSWORD=password",
@@ -102,7 +102,7 @@
     },
     "node": {
         "enable": "false",
-		    "status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, cofine, and confine-",
         "image-name": "node",
         "image-url": "node",
         "options": "",
@@ -120,7 +120,7 @@
     },	
  	"mysql": {
         "enable": "false",
-		    "status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, cofine, and confine-",
         "image-name": "mysql",
         "image-url": "mysql",
         "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
@@ -157,7 +157,7 @@
     },
     "httpd": {
         "enable": "false",
-		"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, cofine, and confine-",
         "image-name": "httpd",
         "image-url": "httpd",
         "binaries": [
@@ -175,7 +175,7 @@
     },
 	"hello-world": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "too simple",
         "image-name": "hello-world",
         "image-url": "hello-world",
@@ -205,7 +205,7 @@
 
 	"mongo": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "angr crashes when wants to recover CFG",
         "image-name": "mongo",
         "image-url": "mongo",
@@ -229,7 +229,7 @@
     },
 	"registry": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "go-based",
         "image-name": "registry",
         "image-url": "registry",
@@ -248,7 +248,7 @@
     },
 	"openjdk": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation",
         "image-name": "openjdk",
         "image-url": "openjdk",
@@ -259,7 +259,7 @@
     },
 	"mariadb": {	
         "enable": "false",
-		"status": "worked on angr, cofine, and confine-",
+	"status": "worked on angr, cofine, and confine-",
         "image-name": "mariadb",
         "image-url": "mariadb",
         "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw",
@@ -277,7 +277,7 @@
     },
 	"golang": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation of golang",
         "image-name": "golang",
         "image-url": "golang",
@@ -288,7 +288,7 @@
     },
 	"wordpress": {
         "enable": "false",
-		"status": "worked on angr, but did not work in confine and confine-, dependent container. check it!",
+	"status": "worked on angr, but did not work in confine and confine-, dependent container. check it!",
         "image-name": "wordpress",
         "image-url": "wordpress",
         "options": "-e WORDPRESS_DB_PASSWORD=wpuser@ -p 80:80 -v /tmp/html:/var/www/html",
@@ -309,7 +309,7 @@
     },
 	"docker": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation of docker",
         "image-name": "docker",
         "image-url": "docker",
@@ -320,7 +320,7 @@
     },
 	"rabbitmq": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "it contains more than one binary",
         "image-name": "rabbitmq",
         "image-url": "rabbitmq",
@@ -331,7 +331,7 @@
     },
 	"influxdb": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "didn't work in Confine, leaving out. Also, it is a go-based application",
         "image-name": "influxdb",
         "image-url": "influxdb",
@@ -350,7 +350,7 @@
     },
 	"consul": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "runs two programs, consul and dumb-init. might have problems, but should look into it. Also, it is a go-based application",
         "image-name": "consul",
         "image-url": "consul",
@@ -373,7 +373,7 @@
     },
 	"nextcloud": {
         "enable": "false",
-		"status": "worked on angr and confine, and confine-",
+	"status": "worked on angr and confine, and confine-",
         "image-name": "nextcloud",
         "image-url": "nextcloud",
         "binaries": [
@@ -395,7 +395,7 @@
     },
 	"haproxy": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "not in confine due to complex configuration",
         "image-name": "haproxy",
         "image-url": "haproxy",
@@ -406,7 +406,7 @@
     },
 	"debian": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation",
         "image-name": "debian",
         "image-url": "debian",
@@ -417,7 +417,7 @@
     },
 	"sonarqube": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "runs multiple java applications, similar to java",
         "image-name": "sonarqube",
         "image-url": "sonarqube",
@@ -428,7 +428,7 @@
     },
 	"ruby": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation",
         "image-name": "ruby",
         "image-url": "ruby",
@@ -439,7 +439,7 @@
     },
 	"elasticsearch": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "run serveral applications",
         "image-name": "elasticsearch",
         "image-url": "elasticsearch:7.1.0",
@@ -450,7 +450,7 @@
     },
 	"centos": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation",
         "image-name": "centos",
         "image-url": "centos",
@@ -461,7 +461,7 @@
     },
 	"php": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation, and angr crashes when wants to recover CFG",
         "image-name": "php",
         "image-url": "php",
@@ -480,8 +480,8 @@
     },
 	"tomcat": {
         "enable": "false",
-		"status": "worked on angr and confine, but didn't work in confine-(hardened with problem), check it",
-		"image-name": "tomcat",
+	"status": "worked on angr and confine, but didn't work in confine-(hardened with problem), check it",
+	"image-name": "tomcat",
         "image-url": "tomcat",
         "options": "",
         "args": "",
@@ -499,7 +499,7 @@
     },
 	"amazonlinux": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla distribution",
         "image-name": "amazonlinux",
         "image-url": "amazonlinux",
@@ -510,7 +510,7 @@
     },
 	"maven": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "not in confine due to complex configuration",
         "image-name": "maven",
         "image-url": "maven",
@@ -521,8 +521,8 @@
     },
 	"eclipse-mosquitto": {
         "enable": "false",
-		"status": "don't consider it",
-		"reason": "uses musl-libc",
+	"status": "don't consider it",
+	"reason": "uses musl-libc",
         "image-name": "eclipse-mosquitto",
         "image-url": "eclipse-mosquitto",
         "options": "",
@@ -540,7 +540,7 @@
     },
 	"telegraf": {
         "enable": "false",
-		"status": "worked on angr, confine, and confine-",
+	"status": "worked on angr, confine, and confine-",
         "image-name": "telegraf",
         "image-url": "telegraf",
         "options": "",
@@ -558,7 +558,7 @@
     },
 	"bash": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run any server-side program",
         "image-name": "bash",
         "image-url": "bash",
@@ -569,7 +569,7 @@
     },
 	"vault": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "go-based",
         "image-name": "vault",
         "image-url": "vault",
@@ -590,7 +590,7 @@
     },
 	"caddy": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "go-based",
         "image-name": "caddy",
         "image-url": "caddy",
@@ -603,7 +603,7 @@
         "enable": "false",
         "image-name": "adminer",
         "image-url": "adminer",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "angr crashes when wants to recover CFG for php",
         "options": "",
         "args": "",
@@ -624,7 +624,7 @@
     },
 	"mongo-express": {
         "enable": "false",
-		"status": "worked on angr, but didn't work in confine- and confine, check it, needs options but it doesn't work",
+	"status": "worked on angr, but didn't work in confine- and confine, check it, needs options but it doesn't work",
         "image-name": "mongo-express",
         "image-url": "mongo-express",
         "options": "-network networks -e ME_CONFIG_MONGODB_SERVER=mongof -p 8081:8081",
@@ -642,7 +642,7 @@
     },
 	"ghost": {
         "enable": "false",
-		"status": "worked in angr, confine ,and confine-",
+	"status": "worked in angr, confine ,and confine-",
         "image-name": "ghost",
         "image-url": "ghost",
         "options": "",
@@ -662,7 +662,7 @@
     },
 	"logstash": {
         "enable": "false",
-		"status": "worked on angr, but did not did not work in confine- and confine, check it",
+	"status": "worked on angr, but did not did not work in confine- and confine, check it",
         "image-name": "logstash",
         "image-url": "logstash:7.16.3",
         "options": "",
@@ -680,7 +680,7 @@
     },
 	"zookeeper": {
         "enable": "false",
-		"status": "worked on angr and confine,and confine-",
+	"status": "worked on angr and confine,and confine-",
         "image-name": "zookeeper",
         "image-url": "zookeeper",
         "options": "",
@@ -699,7 +699,7 @@
     },
 	"gradle": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run in confine, a build tool. needs to be passed a project to be built",
         "image-name": "gradle",
         "image-url": "gradle",
@@ -710,7 +710,7 @@
     },
 	"kong": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "didn't run in confine paper either",
         "image-name": "kong",
         "image-url": "kong",
@@ -721,7 +721,7 @@
     },
 	"kibana": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "runs node and tini program",
         "image-name": "kibana",
         "image-url": "kibana:7.1.0",
@@ -732,7 +732,7 @@
     },
 	"solr": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "based on java, runs another program with tini,more than one",
         "image-name": "solr",
         "image-url": "solr",
@@ -753,7 +753,7 @@
     },
 	"neo4j": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "tini and a java program",
         "image-name": "neo4j",
         "image-url": "neo4j",
@@ -764,7 +764,7 @@
     },
 	"java": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation and depricated",
         "image-name": "java",
         "image-url": "java",
@@ -775,7 +775,7 @@
     },
 	"couchdb": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "similar to couchbase, runs multiple programs with erlang",
         "image-name": "couchdb",
         "image-url": "couchdb",
@@ -788,8 +788,8 @@
         "enable": "false",
         "image-name": "cassandra",
         "image-url": "cassandra",
-		"status": "don't consider it",
-		"reason": "ASCII text as executable",
+	"status": "don't consider it",
+	"reason": "ASCII text as executable",
         "options": "",
         "args": "",
         "dependencies": {},
@@ -807,7 +807,7 @@
     },
 	"nats": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "seems to run a single server application, but can't connect to container to confirm. no bash available",
         "image-name": "nats",
         "image-url": "nats",
@@ -826,7 +826,7 @@
     },
 	"teamspeak": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't work in confine either",
         "image-name": "teamspeak",
         "image-url": "teamspeak",
@@ -837,7 +837,7 @@
     },
 	"percona": {
         "enable": "false",
-		"status": "worked on angr , but did not didn't work in confine- and confine, needs option but it doesn't work in confine ",
+	"status": "worked on angr , but did not didn't work in confine- and confine, needs option but it doesn't work in confine ",
         "image-name": "percona",
         "image-url": "percona",
         "options": " -e MYSQL_ROOT_PASSWORD=my-secret-pw ",
@@ -855,7 +855,7 @@
     },
 	"jenkins": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "runs two applications, tini and java based. should be similar to other java applications",
         "image-name": "jenkins",
         "image-url": "jenkins",
@@ -866,7 +866,7 @@
     },
 	"buildpack-deps": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run any server-side application",
         "image-name": "buildpack-deps",
         "image-url": "buildpack-deps",
@@ -877,7 +877,7 @@
     },
 	"perl": {
         "enable": "false",
-		"status": "worked on angr and cofine, but didn't did not work in confine- (profile successfuly created but the container does not start with it)and confine ?",
+	"status": "worked on angr and cofine, but didn't did not work in confine- (profile successfuly created but the container does not start with it)and confine ?",
         "image-name": "perl",
         "image-url": "perl",
         "options": "",
@@ -895,7 +895,7 @@
     },
 	"nats-streaming": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "go-based",
         "image-name": "nats-streaming",
         "image-url": "nats-streaming",
@@ -914,7 +914,7 @@
     },
 	"rocket.chat": {
         "enable": "false",
-		"status": "can not see the running services, bash does not contain ps command and does not the authorithy to install, dependet to mongo, check it",
+	"status": "can not see the running services, bash does not contain ps command and does not the authorithy to install, dependet to mongo, check it",
         "image-name": "rocket.chat",
         "image-url": "rocket.chat",
         "options": "",
@@ -969,7 +969,7 @@
     },
 	"swarm": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run in confine",
         "image-name": "swarm",
         "image-url": "swarm",
@@ -1001,7 +1001,7 @@
         "enable": "false",
         "image-name": "couchbase",
         "image-url": "couchbase",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "not elf, confine- has a problem",
         "options": "",
         "args": "",
@@ -1018,7 +1018,7 @@
     },
 	"flink": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "didn't work with confine",
         "image-name": "flink",
         "image-url": "flink",
@@ -1029,7 +1029,7 @@
     },
 	"pypy": {
         "enable": "false",
-		"status": "worked in confine and angr, but in confine-, the seccomp profile created but it didn't work , check it",
+	"status": "worked in confine and angr, but in confine-, the seccomp profile created but it didn't work , check it",
         "image-name": "pypy",
         "image-url": "pypy",
         "options": "",
@@ -1047,8 +1047,8 @@
     },
 	"rethinkdb": {
         "enable": "false",
-		"status": "don't consider it",
-		"status": "angr crashes",
+	"status": "don't consider it",
+	"reason": "angr crashes",
         "image-name": "rethinkdb",
         "image-url": "rethinkdb",
         "options": "",
@@ -1068,7 +1068,7 @@
     },
 	"composer": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't work in confine either",
         "image-name": "composer",
         "image-url": "composer",
@@ -1079,7 +1079,7 @@
     },
 	"fedora": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla distribution, doesn't run anything",
         "image-name": "fedora",
         "image-url": "fedora",
@@ -1090,7 +1090,7 @@
     },
 	"jruby": {
         "enable": "false",
-		"status": "work in angr and confine,but in confine-, the seccomp profile created but it did not work ,check it",
+	"status": "work in angr and confine,but in confine-, the seccomp profile created but it did not work ,check it",
         "image-name": "jruby",
         "image-url": "jruby",
         "options": "",
@@ -1108,7 +1108,7 @@
     },
 	"rust": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run anything",
         "image-name": "rust",
         "image-url": "rust",
@@ -1119,7 +1119,7 @@
     },
 	"odoo": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "dies after waiting for postgresql, has dependency, skip for now",
         "image-name": "odoo",
         "image-url": "odoo",
@@ -1130,7 +1130,7 @@
     },
 	"elixir": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "similar to couchbase, should look into, maybe we can find a solution. mostly for programs written with erlang",
         "image-name": "elixir",
         "image-url": "elixir",
@@ -1141,7 +1141,7 @@
     },
 	"adoptopenjdk": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "image-name": "adoptopenjdk",
         "image-url": "adoptopenjdk",
         "options": "",
@@ -1151,8 +1151,8 @@
     },
 	"kapacitor": {
         "enable": "false",
-		"status": "don't consider it",
-		"reason": "kapacitord statically linked",
+	"status": "don't consider it",
+	"reason": "kapacitord statically linked",
         "image-name": "kapacitor",
         "image-url": "kapacitor",   
         "options": "",
@@ -1172,8 +1172,8 @@
         "enable": "false",
         "image-name": "jetty",
         "image-url": "jetty",
-		"status": "don't consider it",
-		"reason": "but it does not run anything",
+	"status": "don't consider it",
+	"reason": "but it does not run anything",
         "options": "",
         "args": "",
         "dependencies": {},
@@ -1181,7 +1181,7 @@
     },
 	"erlang": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "similar to couchbase, should look into, maybe we can find a solution. mostly for programs written with erlang, it runs more than one",
         "image-name": "erlang",
         "image-url": "erlang",
@@ -1192,7 +1192,7 @@
     },
 	"websphere-liberty": {
         "enable": "false",
-		"status": "worked on angr and confine, but didn't work in confine-(entrypoint error) check it",
+	"status": "worked on angr and confine, but didn't work in confine-(entrypoint error) check it",
         "image-name": "websphere-liberty",
         "image-url": "websphere-liberty",
         "options": "",
@@ -1212,7 +1212,7 @@
     },
 	"redmine": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "similar to couchbase, runs multiple programs",
         "image-name": "redmine",
         "image-url": "redmine",
@@ -1223,7 +1223,7 @@
     },
 	"mediawiki": {
         "enable": "true",
-		"status": "worked in angr and confine,but didn't in confine-,check it",
+	"status": "worked in angr and confine,but didn't in confine-,check it",
         "image-name": "mediawiki",
         "image-url": "mediawiki",
 		"binaries": [
@@ -1241,7 +1241,7 @@
     },
 	"clojure": {
         "enable": "false",
-		"status": " complex runing, check it again",
+	"status": " complex runing, check it again",
         "image-name": "clojure",
         "image-url": "clojure",
         "options": "",
@@ -1251,7 +1251,7 @@
     },
 	"swift": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run anything",
         "image-name": "swift",
         "image-url": "swift",
@@ -1262,7 +1262,7 @@
     },
 	"amazoncorretto": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "does not run a service",
         "image-name": "amazoncorretto",
         "image-url": "amazoncorretto",
@@ -1273,7 +1273,7 @@
     },
 	"oraclelinux": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation",
         "image-name": "oraclelinux",
         "image-url": "oraclelinux",
@@ -1284,7 +1284,7 @@
     },
 	"haxe": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't work in confine either",
         "image-name": "haxe",
         "image-url": "haxe",
@@ -1296,7 +1296,7 @@
 
 	"phpmyadmin": {
         "enable": "true",
-		"status": "dependet container, dependet to mysql, check it, option errors",
+	"status": "dependet container, dependet to mysql, check it, option errors",
         "image-name": "phpmyadmin",
         "image-url": "phpmyadmin",
         "options": "",
@@ -1322,7 +1322,7 @@
     },
     "xwiki": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "runs multiple programs",
         "image-name": "xwiki",
         "image-url": "xwiki",
@@ -1333,7 +1333,7 @@
     },
     "mono": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't run anything",
         "image-name": "mono",
         "image-url": "mono",
@@ -1344,7 +1344,7 @@
     },
 	"znc": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "doesn't work in confine either",
         "image-name": "znc",
         "image-url": "znc",
@@ -1355,7 +1355,7 @@
     },
 	"iojs": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "DEPRECATED",
         "image-name": "iojs",
         "image-url": "iojs",
@@ -1374,7 +1374,7 @@
     },
 	"crate": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "not in confine due to complex configuration",
         "image-name": "crate",
         "image-url": "crate",
@@ -1385,7 +1385,7 @@
     },
 	"ros": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation, and not in confine due to complex configuration",
         "image-name": "ros",
         "image-url": "ros",
@@ -1396,7 +1396,7 @@
     },
 	"hylang": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "not in confine due to complex configuration",
         "image-name": "hylang",
         "image-url": "hylang",
@@ -1407,7 +1407,7 @@
     },
 	"julia": {
         "enable": "false",
-		"status": "worked in confine and angr,but in confine-, the seccomp profile created but it did not work, check it",
+	"status": "worked in confine and angr,but in confine-, the seccomp profile created but it did not work, check it",
         "image-name": "julia",
         "image-url": "julia",
         "options": "",
@@ -1422,7 +1422,7 @@
     },
 	 "tomee": {
         "enable": "false",
-		"status": "worked in confine and angr, but in confine-, the seccomp profile created but it did not work, check it",
+	"status": "worked in confine and angr, but in confine-, the seccomp profile created but it did not work, check it",
         "image-name": "tomee",
         "image-url": "tomee",
         "options": "",
@@ -1443,7 +1443,7 @@
         "enable": "false",
         "image-name": "gcc",
         "image-url": "gcc",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "vanilla installation, and not in confine due to complex configuration",
         "options": "",
         "args": "",
@@ -1452,7 +1452,7 @@
     },
 	"orientdb": {
         "enable": "false",
-		"status": "check it",
+	"status": "check it",
         "image-name": "orientdb",
         "image-url": "orientdb",
         "options": "",
@@ -1462,7 +1462,7 @@
     },
 	"storm": {
         "enable": "false",
-		"status": "don't consider it",
+	"status": "don't consider it",
         "reason": "not in confine due to complex configuration",
         "image-name": "storm",
         "image-url": "storm",
