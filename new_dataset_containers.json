@@ -209,11 +209,6 @@
         "reason": "angr crashes when wants to recover CFG",
         "image-name": "mongo",
         "image-url": "mongo",
-        "category": [
-            "Databases"
-        ],
-        "pull-count": 1831318554,
-        "official": true,
         "options": "",
         "args": "",
         "dependencies": {},
@@ -640,12 +635,11 @@
         "entrypoint": "entrypoint.sh",
         "docker-path": "/home/confine/adminer"
     },
-	"mongo-express": {
-        "enable": "false",
-	"status": "worked on angr, but didn't work in confine- and confine, check it, needs options but it doesn't work",
+    "mongo-express": {
+        "enable": "flase",
         "image-name": "mongo-express",
         "image-url": "mongo-express",
-        "options": "-network networks -e ME_CONFIG_MONGODB_SERVER=mongof -p 8081:8081",
+        "options": "--network some-network -e ME_CONFIG_MONGODB_SERVER=some-mongo -p 8081:808",
         "args": "",
         "dependencies": {},
         "id": "42",
@@ -1239,7 +1233,7 @@
         "id": "8"
     },
 	"mediawiki": {
-        "enable": "true",
+        "enable": "flase",
 	"status": "worked in angr and confine,but didn't in confine-,check it",
         "image-name": "mediawiki",
         "image-url": "mediawiki",
@@ -1312,7 +1306,7 @@
     },
 
 	"phpmyadmin": {
-        "enable": "true",
+        "enable": "flase",
 	"status": "dependet container, dependet to mysql, check it, option errors",
         "image-name": "phpmyadmin",
         "image-url": "phpmyadmin",
