@@ -257,6 +257,7 @@ if __name__ == '__main__':
                     depDockerPath = ""
                     depDockerEntryPoint = depVals.get("entrypoint", "")
                     depDockerEntryPointModify = depVals.get("entrypoint-modify", "true")
+                    rootLogger.info("hardening dependent container first: %s", depImageName)
 
                     retryCount = 0
                     while ( retryCount < 2 ):

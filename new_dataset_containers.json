@@ -285,29 +285,38 @@
     "id": "18"
   },
   "wordpress": {
-    "enable": "flase",
+        "enable": "false",
     "status": "worked on angr, but did not work in confine and confine-, dependent container. check it!",
-    "image-name": "wordpress",
-    "image-url": "wordpress",
-    "options": "-e WORDPRESS_DB_PASSWORD=wpuser@ -p 80:80 -v /tmp/html:/var/www/html",
-    "args": "",
-    "binaries": [
-      "apache2"
-    ],
-    "dependencies": {
-      "mariadb": {
-        "image-name": "mysql",
-        "image-url": "mysql",
-        "options": "-e MYSQL_ROOT_PASSWORD=aqwe123 -e MYSQL_USER=wpuser -e MYSQL_PASSWORD=wpuser@ -e MYSQL_DATABASE=wordpress_db",
-        "link": true
-      }
-    },
-    "id": "19",
-    "docker-cmd": [
-      "apache2-foreground"
-    ],
-    "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/wordpress"
+        "image-name": "wordpress",
+        "image-url": "wordpress",
+        "options": "-e WORDPRESS_DB_PASSWORD=wpuser@ -p 8080:80",
+        "args": "",
+        "binaries": [
+            "apache2"
+        ],
+        "dependencies":
+        {
+            "mariadb": {
+                "image-name": "mysql",
+                "image-url": "mysql",
+                "options": "-e MYSQL_ROOT_PASSWORD=aqwe123 -e MYSQL_USER=wpuser -e MYSQL_PASSWORD=wpuser@ -e MYSQL_DATABASE=wordpress_db",
+                "binaries": [
+                    "mysqld"
+                ],
+                "docker-cmd": [
+                    "mysqld"
+                ],
+                "entrypoint": "docker-entrypoint.sh",
+                "docker-path": "/home/confine/mysqld",
+                "link": true
+            }
+        },
+        "docker-cmd": [
+            "apache2-foreground"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/apache2",
+        "id": "19"
   },
   "docker": {
     "enable": "false",
@@ -612,7 +621,7 @@
     "docker-cmd": [
       "apache2-foreground"
     ],
-    "entrypoint": "/entrypoint.sh",
+    "entrypoint": "entrypoint.sh",
     "docker-path": "/home/confine/matome"
   },
   "adminer": {
@@ -676,7 +685,7 @@
     "docker-path": "/home/confine/node"
   },
   "logstash": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked on angr, but did not did not work in confine- and confine, check it",
     "image-name": "logstash",
     "image-url": "logstash:7.16.3",
@@ -928,7 +937,7 @@
   },
   "rocket.chat": {
     "enable": "false",
-    "status": "the container can not created, option error, check it",
+    "status": "depends on MongoDB, dies if not run with one. must read README in dockerhub page! too difficult to initialize, Confine doesn't support it, skipping.",
     "image-name": "rocket.chat",
     "image-url": "rocket.chat",
     "options": "--env MONGO_OPLOG_URL=mongodb://db:27017/local",
@@ -1318,7 +1327,7 @@
   },
   "phpmyadmin": {
     "enable": "false",
-    "status": "dependet container, dependet to mysql, check it, option errors",
+    "status": "dependet container, dependet to mysql, check it, option errors (if we're running multi-stage, all dependent images need to have all options as well, if they don't everything breaks)",
     "image-name": "phpmyadmin",
     "image-url": "phpmyadmin",
     "options": "-p 8080:80",
@@ -1328,6 +1337,14 @@
         "image-name": "mysql",
         "image-url": "mysql",
         "options": "-e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 ",
+        "binaries": [
+            "mysqld"
+        ],
+        "docker-cmd": [
+            "mysqld"
+        ],
+        "entrypoint": "docker-entrypoint.sh",
+        "docker-path": "/home/confine/mysqld",
         "link": true
       }
     },
