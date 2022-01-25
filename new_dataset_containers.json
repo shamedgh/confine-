@@ -383,12 +383,14 @@
     "docker-path": "/home/confine/consul"
   },
   "nextcloud": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked on angr and confine, and confine-, however it stopped after start",
     "image-name": "nextcloud",
     "image-url": "nextcloud",
     "binaries": [
-      "apache2"
+      "apache2",
+      "rm",
+      "mkdir"
     ],
     "options": "",
     "args": "",
@@ -607,7 +609,7 @@
     "id": "39"
   },
   "matomo": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked on angr, confine, and confine-(check it, didn't work in the new version)",
     "image-name": "matomo",
     "image-url": "matomo",
@@ -616,13 +618,15 @@
     "dependencies": {},
     "id": "40",
     "binaries": [
-      "apache2"
+      "apache2",
+      "rm",
+      "mkdir"
     ],
     "docker-cmd": [
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/matome"
+    "docker-path": "/home/confine/apache2-foreground"
   },
   "adminer": {
     "enable": "false",
