@@ -383,7 +383,7 @@
     "docker-path": "/home/confine/consul"
   },
   "nextcloud": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked on angr and confine, and confine-, however it stopped after start",
     "image-name": "nextcloud",
     "image-url": "nextcloud",
@@ -398,7 +398,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/nextcloud"
+    "docker-path": "/home/confine/apache2-foreground"
   },
   "haproxy": {
     "enable": "false",
@@ -685,7 +685,7 @@
     "docker-path": "/home/confine/node"
   },
   "logstash": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked on angr, but did not did not work in confine- and confine, check it",
     "image-name": "logstash",
     "image-url": "logstash:7.16.3",
