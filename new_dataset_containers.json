@@ -609,7 +609,7 @@
     "id": "39"
   },
   "matomo": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked on angr, confine, and confine-(check it, didn't work in the new version)",
     "image-name": "matomo",
     "image-url": "matomo",
@@ -692,7 +692,7 @@
     "enable": "false",
     "status": "worked on angr, but did not did not work in confine- and confine, check it",
     "image-name": "logstash",
-    "image-url": "logstash:7.16.3",
+    "image-url": "logstash:7.1.0",
     "options": "",
     "args": "",
     "dependencies": {},
@@ -701,7 +701,7 @@
       "java"
     ],
     "docker-cmd": [
-      "logstash:7.10.3"
+      "logstash:7.10.1"
     ],
     "entrypoint": "docker-entrypoint",
     "docker-path": "/home/confine/logstash"
@@ -985,14 +985,16 @@
     "docker-path": "/home/confine/groovysh"
   },
   "drupal": {
-    "enable": "false",
+    "enable": "true",
     "status": "works in angr and confine, but didn't in confine-, check it",
     "image-name": "drupal",
     "image-url": "drupal",
     "options": "",
     "args": "",
     "binaries": [
-      "apache2"
+      "apache2",
+      "rm",
+      "mkdir"
     ],
     "docker-cmd": [
       "apache2-foreground"
@@ -1000,7 +1002,7 @@
     "dependencies": {},
     "id": "63",
     "entrypoint": "docker-php-entrypoint",
-    "docker-path": "/home/confine/drupal"
+    "docker-path": "/home/confine/apache2-foreground"
   },
   "swarm": {
     "enable": "false",
