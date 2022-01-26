@@ -985,7 +985,7 @@
     "docker-path": "/home/confine/groovysh"
   },
   "drupal": {
-    "enable": "true",
+    "enable": "false",
     "status": "works in angr and confine, but didn't in confine-, check it",
     "image-name": "drupal",
     "image-url": "drupal",
@@ -1016,13 +1016,16 @@
     "id": "64"
   },
   "owncloud": {
-    "enable": "flase",
+    "enable": "true",
     "status": "works in angr and confine, but it didn't work in confine- ,check it",
     "image-name": "owncloud",
     "image-url": "owncloud:8.1",
+    "libc-version": "2.19",
     "options": "",
     "binaries": [
-      "apache2"
+      "apache2",
+      "rm",
+      "mkdir"
     ],
     "args": "",
     "dependencies": {},
@@ -1031,7 +1034,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/owncloud"
+    "docker-path": "/home/confine/apache2-foreground"
   },
   "couchbase": {
     "enable": "false",
