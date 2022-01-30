@@ -388,9 +388,7 @@
     "image-name": "nextcloud",
     "image-url": "nextcloud",
     "binaries": [
-      "apache2",
-      "rm",
-      "mkdir"
+      "apache2"
     ],
     "options": "",
     "args": "",
@@ -400,7 +398,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/apache2-foreground"
+    "docker-path": "/home/confine/apache2"
   },
   "haproxy": {
     "enable": "false",
@@ -488,7 +486,7 @@
     "docker-path": "/home/confine/php"
   },
   "tomcat": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked on angr and confine, but didn't work in confine-(hardened with problem), check it",
     "image-name": "tomcat",
     "image-url": "tomcat",
@@ -504,7 +502,7 @@
       "run"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/catalina.sh"
+    "docker-path": "/home/confine/java"
   },
   "amazonlinux": {
     "enable": "false",
@@ -723,7 +721,7 @@
       "start-foreground"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/zookeeper"
+    "docker-path": "/home/confine/java"
   },
   "gradle": {
     "enable": "false",
@@ -906,19 +904,21 @@
     "enable": "false",
     "status": "worked on angr and cofine, but didn't did not work in confine- (profile successfuly created but the container does not start with it)and confine ?",
     "image-name": "perl",
-    "image-url": "perl",
+    "image-url": "perl:5.30",
     "options": "",
     "args": "",
     "dependencies": {},
     "id": "59",
     "binaries": [
-      "perl5.32.1"
+      "perl",
+      "perl5.30.3"
     ],
     "docker-cmd": [
-      "perl5.32.1"
+      "perl5.30.3",
+      "-de0"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/perl5.32.1"
+    "docker-path": "/home/confine/perl5.30.3"
   },
   "nats-streaming": {
     "enable": "false",
@@ -967,7 +967,7 @@
     "docker-path": "/home/confine/node"
   },
   "groovy": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked in angr and confine, didn't work in cofine-, profile created didn't start, check it",
     "image-name": "groovy",
     "image-url": "groovy",
@@ -982,7 +982,7 @@
       "groovysh"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/groovysh"
+    "docker-path": "/home/confine/java"
   },
   "drupal": {
     "enable": "false",
@@ -992,9 +992,7 @@
     "options": "",
     "args": "",
     "binaries": [
-      "apache2",
-      "rm",
-      "mkdir"
+      "apache2"
     ],
     "docker-cmd": [
       "apache2-foreground"
@@ -1002,7 +1000,7 @@
     "dependencies": {},
     "id": "63",
     "entrypoint": "docker-php-entrypoint",
-    "docker-path": "/home/confine/apache2-foreground"
+    "docker-path": "/home/confine/apache2"
   },
   "swarm": {
     "enable": "false",
@@ -1016,16 +1014,14 @@
     "id": "64"
   },
   "owncloud": {
-    "enable": "true",
+    "enable": "false",
     "status": "works in angr and confine, but it didn't work in confine- ,check it",
     "image-name": "owncloud",
     "image-url": "owncloud:8.1",
     "libc-version": "2.19",
     "options": "",
     "binaries": [
-      "apache2",
-      "rm",
-      "mkdir"
+      "apache2"
     ],
     "args": "",
     "dependencies": {},
@@ -1034,7 +1030,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/apache2-foreground"
+    "docker-path": "/home/confine/apache2"
   },
   "couchbase": {
     "enable": "false",
@@ -1082,7 +1078,7 @@
       "pypy3"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/pypy"
+    "docker-path": "/home/confine/pypy3"
   },
   "rethinkdb": {
     "enable": "false",
@@ -1128,7 +1124,7 @@
     "id": "71"
   },
   "jruby": {
-    "enable": "flase",
+    "enable": "false",
     "status": "work in angr and confine,but in confine-, the seccomp profile created but it did not work ,check it",
     "image-name": "jruby",
     "image-url": "jruby",
@@ -1143,7 +1139,7 @@
       "irb"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/jruby"
+    "docker-path": "/home/confine/java"
   },
   "rust": {
     "enable": "false",
@@ -1231,7 +1227,7 @@
     "id": "79"
   },
   "websphere-liberty": {
-    "enable": "flase",
+    "enable": "false",
     "status": "worked on angr and confine, but didn't work in confine-(entrypoint error) check it",
     "image-name": "websphere-liberty",
     "image-url": "websphere-liberty",
@@ -1243,12 +1239,11 @@
       "java"
     ],
     "docker-cmd": [
-      "/opt/ibm/wlp/bin/server",
       "run",
       "defaultServer"
     ],
-    "entrypoint": "/opt/ibm/helpers/runtime/docker-server.sh",
-    "docker-path": "/home/confine/websphere-liberty"
+    "entrypoint": "docker-server.sh",
+    "docker-path": "/home/confine/java"
   },
   "redmine": {
     "enable": "false",
@@ -1262,7 +1257,7 @@
     "id": "8"
   },
   "mediawiki": {
-    "enable": "flase",
+    "enable": "false",
     "status": "worked in angr and confine,but didn't in confine-,check it",
     "image-name": "mediawiki",
     "image-url": "mediawiki",
@@ -1277,7 +1272,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "docker-php-entrypoint",
-    "docker-path": "/home/confine/mediawiki"
+    "docker-path": "/home/confine/apache2"
   },
   "clojure": {
     "enable": "false",
@@ -1359,13 +1354,15 @@
     },
     "id": "88",
     "binaries": [
-      ""
+      "apache2",
+      "rm",
+      "mkdir"
     ],
     "docker-cmd": [
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/phpmyadmin"
+    "docker-path": "/home/confine/apache2-foreground"
   },
   "xwiki": {
     "enable": "false",
@@ -1453,7 +1450,7 @@
     "id": "95"
   },
   "julia": {
-    "enable": "flase",
+    "enable": "false",
     "status": "worked in confine and angr,but in confine-, the seccomp profile created but it did not work, check it",
     "image-name": "julia",
     "image-url": "julia",
@@ -1468,7 +1465,7 @@
     "docker-path": "/home/confine/julia"
   },
   "tomee": {
-    "enable": "flase",
+    "enable": "false",
     "status": "worked in confine and angr, but in confine-, the seccomp profile created but it did not work, check it",
     "image-name": "tomee",
     "image-url": "tomee",
@@ -1483,8 +1480,9 @@
       "catalina.sh",
       "run"
     ],
+    "docker-orig-binary-path.bak": "/usr/local/openjdk-11/bin/java",
     "entrypoint": "",
-    "docker-path": "/home/confine/tomee"
+    "docker-path": "/home/confine/java"
   },
   "gcc": {
     "enable": "false",
@@ -1506,10 +1504,9 @@
       "java"
     ],
     "docker-cmd": [
-      "server.sh"
     ],
-    "entrypoint": "server.sh",
-    "docker-path": "/home/confine/orientdb",
+    "entrypoint": "/orientdb/bin/server.sh",
+    "docker-path": "/usr/local/openjdk-8/bin/java.bak",
     "options": "",
     "args": "",
     "dependencies": {},

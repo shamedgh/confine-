@@ -28,7 +28,7 @@ class Container():
     """
     This class can be used to extract information regarding a container created from a docker image
     """
-    def __init__(self, name, options, logger, remote=None, args=None):
+    def __init__(self, name, options, logger, args, remote=None):
         self.logger = logger
         self.imageName = name
         self.containerName = name
@@ -116,7 +116,8 @@ class Container():
         cmdList = ["docker", self.remote, "run", "-l", C.TOOLNAME, "--security-opt", 
                  "seccomp=unconfined", "--name", self.containerName]
         cmdList.extend(self.options.split())
-        cmdList.extend(["-td", self.imageName, self.args])
+        cmdList.extend(["-td", self.imageName])
+        cmdList.extend(self.args.split())
         cmd = list(filter(None,cmdList))
         self.logger.debug("Running container %s, cmd=%s", self.imageName, cmd)
         proc = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -404,6 +405,17 @@ class Container():
         #        else:
         #            self.logger.error("ps command doesn't have enough output lines for pid: %s", pid)
         return pidToUserDict, pidToCmdDict
+    
+    def extractBinaryPath(self, binaryName):
+        if ( not self.containerId ):
+            self.logger.error("Trying to extract main binary path from non-running container! self.containerId: %s", self.containerId)
+            return False
+        cmd = "sudo docker {} exec -it {} which {}"
+        finalCmd = cmd.format(self.remote, self.containerId, binaryName)
+        returncode, out, err = util.runCommand(finalCmd)
+        if ( returncode != 0 ):
+            self.logger.debug("Couldn't extract binary full path with cmd: %s", cmd)
+        return out.strip()
 
     def extractLibsFromProc(self):
         binaryToLibraryDict = dict()

@@ -250,6 +250,7 @@ if __name__ == '__main__':
                     depImageName = depVals.get("image-name", depKey)
                     depImageNameFullPath = depVals.get("image-url", depImageName)
                     depOptions = depVals.get("options", "")
+                    depArgs = depVals.get("args", "")
                     depLink = True if depVals.get("link", False) else False
                     #rootLogger.info("depLink: %s", depLink)
                     depBinaryFiles = []
@@ -283,6 +284,7 @@ if __name__ == '__main__':
                             options.binliblist,
                             options.monitoringtool,
                             rootLogger, 
+                            depArgs,
                             True)
                         returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + depImageName + "/", options.reportfolder)
                         #if ( returncode != C.SYSDIGERR ):
@@ -312,6 +314,7 @@ if __name__ == '__main__':
                 imageBinaryFiles = imageVals.get("binaries", [])
                 dockerStartArgs = imageVals.get("docker-cmd",[])
                 dockerPath = imageVals.get("docker-path", "")
+                origBinaryPath = imageVals.get("docker-orig-binary-path", "")
                 dockerEntryPoint = imageVals.get("entrypoint", "")
                 dockerEntryPointModify = imageVals.get("entrypoint-modify", "true")
 
@@ -328,6 +331,7 @@ if __name__ == '__main__':
                         dockerEntryPoint,
                         dockerEntryPointModify,
                         options.defaultentrypoint,
+                        origBinaryPath,
                         options.libccfginput, 
                         options.muslcfginput, 
                         glibcFuncList, 
@@ -339,7 +343,8 @@ if __name__ == '__main__':
                         options.allbinaries, 
                         options.binliblist,
                         options.monitoringtool,
-                        rootLogger)
+                        rootLogger,
+                        imageArgs)
                     returncode = newProfile.createSeccompProfile(options.outputfolder + "/" + imageName + "/", options.reportfolder)
                     end = time.time()
                     #if ( returncode != C.SYSDIGERR ):

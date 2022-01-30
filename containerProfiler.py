@@ -27,14 +27,16 @@ class ContainerProfiler():
                 imageBinaryFiles, dockerStartArgs, 
                 dockerPath, dockerEntryPoint, 
                 dockerEntryPointModify, dockerTemplateEntryPoint, 
+                origBinaryPath,
                 glibccfgpath, muslcfgpath, 
                 glibcfunclist, muslfunclist, 
                 strictmode, gofolderpath, 
                 cfgfolderpath, fineGrain, 
                 extractAllBinaries, binLibList,
-                monitoringTool, logger, isDependent=False):
+                monitoringTool, logger, args, isDependent=False):
         self.logger = logger
         self.name = name
+        self.args = args
         self.imagePath = imagePath
         self.imageBinaryFiles = imageBinaryFiles
         self.dockerStartArgs = dockerStartArgs
@@ -42,6 +44,7 @@ class ContainerProfiler():
         self.dockerEntryPoint = dockerEntryPoint
         self.dockerEntryPointModify = True if dockerEntryPointModify == 'true' else False
         self.dockerTemplateEntryPoint = dockerTemplateEntryPoint
+        self.origBinaryPath = origBinaryPath    # TODO automatically extract this later
         #self.name = name
         #if ( "/" in self.name ):
         #    self.name = self.name.replace("/","-")
@@ -345,7 +348,7 @@ class ContainerProfiler():
         self.logger.debug("binaryReady: %s libFileReady: %s", str(binaryReady), str(libFileReady), extra=monitorLogExtra)
 
 
-        myContainer = container.Container(self.imagePath, self.options, self.logger)
+        myContainer = container.Container(self.imagePath, self.options, self.logger, self.args)
         self.containerName = myContainer.getContainerName()
 
         if ( not myContainer.pruneVolumes() ):
@@ -480,6 +483,11 @@ class ContainerProfiler():
                 myFile.close()
                 self.logger.info("Finished copying identified binaries and libraries", extra=monitorLogExtra)
                 self.logger.info("Finished Monitoring phase", extra=monitorLogExtra)
+
+            binaryNameToPath = dict()
+
+            for binaryName in self.imageBinaryFiles:
+                binaryNameToPath[binaryName] = myContainer.extractBinaryPath(binaryName)
 
             self.logger.debug(str(myContainer.kill()))
             self.logger.debug(str(myContainer.delete()))
@@ -774,9 +782,26 @@ class ContainerProfiler():
 
                     dockerStartArgsStr = ""
                     for arg in self.dockerStartArgs:
-                        outputFile.write(f"\"{arg}\", ")
+                    #    outputFile.write(f"\"{arg}\", ")
                         dockerStartArgsStr += arg + " "
-                    outputFile.write(f" NULL}};\n\texecv(\"{self.dockerPath}\", args);\n}}\n")
+                    dockerStartArgsStr += self.args     # in case the container needs args itself as well to run ("args" in json)
+                    #outputFile.write(f" NULL}};\n\texecv(\"{self.dockerPath}\", args);\n}}\n")
+
+                    programName = ""    # name of main binary (e.g., java, perl, redis-server) should be an ELF binary
+                    programPath = ""    # full path of the main binary
+
+                    thisOrigBinPath = self.origBinaryPath
+                    if ( not thisOrigBinPath or thisOrigBinPath == "" ):
+                        thisOrigBinPath = binaryNameToPath[self.imageBinaryFiles[0]]    # we want this to break if it doesn't exist!!!
+                    thisOrigBakBinPath = thisOrigBinPath + ".bak"       # the original binary will be overwritten with C program, use backup here
+                    programName = self.dockerPath
+                    programPath = self.dockerPath
+                    if ( programName == "" ):
+                        programName = thisOrigBakBinPath
+                        programPath = thisOrigBakBinPath
+                    if ( "/" in programName ):
+                        programName = programName[programName.rindex("/")+1:]
+                    outputFile.write(f"args[0] = \"{programName}\";\n\texecv(\"{programPath}\", args);\n}}\n")
 
                     outputFile.flush()
                     outputFile.close()
@@ -841,13 +866,14 @@ class ContainerProfiler():
                                 if ( cProgramStatus ):
                                     entrypointStatus = False
                                     if ( self.dockerEntryPointModify and not os.path.isfile(os.path.join(tempOutputFolder, C.DOCKERENTRYSCRIPTMODIFIED) ) ):
-                                        if ( self.dockerEntryPoint == "" ):
-                                            self.createDockerEntryPointFromTemplate(tempOutputFolder, C.DOCKERENTRYSCRIPT)
-                                        if ( os.path.isfile(os.path.join(tempOutputFolder, self.dockerEntryPoint)) ):
-                                            entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + self.dockerEntryPoint, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
-                                        else:
-                                            self.logger.warning("Docker image does not seem to have entrypoint.sh", extra=multiphaseLogExtra)
-                                            entrypointStatus = False
+                                        entrypointStatus = self.createDockerEntryPointToOverwriteOrigBinary(self.dockerEntryPoint, thisOrigBinPath, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED)
+                                        #if ( self.dockerEntryPoint == "" ):
+                                        #    self.createDockerEntryPointFromTemplate(tempOutputFolder, C.DOCKERENTRYSCRIPT)
+                                        #if ( os.path.isfile(os.path.join(tempOutputFolder, self.dockerEntryPoint)) ):
+                                        #    entrypointStatus = self.generateModifiedEntrypointScript(tempOutputFolder + self.dockerEntryPoint, tempOutputFolder + C.DOCKERENTRYSCRIPTMODIFIED, C.SECCOMPCPROG)
+                                        #else:
+                                        #    self.logger.warning("Docker image does not seem to have entrypoint.sh", extra=multiphaseLogExtra)
+                                        #    entrypointStatus = False
                                     else:
                                         entrypointStatus = True
 
@@ -859,7 +885,7 @@ class ContainerProfiler():
                             
                                     if ( entrypointStatus ):
                                         restrictiveOptions = self.generateRestrictiveOptions(tempOutputFolder, dockerEntryPointFileName)
-                                        myRestrictedContainer = container.Container(self.imagePath, restrictiveOptions, self.logger, remote=None, args=dockerStartArgsStr)
+                                        myRestrictedContainer = container.Container(self.imagePath, restrictiveOptions, self.logger, dockerStartArgsStr, remote=None)
                                         self.logger.info("Validating post-initialization Seccomp profile: %s", seccompCProgramPath, extra=validationLogExtra)
                                         #self.logger.info("Killing and deleting fine-grained hardened container")
                                         myContainer.kill()
@@ -938,6 +964,85 @@ class ContainerProfiler():
             self.logger.error("Error generating docker entrypoint: %s", err)
             return False
         self.dockerEntryPoint = fileName
+        return True
+
+    def createDockerEntryPointToOverwriteOrigBinary(self, origEntryPath, origBinaryPath, outputEntryPath):
+        '''
+            cp [orig-path] [orig-bak-path]
+            cp /home/confine/seccomp [orig-binary-path]
+            if HAS_ENTRYPOINT: /home/confine/[origScriptPath] "$@"
+            else exec "$@"
+        '''
+        tmpPath = "/tmp/tmp.entry.sh"
+        pathInContainer = "/home/confine"
+
+
+        cProgramPath = pathInContainer + "/" + C.SECCOMPCPROG
+        cProgramPath = cProgramPath.replace("/", "\/")
+        cmd = "sed 's/\[seccomp-file-path\]/" + cProgramPath + "/g' " + self.dockerTemplateEntryPoint + " > " + tmpPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        origBinaryPath = origBinaryPath.replace("/", "\/")
+        origBakBinaryPath = origBinaryPath + ".bak"
+        cmd = "sed 's/\[orig-path\]/" + origBinaryPath + "/g' " + tmpPath + " > " + outputEntryPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        self.runCopyCmd(outputEntryPath, tmpPath)
+
+        cmd = "sed 's/\[orig-bak-path\]/" + origBakBinaryPath + "/g' " + tmpPath + " > " + outputEntryPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        self.runCopyCmd(outputEntryPath, tmpPath)
+
+        cmd = "sed 's/\[orig-binary-path\]/" + origBinaryPath + "/g' " + tmpPath + " > " + outputEntryPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        self.runCopyCmd(outputEntryPath, tmpPath)
+        if ( "/" not in origEntryPath and origEntryPath != "" ):
+            origEntryPath = "/home/confine/" + origEntryPath
+
+        origEntryPath = origEntryPath.replace("/", "\/")
+        if ( origEntryPath and origEntryPath != "" ):
+            cmd = "sed 's/exec /" + origEntryPath + " /g' " + tmpPath + " > " + outputEntryPath
+        else:
+            cmd = "cp " + tmpPath + " " + outputEntryPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        cmd = "sudo chmod +x {}"
+        cmd = cmd.format(outputEntryPath)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.wseccomp.sh permission: %s", err)
+            return False
+        return True
+
+    def runCopyCmd(self, src, dst):
+        cmd = "cp " + src + " " + dst
+        self.logger.debug("copying src to dst command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error copying file: %s", err)
+            return False
         return True
 
     def compileSeccompCProgram(self, inputPath, outputPath):

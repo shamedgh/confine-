@@ -15,4 +15,10 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    char *args[] = {
+//    char *args[] = {
+    char *args[argc+1];
+    for ( int i = 1; i < argc; i++ ){
+        args[i] = argv[i];
+    }
+    args[argc] = NULL;
+
