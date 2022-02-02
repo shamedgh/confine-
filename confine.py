@@ -253,9 +253,10 @@ if __name__ == '__main__':
                     depArgs = depVals.get("args", "")
                     depLink = True if depVals.get("link", False) else False
                     #rootLogger.info("depLink: %s", depLink)
-                    depBinaryFiles = []
-                    depDockerStartArgs = ""
+                    depBinaryFiles = depVals.get("binaries", [])
+                    depDockerStartArgs = depVals.get("docker-cmd", [])
                     depDockerPath = ""
+                    depOrigBinaryPath = imageVals.get("docker-orig-binary-path", "")
                     depDockerEntryPoint = depVals.get("entrypoint", "")
                     depDockerEntryPointModify = depVals.get("entrypoint-modify", "true")
                     rootLogger.info("hardening dependent container first: %s", depImageName)
@@ -272,6 +273,7 @@ if __name__ == '__main__':
                             depDockerEntryPoint,
                             depDockerEntryPointModify,
                             options.defaultentrypoint,
+                            depOrigBinaryPath,
                             options.libccfginput, 
                             options.muslcfginput, 
                             glibcFuncList, 

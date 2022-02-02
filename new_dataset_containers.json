@@ -59,7 +59,7 @@
       "redis-server"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/redis-server"
+    "docker-path.bak": "/home/confine/redis-server"
   },
   "nginx": {
     "enable": "false",
@@ -79,7 +79,7 @@
       "daemon off;"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/nginx"
+    "docker-path.bak": "/home/confine/nginx"
   },
   "postgres": {
     "enable": "false",
@@ -97,7 +97,7 @@
       "postgres"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/postgres"
+    "docker-path.bak": "/home/confine/postgres"
   },
   "node": {
     "enable": "false",
@@ -115,7 +115,7 @@
       "node"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/node"
+    "docker-path.bak": "/home/confine/node"
   },
   "mysql": {
     "enable": "false",
@@ -127,13 +127,15 @@
     "dependencies": {},
     "id": "9",
     "binaries": [
-      "mysqld"
+      "mysqld",
+      "date",
+      "gosu"
     ],
     "docker-cmd": [
       "mysqld"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/mysqld"
+    "docker-path.bak": "/home/confine/mysqld"
   },
   "traefik": {
     "enable": "false",
@@ -152,7 +154,7 @@
       "traefik"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/traefik"
+    "docker-path.bak": "/home/confine/traefik"
   },
   "httpd": {
     "enable": "false",
@@ -170,7 +172,7 @@
     ],
     "id": "11",
     "entrypoint": "",
-    "docker-path": "/home/confine/httpd"
+    "docker-path.bak": "/home/confine/httpd"
   },
   "hello-world": {
     "enable": "false",
@@ -199,7 +201,7 @@
       "memcached"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/memcached"
+    "docker-path.bak": "/home/confine/memcached"
   },
   "mongo": {
     "enable": "false",
@@ -223,7 +225,7 @@
       "mongod"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/mongod"
+    "docker-path.bak": "/home/confine/mongod"
   },
   "registry": {
     "enable": "false",
@@ -242,7 +244,7 @@
       "registry"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/registry"
+    "docker-path.bak": "/home/confine/registry"
   },
   "openjdk": {
     "enable": "false",
@@ -268,10 +270,10 @@
       "mariadbd"
     ],
     "docker-cmd": [
-      "mysqld"
+      "mariadbd"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/mysqld"
+    "docker-path.bak": "/home/confine/mysqld"
   },
   "golang": {
     "enable": "false",
@@ -296,7 +298,7 @@
         ],
         "dependencies":
         {
-            "mariadb": {
+            "mysql": {
                 "image-name": "mysql",
                 "image-url": "mysql",
                 "options": "-e MYSQL_ROOT_PASSWORD=aqwe123 -e MYSQL_USER=wpuser -e MYSQL_PASSWORD=wpuser@ -e MYSQL_DATABASE=wordpress_db",
@@ -307,7 +309,7 @@
                     "mysqld"
                 ],
                 "entrypoint": "docker-entrypoint.sh",
-                "docker-path": "/home/confine/mysqld",
+                "docker-path.bak": "/home/confine/mysqld",
                 "link": true
             }
         },
@@ -315,7 +317,7 @@
             "apache2-foreground"
         ],
         "entrypoint": "docker-entrypoint.sh",
-        "docker-path": "/home/confine/apache2",
+        "docker-path.bak": "/home/confine/apache2",
         "id": "19"
   },
   "docker": {
@@ -357,7 +359,7 @@
       "influxd"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/influxd"
+    "docker-path.bak": "/home/confine/influxd"
   },
   "consul": {
     "enable": "false",
@@ -380,7 +382,7 @@
       "0.0.0.0"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/consul"
+    "docker-path.bak": "/home/confine/consul"
   },
   "nextcloud": {
     "enable": "false",
@@ -398,7 +400,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/apache2"
+    "docker-path.bak": "/home/confine/apache2"
   },
   "haproxy": {
     "enable": "false",
@@ -483,10 +485,10 @@
       "php"
     ],
     "entrypoint": "docker-php-entrypoint",
-    "docker-path": "/home/confine/php"
+    "docker-path.bak": "/home/confine/php"
   },
   "tomcat": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked on angr and confine, but didn't work in confine-(hardened with problem), check it",
     "image-name": "tomcat",
     "image-url": "tomcat",
@@ -502,7 +504,7 @@
       "run"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/java"
+    "docker-path.bak": "/home/confine/java"
   },
   "amazonlinux": {
     "enable": "false",
@@ -543,7 +545,7 @@
       "mosquitto"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/mosquitto"
+    "docker-path.bak": "/home/confine/mosquitto"
   },
   "telegraf": {
     "enable": "false",
@@ -561,7 +563,7 @@
       "telegraf"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/telegraf"
+    "docker-path.bak": "/home/confine/telegraf"
   },
   "bash": {
     "enable": "false",
@@ -593,7 +595,7 @@
       "dev"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/vault"
+    "docker-path.bak": "/home/confine/vault"
   },
   "caddy": {
     "enable": "false",
@@ -624,7 +626,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/apache2-foreground"
+    "docker-path.bak": "/home/confine/apache2-foreground"
   },
   "adminer": {
     "enable": "false",
@@ -647,7 +649,7 @@
       "/var/www/html"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/adminer"
+    "docker-path.bak": "/home/confine/adminer"
   },
   "mongo-express": {
     "enable": "flase",
@@ -665,7 +667,7 @@
       "mongo-express"
     ],
     "entrypoint": "/docker-entrypoint.sh",
-    "docker-path": "/home/confine/mongo-express"
+    "docker-path.bak": "/home/confine/mongo-express"
   },
   "ghost": {
     "enable": "false",
@@ -684,7 +686,7 @@
       "current/index.js"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/node"
+    "docker-path.bak": "/home/confine/node"
   },
   "logstash": {
     "enable": "false",
@@ -702,7 +704,7 @@
       "logstash:7.10.1"
     ],
     "entrypoint": "docker-entrypoint",
-    "docker-path": "/home/confine/logstash"
+    "docker-path.bak": "/home/confine/logstash"
   },
   "zookeeper": {
     "enable": "false",
@@ -721,7 +723,7 @@
       "start-foreground"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/java"
+    "docker-path.bak": "/home/confine/java"
   },
   "gradle": {
     "enable": "false",
@@ -775,7 +777,7 @@
       "8983:8983"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/solr"
+    "docker-path.bak": "/home/confine/solr"
   },
   "neo4j": {
     "enable": "false",
@@ -828,7 +830,7 @@
     ],
     "id": "53",
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/cassandra"
+    "docker-path.bak": "/home/confine/cassandra"
   },
   "nats": {
     "enable": "false",
@@ -847,7 +849,7 @@
       "nats-server"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/natsserver"
+    "docker-path.bak": "/home/confine/natsserver"
   },
   "teamspeak": {
     "enable": "false",
@@ -876,7 +878,7 @@
       "mysqld"
     ],
     "entrypoint": "docker-entrypoint.sh",
-    "docker-path": "/home/confine/mysqld"
+    "docker-path.bak": "/home/confine/mysqld"
   },
   "jenkins": {
     "enable": "false",
@@ -918,7 +920,7 @@
       "-de0"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/perl5.30.3"
+    "docker-path.bak": "/home/confine/perl5.30.3"
   },
   "nats-streaming": {
     "enable": "false",
@@ -937,7 +939,7 @@
       "nats-streaming"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/nats-streaming"
+    "docker-path.bak": "/home/confine/nats-streaming"
   },
   "rocket.chat": {
     "enable": "false",
@@ -964,10 +966,10 @@
       "main.js"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/node"
+    "docker-path.bak": "/home/confine/node"
   },
   "groovy": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked in angr and confine, didn't work in cofine-, profile created didn't start, check it",
     "image-name": "groovy",
     "image-url": "groovy",
@@ -982,7 +984,7 @@
       "groovysh"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/java"
+    "docker-path.bak": "/home/confine/java"
   },
   "drupal": {
     "enable": "false",
@@ -1000,7 +1002,7 @@
     "dependencies": {},
     "id": "63",
     "entrypoint": "docker-php-entrypoint",
-    "docker-path": "/home/confine/apache2"
+    "docker-path.bak": "/home/confine/apache2"
   },
   "swarm": {
     "enable": "false",
@@ -1030,7 +1032,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/apache2"
+    "docker-path.bak": "/home/confine/apache2"
   },
   "couchbase": {
     "enable": "false",
@@ -1049,7 +1051,7 @@
       "couchbase-server"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/couchbase-server"
+    "docker-path.bak": "/home/confine/couchbase-server"
   },
   "flink": {
     "enable": "false",
@@ -1078,7 +1080,7 @@
       "pypy3"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/pypy3"
+    "docker-path.bak": "/home/confine/pypy3"
   },
   "rethinkdb": {
     "enable": "false",
@@ -1099,7 +1101,7 @@
       "all"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/rethinkdb"
+    "docker-path.bak": "/home/confine/rethinkdb"
   },
   "composer": {
     "enable": "false",
@@ -1139,7 +1141,7 @@
       "irb"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/java"
+    "docker-path.bak": "/home/confine/java"
   },
   "rust": {
     "enable": "false",
@@ -1202,7 +1204,7 @@
       "kapacitord"
     ],
     "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/kapacitor"
+    "docker-path.bak": "/home/confine/kapacitor"
   },
   "jetty": {
     "enable": "false",
@@ -1243,7 +1245,7 @@
       "defaultServer"
     ],
     "entrypoint": "docker-server.sh",
-    "docker-path": "/home/confine/java"
+    "docker-path.bak": "/home/confine/java"
   },
   "redmine": {
     "enable": "false",
@@ -1272,7 +1274,7 @@
       "apache2-foreground"
     ],
     "entrypoint": "docker-php-entrypoint",
-    "docker-path": "/home/confine/apache2"
+    "docker-path.bak": "/home/confine/apache2"
   },
   "clojure": {
     "enable": "false",
@@ -1330,7 +1332,7 @@
     "id": "87"
   },
   "phpmyadmin": {
-    "enable": "false",
+    "enable": "true",
     "status": "dependet container, dependet to mysql, check it, option errors (if we're running multi-stage, all dependent images need to have all options as well, if they don't everything breaks)",
     "image-name": "phpmyadmin",
     "image-url": "phpmyadmin",
@@ -1348,7 +1350,7 @@
             "mysqld"
         ],
         "entrypoint": "docker-entrypoint.sh",
-        "docker-path": "/home/confine/mysqld",
+        "docker-path.bak": "/home/confine/mysqld",
         "link": true
       }
     },
@@ -1361,8 +1363,8 @@
     "docker-cmd": [
       "apache2-foreground"
     ],
-    "entrypoint": "entrypoint.sh",
-    "docker-path": "/home/confine/apache2-foreground"
+    "entrypoint": "docker-entrypoint.sh",
+    "docker-path.bak": "/home/confine/apache2-foreground"
   },
   "xwiki": {
     "enable": "false",
@@ -1414,7 +1416,7 @@
       "iojs"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/iojs"
+    "docker-path.bak": "/home/confine/iojs"
   },
   "crate": {
     "enable": "false",
@@ -1462,7 +1464,7 @@
       "julia"
     ],
     "entrypoint": "",
-    "docker-path": "/home/confine/julia"
+    "docker-path.bak": "/home/confine/julia"
   },
   "tomee": {
     "enable": "false",
@@ -1482,7 +1484,7 @@
     ],
     "docker-orig-binary-path.bak": "/usr/local/openjdk-11/bin/java",
     "entrypoint": "",
-    "docker-path": "/home/confine/java"
+    "docker-path.bak": "/home/confine/java"
   },
   "gcc": {
     "enable": "false",
@@ -1506,7 +1508,7 @@
     "docker-cmd": [
     ],
     "entrypoint": "/orientdb/bin/server.sh",
-    "docker-path": "/usr/local/openjdk-8/bin/java.bak",
+    "docker-path.bak": "/usr/local/openjdk-8/bin/java.bak",
     "options": "",
     "args": "",
     "dependencies": {},

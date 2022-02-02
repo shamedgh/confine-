@@ -55,7 +55,7 @@ class ContainerProfiler():
         self.muslCfgpath = muslcfgpath
         self.glibcFuncList = glibcfunclist
         self.muslFuncList = muslfunclist
-        self.strictMode = strictmode
+        self.strictMode = False#strictmode
         self.goFolderPath = gofolderpath
         self.cfgFolderPath = cfgfolderpath
         self.status = False
