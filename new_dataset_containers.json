@@ -62,7 +62,7 @@
     "docker-path.bak": "/home/confine/redis-server"
   },
   "nginx": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked on angr, confine, and confine-",
     "image-name": "nginx",
     "image-url": "nginx",
@@ -76,7 +76,7 @@
     "docker-cmd": [
       "nginx",
       "-g",
-      "daemon off;"
+      "'daemon off;'"
     ],
     "entrypoint": "docker-entrypoint.sh",
     "docker-path.bak": "/home/confine/nginx"
@@ -1332,7 +1332,7 @@
     "id": "87"
   },
   "phpmyadmin": {
-    "enable": "true",
+    "enable": "false",
     "status": "dependet container, dependet to mysql, check it, option errors (if we're running multi-stage, all dependent images need to have all options as well, if they don't everything breaks)",
     "image-name": "phpmyadmin",
     "image-url": "phpmyadmin",
