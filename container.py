@@ -169,6 +169,18 @@ class Container():
             return False
         return True
     
+    def runAsRootWithSeccompProfile(self, seccompPath):
+        self.logger.debug("Running container %s", self.imageName)
+        cmd = "sudo docker {} run --user 0 -l {} --name {} {} --security-opt seccomp={} -td {} {}"
+        cmd = cmd.format(self.remote, C.TOOLNAME, self.containerName, self.options, seccompPath, self.imageName, self.args)
+        self.logger.info("Running container with command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        self.containerId = out.strip()
+        if ( returncode != 0 ):
+            self.logger.error("Error running docker: %s", err)
+            return False
+        return True
+    
 
     def kill(self):
         if ( self.containerId ):

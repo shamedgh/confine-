@@ -26,7 +26,8 @@ class ContainerProfiler():
     def __init__(self, name, imagePath, options,
                 imageBinaryFiles, dockerStartArgs, 
                 dockerPath, dockerEntryPoint, 
-                dockerEntryPointModify, dockerTemplateEntryPoint, 
+                dockerEntryPointModify, dockerUser,
+                dockerTemplateEntryPoint, 
                 origBinaryPath,
                 glibccfgpath, muslcfgpath, 
                 glibcfunclist, muslfunclist, 
@@ -43,6 +44,7 @@ class ContainerProfiler():
         self.dockerPath = dockerPath
         self.dockerEntryPoint = dockerEntryPoint
         self.dockerEntryPointModify = True if dockerEntryPointModify == 'true' else False
+        self.dockerUser = dockerUser
         self.dockerTemplateEntryPoint = dockerTemplateEntryPoint
         self.origBinaryPath = origBinaryPath    # TODO automatically extract this later
         #self.name = name
@@ -324,7 +326,7 @@ class ContainerProfiler():
 
         #time.sleep(10)
 
-        exceptList = ["access","arch_prctl","brk","close","execve","exit_group","fcntl","fstat","geteuid","lseek","mmap","mprotect","munmap","openat","prlimit64","read","rt_sigaction","rt_sigprocmask","set_robust_list","set_tid_address","stat","statfs","write","setns","capget","capset","chdir","fchown","futex","getdents64","getpid","getppid","lstat","openat","prctl","setgid","setgroups","setuid","stat","io_setup","getdents","clone","readlinkat","newfstatat","getrandom","sigaltstack","getresgid","getresuid","setresgid","setresuid","alarm","getsid","getpgrp", "epoll_pwait", "vfork", "fstatfs"]
+        exceptList = ["access","arch_prctl","brk","close","execve","exit_group","fcntl","fstat","geteuid","lseek","mmap","mprotect","munmap","openat","prlimit64","read","rt_sigaction","rt_sigprocmask","set_robust_list","set_tid_address","stat","statfs","write","setns","capget","capset","chdir","fchown","futex","getdents64","getpid","getppid","lstat","openat","prctl","setgid","setgroups","setuid","stat","io_setup","getdents","clone","readlinkat","newfstatat","getrandom","sigaltstack","getresgid","getresuid","setresgid","setresuid","alarm","getsid","getpgrp", "epoll_pwait", "vfork", "fstatfs", "renameat2"]     # renameat2 required for performing mv needed for multi-phase
         
         binExceptList = ["execve", "exit group", "brk", "mmap", "munmap", "prctl", "write", "fstat"]
 
@@ -890,7 +892,7 @@ class ContainerProfiler():
                                         #self.logger.info("Killing and deleting fine-grained hardened container")
                                         myContainer.kill()
                                         myContainer.delete()
-                                        if ( myRestrictedContainer.runWithSeccompProfile(seccompPath) ):
+                                        if ( myRestrictedContainer.runAsRootWithSeccompProfile(seccompPath) ):
                                             time.sleep(logSleepTime)
                                             restrictedLogs = myRestrictedContainer.checkLogs()
                                             restrictedLogs = restrictedLogs.replace("/home/confine/docker-entrypoint.wseccomp.sh", "/docker-entrypoint.sh")
@@ -1007,6 +1009,17 @@ class ContainerProfiler():
         self.runCopyCmd(outputEntryPath, tmpPath)
 
         cmd = "sed 's/\[orig-binary-path\]/" + origBinaryPath + "/g' " + tmpPath + " > " + outputEntryPath
+        self.logger.debug("modifying entrypoint using command: %s", cmd)
+        returncode, out, err = util.runCommand(cmd)
+        if ( returncode != 0 ):
+            self.logger.error("Error modifying the docker-entrypoint.sh script: %s", err)
+            return False
+
+        self.runCopyCmd(outputEntryPath, tmpPath)
+        if ( self.dockerUser and self.dockerUser != "" ):
+            cmd = "sed 's/\[switch-user-cmd\]/su " + self.dockerUser + "/g' " + tmpPath + " > " + outputEntryPath
+        else:
+            cmd = "sed 's/\[switch-user-cmd\]//g' " + tmpPath + " > " + outputEntryPath
         self.logger.debug("modifying entrypoint using command: %s", cmd)
         returncode, out, err = util.runCommand(cmd)
         if ( returncode != 0 ):

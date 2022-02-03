@@ -62,7 +62,7 @@
     "docker-path.bak": "/home/confine/redis-server"
   },
   "nginx": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked on angr, confine, and confine-",
     "image-name": "nginx",
     "image-url": "nginx",
@@ -193,12 +193,15 @@
     "options": "",
     "args": "",
     "dependencies": {},
+    "user.todo": "memcache",
     "id": "13",
     "binaries": [
       "memcached"
     ],
     "docker-cmd": [
-      "memcached"
+      "memcached",
+      "-u",
+      "memcache"
     ],
     "entrypoint": "docker-entrypoint.sh",
     "docker-path.bak": "/home/confine/memcached"
@@ -701,7 +704,6 @@
       "java"
     ],
     "docker-cmd": [
-      "logstash:7.10.1"
     ],
     "entrypoint": "docker-entrypoint",
     "docker-path.bak": "/home/confine/logstash"
@@ -863,7 +865,7 @@
     "id": "55"
   },
   "percona": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked on angr, confine, and confine- (stopped after a few second in muliti-stage, didn't work in this version, check it, option error)",
     "image-name": "percona",
     "image-url": "percona",
@@ -875,7 +877,9 @@
       "mysqld"
     ],
     "docker-cmd": [
-      "mysqld"
+      "mysqld",
+      "-u",
+      "mysql"
     ],
     "entrypoint": "docker-entrypoint.sh",
     "docker-path.bak": "/home/confine/mysqld"
@@ -1241,6 +1245,7 @@
       "java"
     ],
     "docker-cmd": [
+      "/opt/ibm/wlp/bin/server",
       "run",
       "defaultServer"
     ],

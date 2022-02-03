@@ -256,6 +256,7 @@ if __name__ == '__main__':
                     depBinaryFiles = depVals.get("binaries", [])
                     depDockerStartArgs = depVals.get("docker-cmd", [])
                     depDockerPath = ""
+                    depUser = depVals.get("user", "")
                     depOrigBinaryPath = imageVals.get("docker-orig-binary-path", "")
                     depDockerEntryPoint = depVals.get("entrypoint", "")
                     depDockerEntryPointModify = depVals.get("entrypoint-modify", "true")
@@ -272,6 +273,7 @@ if __name__ == '__main__':
                             depDockerPath,
                             depDockerEntryPoint,
                             depDockerEntryPointModify,
+                            depUser,
                             options.defaultentrypoint,
                             depOrigBinaryPath,
                             options.libccfginput, 
@@ -316,6 +318,7 @@ if __name__ == '__main__':
                 imageBinaryFiles = imageVals.get("binaries", [])
                 dockerStartArgs = imageVals.get("docker-cmd",[])
                 dockerPath = imageVals.get("docker-path", "")
+                dockerUser = imageVals.get("user", "")
                 origBinaryPath = imageVals.get("docker-orig-binary-path", "")
                 dockerEntryPoint = imageVals.get("entrypoint", "")
                 dockerEntryPointModify = imageVals.get("entrypoint-modify", "true")
@@ -332,6 +335,7 @@ if __name__ == '__main__':
                         dockerPath,
                         dockerEntryPoint,
                         dockerEntryPointModify,
+                        dockerUser,
                         options.defaultentrypoint,
                         origBinaryPath,
                         options.libccfginput, 
