@@ -865,7 +865,7 @@
     "id": "55"
   },
   "percona": {
-    "enable": "true",
+    "enable": "false",
     "status": "worked on angr, confine, and confine- (stopped after a few second in muliti-stage, didn't work in this version, check it, option error)",
     "image-name": "percona",
     "image-url": "percona",
@@ -1457,7 +1457,7 @@
     "id": "95"
   },
   "julia": {
-    "enable": "false",
+    "enable": "true",
     "status": "worked in confine and angr,but in confine-, the seccomp profile created but it did not work, check it",
     "image-name": "julia",
     "image-url": "julia",
@@ -1466,6 +1466,9 @@
     "dependencies": {},
     "id": "96",
     "binaries": [
+      "julia"
+    ],
+    "docker-cmd": [
       "julia"
     ],
     "entrypoint": "",
